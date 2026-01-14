@@ -12,6 +12,8 @@ from contextlib import asynccontextmanager
 API_URL = "https://api.hh.ru/vacancies"
 OUTPUT_FOLDER = "final_folder"
 INTERVAL_HOURS = 12
+PER_PAGE = 100
+PAGES = 20
 
 app = FastAPI()
 
@@ -34,16 +36,38 @@ def save_vacancies_to_file(data: dict):
 async def fetch_vacancies():
     """Fetches vacancies from the HH API."""
     print(f"[{datetime.now()}] Fetching data from {API_URL}...")
+    
+    all_items = []
+    
     async with httpx.AsyncClient() as client:
-        try:
-            response = await client.get(API_URL, params={"area": 2})
-            response.raise_for_status()
-            data = response.json()
-            save_vacancies_to_file(data)
-        except httpx.HTTPError as e:
-            print(f"[{datetime.now()}] HTTP Error: {e}")
-        except Exception as e:
-            print(f"[{datetime.now()}] Unexpected Error: {e}")
+        for page in range(PAGES):
+            try:
+                params = {
+                    "area": 2,
+                    "per_page": PER_PAGE,
+                    "page": page
+                }
+                print(f"[{datetime.now()}] Fetching page {page + 1}/{PAGES}...")
+                response = await client.get(API_URL, params=params)
+                response.raise_for_status()
+                data = response.json()
+                
+                items = data.get("items", [])
+                all_items.extend(items)
+                
+                # Check if we reached the last page available in API
+                if page >= data.get("pages", 0) - 1:
+                    break
+                    
+            except httpx.HTTPError as e:
+                print(f"[{datetime.now()}] HTTP Error on page {page}: {e}")
+            except Exception as e:
+                print(f"[{datetime.now()}] Unexpected Error on page {page}: {e}")
+
+    if all_items:
+        save_vacancies_to_file({"items": all_items, "meta": {"total_fetched": len(all_items)}})
+    else:
+        print(f"[{datetime.now()}] No data fetched.")
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -80,4 +104,4 @@ async def root():
 
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run("main:app", host="0.0.0.0", port=1000, reload=True)
+    uvicorn.run("main:app", host="0.0.0.0", port=8000, reload=True)
