@@ -36,7 +36,7 @@ async def fetch_vacancies():
     print(f"[{datetime.now()}] Fetching data from {API_URL}...")
     async with httpx.AsyncClient() as client:
         try:
-            response = await client.get(API_URL)
+            response = await client.get(API_URL, params={"area": 2})
             response.raise_for_status()
             data = response.json()
             save_vacancies_to_file(data)
