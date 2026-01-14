@@ -12,8 +12,9 @@ from contextlib import asynccontextmanager
 API_URL = "https://api.hh.ru/vacancies"
 OUTPUT_FOLDER = "final_folder"
 INTERVAL_HOURS = 12
+# GET request params
+AREA = 2
 PER_PAGE = 100
-PAGES = 20
 
 app = FastAPI()
 
@@ -38,16 +39,17 @@ async def fetch_vacancies():
     print(f"[{datetime.now()}] Fetching data from {API_URL}...")
     
     all_items = []
-    
+    pages_count = 20
+
     async with httpx.AsyncClient() as client:
-        for page in range(PAGES):
+        for page in range(pages_count):
             try:
                 params = {
-                    "area": 2,
+                    "area": AREA,
                     "per_page": PER_PAGE,
                     "page": page
                 }
-                print(f"[{datetime.now()}] Fetching page {page + 1}/{PAGES}...")
+                print(f"[{datetime.now()}] Fetching page {page + 1}/{pages_count}...")
                 response = await client.get(API_URL, params=params)
                 response.raise_for_status()
                 data = response.json()
