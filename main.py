@@ -39,7 +39,7 @@ async def fetch_vacancies():
     print(f"[{datetime.now()}] Fetching data from {API_URL}...")
     
     all_items = []
-    pages_count = 20
+    pages_count = 600
 
     async with httpx.AsyncClient() as client:
         for page in range(pages_count):
