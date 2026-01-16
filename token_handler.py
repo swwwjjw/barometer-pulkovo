@@ -14,7 +14,7 @@ state = "my_unique_state_123"  # Для защиты от CSRF
 @app.get("/")
 async def auth():
     # Автоматически перенаправляем на HH
-    auth_url = f"https://hh.ru/oauth/authorize?response_type=code&client_id=ВАШ_CLIENT_ID&state={state}&redirect_uri=http://localhost:8000/callback"
+    auth_url = f"https://hh.ru/oauth/authorize?response_type=code&client_id=MI85K2MSM4M9BKE1D7TBBMI358QU9OQJ3ILI2CBJB81SI0K7HL2J6BO3H3TCM4OR&state={state}&redirect_uri=http://localhost:1000/callback"
     return HTMLResponse(f"""
         <html>
             <script>window.location.href = "{auth_url}"</script>
