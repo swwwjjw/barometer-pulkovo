@@ -1,57 +1,83 @@
-import requests
-from flask import Flask, request
-import threading
+import uvicorn
 import webbrowser
+import asyncio
+from fastapi import FastAPI, Request
+from fastapi.responses import HTMLResponse
+import httpx
 
-app = Flask(__name__)
+app = FastAPI()
 
-# Глобальная переменная для хранения кода
+# Глобальные переменные для обмена данными между потоками
 auth_code = None
+state = "my_unique_state_123"  # Для защиты от CSRF
 
-@app.route('/')
-def callback():
+@app.get("/")
+async def auth():
+    # Автоматически перенаправляем на HH
+    auth_url = f"https://hh.ru/oauth/authorize?response_type=code&client_id=ВАШ_CLIENT_ID&state={state}&redirect_uri=http://localhost:8000/callback"
+    return HTMLResponse(f"""
+        <html>
+            <script>window.location.href = "{auth_url}"</script>
+            <body>Перенаправление на авторизацию HH...</body>
+        </html>
+    """)
+
+@app.get("/callback")
+async def callback(request: Request):
     global auth_code
-    auth_code = request.args.get('code')
-    return "Авторизация успешна! Вы можете закрыть это окно."
+    code = request.query_params.get("code")
+    received_state = request.query_params.get("state")
+    
+    # Проверяем state для безопасности
+    if received_state != state:
+        return HTMLResponse("Ошибка: неверный state параметр", status_code=400)
+    
+    if code:
+        auth_code = code
+        return HTMLResponse("""
+            <h2>Авторизация успешна!</h2>
+            <p>Вы можете закрыть это окно и вернуться в приложение.</p>
+        """)
+    return HTMLResponse("Ошибка: код не получен", status_code=400)
 
-def run_server():
-    app.run(port=1000)
+async def get_tokens():
+    """Получаем токены с помощью httpx"""
+    async with httpx.AsyncClient() as client:
+        response = await client.post(
+            "https://hh.ru/oauth/token",
+            data={
+                'grant_type': 'authorization_code',
+                'client_id': 'MI85K2MSM4M9BKE1D7TBBMI358QU9OQJ3ILI2CBJB81SI0K7HL2J6BO3H3TCM4OR',
+                'client_secret': 'V0IHK8VT0KGU14BDV742ITMGS65ISHUEUO0V8TV09R63NFU4294A25SUNKFLAQR1',
+                'code': auth_code,
+                'redirect_uri': 'http://localhost:1000/callback'
+            }
+        )
+        return response.json()
 
-# Запускаем сервер в отдельном потоке
-server_thread = threading.Thread(target=run_server)
-server_thread.daemon = True
-server_thread.start()
+async def main():
+    # Запускаем сервер в фоне
+    config = uvicorn.Config(app, host="127.0.0.1", port=1000, log_level="error")
+    server = uvicorn.Server(config)
+    
+    # Открываем браузер
+    webbrowser.open('http://localhost:1000')
+    
+    print("Открыта страница авторизации HH...")
+    print("Ожидаем, пока вы авторизуетесь...")
+    
+    # Ждем получения кода
+    while auth_code is None:
+        await asyncio.sleep(1)
+    
+    # Получаем токены
+    tokens = await get_tokens()
+    
+    # Останавливаем сервер
+    server.should_exit = True
+    
+    return tokens
 
-# Даем серверу время запуститься
-import time
-time.sleep(1)
-
-# Формируем ссылку с redirect_uri на localhost
-HH_CLIENT_ID = 'MI85K2MSM4M9BKE1D7TBBMI358QU9OQJ3ILI2CBJB81SI0K7HL2J6BO3H3TCM4OR'
-redirect_uri = 'http://localhost:1000'
-auth_url = f"https://hh.ru/oauth/authorize?response_type=code&client_id=&redirect_uri={redirect_uri}"
-
-# Открываем браузер автоматически
-webbrowser.open(auth_url)
-
-# Ждем, пока пользователь авторизуется и мы получим код
-print("Ждем авторизации...")
-while auth_code is None:
-    time.sleep(1)
-
-# Теперь у нас есть auth_code, получаем токен
-client_secret = 'V0IHK8VT0KGU14BDV742ITMGS65ISHUEUO0V8TV09R63NFU4294A25SUNKFLAQR1'
-url = "https://hh.ru/oauth/token"
-body = {
-    'grant_type': 'authorization_code',
-    'client_id': HH_CLIENT_ID,
-    'client_secret': client_secret,
-    'code': auth_code,
-    'redirect_uri': redirect_uri
-}
-
-response = requests.post(url, data=body)
-tokens = response.json()
-
-print("Токен получен!")
-print(tokens)
+if __name__ == "__main__":
+    tokens = asyncio.run(main())
+    print("Токены получены:", tokens)
