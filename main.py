@@ -9,7 +9,7 @@ from apscheduler.triggers.interval import IntervalTrigger
 from contextlib import asynccontextmanager
 
 # Configuration
-API_URL = "https://api.hh.ru/vacancies"
+API_URL = "https://api.hh.ru/professional_roles"
 OUTPUT_FOLDER = "final_folder"
 INTERVAL_HOURS = 12
 # GET request params
@@ -51,7 +51,7 @@ async def fetch_vacancies():
                     "professional_role": 33
                 }
                 print(f"[{datetime.now()}] Fetching page {page + 1}/{pages_count}...")
-                response = await client.get(API_URL, params=params)
+                response = await client.get(API_URL)
                 response.raise_for_status()
                 data = response.json()
                 
