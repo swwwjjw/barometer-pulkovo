@@ -54,7 +54,6 @@ async def fetch_vacancies():
                 response = await client.get(API_URL, params=params)
                 response.raise_for_status()
                 data = response.json()
-                save_vacancies_to_file(data)
 
                 items = data.get("items", [])
                 all_items.extend(items)
@@ -68,10 +67,10 @@ async def fetch_vacancies():
             except Exception as e:
                 print(f"[{datetime.now()}] Unexpected Error on page {page}: {e}")
 
-    # if all_items:
-        # save_vacancies_to_file({"items": all_items, "meta": {"total_fetched": len(all_items)}})
-    # else:
-        # print(f"[{datetime.now()}] No data fetched.")
+    if all_items:
+        save_vacancies_to_file({"items": all_items, "meta": {"total_fetched": len(all_items)}})
+    else:
+        print(f"[{datetime.now()}] No data fetched.")
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
