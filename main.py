@@ -48,7 +48,8 @@ async def fetch_vacancies():
                     "area": AREA,
                     "per_page": PER_PAGE,
                     "page": page,
-                    "professional_role": 33
+                    "professional_role": 33,
+                    "professional_role": 10
                 }
                 print(f"[{datetime.now()}] Fetching page {page + 1}/{pages_count}...")
                 response = await client.get(API_URL, params=params)
