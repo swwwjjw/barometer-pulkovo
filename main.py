@@ -14,7 +14,7 @@ OUTPUT_FOLDER = "final_folder"
 INTERVAL_HOURS = 12
 # GET request params
 AREA = 2
-PER_PAGE = 100
+PER_PAGE = 2000
 
 app = FastAPI()
 
@@ -48,8 +48,7 @@ async def fetch_vacancies():
                     "area": AREA,
                     "per_page": PER_PAGE,
                     "page": page,
-                    "professional_role": 33,
-                    "professional_role": 10
+                    "professional_role": 33
                 }
                 print(f"[{datetime.now()}] Fetching page {page + 1}/{pages_count}...")
                 response = await client.get(API_URL, params=params)
