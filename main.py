@@ -44,18 +44,29 @@ async def fetch_vacancies():
     async with httpx.AsyncClient() as client:
         for vacancy_roles in PROFESSIONAL_ROLE:
             try:
-                params = [
+                base_params = [
                     ("area", AREA),
                     ("per_page", PER_PAGE),
                 ]
                 for role_id in vacancy_roles:
-                    params.append(("professional_role", role_id))
-                response = await client.get(API_URL, params=params)
-                response.raise_for_status()
-                data = response.json()
+                    base_params.append(("professional_role", role_id))
 
-                items = data.get("items", [])
-                all_items.extend(items)
+                page = 0
+                while True:
+                    params = base_params + [("page", page)]
+                    
+                    response = await client.get(API_URL, params=params)
+                    response.raise_for_status()
+                    data = response.json()
+
+                    items = data.get("items", [])
+                    all_items.extend(items)
+
+                    pages = data.get("pages", 1)
+                    if page >= pages - 1:
+                        break
+                    
+                    page += 1
                     
             except httpx.HTTPError as e:
                 print(f"[{datetime.now()}] Ошибка HTTP: {e}")
@@ -95,4 +106,4 @@ async def root():
 
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run("main:app", host="0.0.0.0", port=1000, reload=True)
+    uvicorn.run("main:app", host="0.0.0.0", port=8000, reload=True)
