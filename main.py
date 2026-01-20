@@ -12,9 +12,9 @@ from contextlib import asynccontextmanager
 API_URL = "https://api.hh.ru/vacancies"
 OUTPUT_FOLDER = "final_folder"
 INTERVAL_HOURS = 12
-# Параметры запроса к  hh.ru
+# Параметры запроса к hh.ru
 AREA = 2
-PER_PAGE = 2000
+PER_PAGE = 100
 PROFESSIONAL_ROLE = [[31, 52], [156, 150, 10], [165, 96], [63], [81], [128, 86], [70], [15, 24, 64], [111, 173, 44, 46], [130], [89], [89], [64], [114], [131, 81, 52], [90, 120], [111, 144], [90, 120, 95]]
 
 app = FastAPI()
