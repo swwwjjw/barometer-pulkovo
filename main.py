@@ -14,8 +14,9 @@ OUTPUT_FOLDER = "final_folder"
 INTERVAL_HOURS = 12
 # Параметры запроса к hh.ru
 AREA = 2
-PER_PAGE = 100
+PER_PAGE = 1
 PROFESSIONAL_ROLE = [[31, 52], [156, 150, 10], [165, 96], [63], [81], [128, 86], [70], [15, 24, 64], [111, 173, 44, 46], [130], [89], [89], [64], [114], [131, 81, 52], [90, 120], [111, 144], [90, 120, 95]]
+max = 10
 
 app = FastAPI()
 
@@ -42,14 +43,18 @@ async def fetch_vacancies():
     all_items = []
 
     async with httpx.AsyncClient() as client:
-        for vacancy_roles in PROFESSIONAL_ROLE:
+        # for vacancy_roles in PROFESSIONAL_ROLE:
+        for page in range(0, max):
             try:
                 params = [
                     ("area", AREA),
                     ("per_page", PER_PAGE),
+                    ("page", page)
                 ]
-                for role_id in vacancy_roles:
-                    params.append(("professional_role", role_id))
+                page += 1
+                # for role_id in vacancy_roles:
+                    # params.append(("professional_role", role_id))
+
                 response = await client.get(API_URL, params=params)
                 response.raise_for_status()
                 data = response.json()
