@@ -12,7 +12,7 @@ from contextlib import asynccontextmanager
 API_URL = "https://api.hh.ru/vacancies"
 OUTPUT_FOLDER = "final_folder"
 INTERVAL_HOURS = 12
-MAX_PAGES = 1
+MAX_PAGES = 20
 # Параметры запроса к hh.ru
 AREA = 2
 PER_PAGE = 99 # Если указать 100, то будет 400 Bad request, 
@@ -57,6 +57,8 @@ async def fetch_vacancies():
                     ]
                     for role_id in vacancy_roles:
                         params.append(("professional_role", role_id))
+
+                    await asyncio.sleep(30)
 
                     response = await client.get(API_URL, params=params)
                     response.raise_for_status()
