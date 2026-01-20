@@ -12,11 +12,15 @@ from contextlib import asynccontextmanager
 API_URL = "https://api.hh.ru/vacancies"
 OUTPUT_FOLDER = "final_folder"
 INTERVAL_HOURS = 12
+MAX_PAGES = 20
 # Параметры запроса к hh.ru
 AREA = 2
-PER_PAGE = 1
-PROFESSIONAL_ROLE = [[31, 52], [156, 150, 10], [165, 96], [63], [81], [128, 86], [70], [15, 24, 64], [111, 173, 44, 46], [130], [89], [89], [64], [114], [131, 81, 52], [90, 120], [111, 144], [90, 120, 95]]
-max = 10
+PER_PAGE = 99 # Если указать 100, то будет 400 Bad request, 
+              # т.к. API hh.ru поддерживает возврат до 2000 значений
+PROFESSIONAL_ROLE = [[31, 52], [156, 150, 10], [165, 96], [63], 
+                     [81], [128, 86], [70], [15, 24, 64], [111, 173, 44, 46], 
+                     [130], [89], [89], [64], [114], [131, 81, 52], [90, 120], 
+                     [111, 144], [90, 120, 95]]
 
 app = FastAPI()
 
@@ -32,9 +36,9 @@ def save_vacancies_to_file(data: dict):
     try:
         with open(filepath, "w", encoding="utf-8") as f:
             json.dump(data, f, ensure_ascii=False, indent=4)
-        print(f"[{datetime.now()}] Данные сохранены в {filepath}")
+        print(f"[{datetime.now()}] Данные сохранены в {filepath}.")
     except Exception as e:
-        print(f"[{datetime.now()}] Ошибка сохранения данных: {e}")
+        print(f"[{datetime.now()}] Ошибка сохранения данных: {e}.")
 
 async def fetch_vacancies():
     # Получает данные с API hh.ru
@@ -43,37 +47,37 @@ async def fetch_vacancies():
     all_items = []
 
     async with httpx.AsyncClient() as client:
-        # for vacancy_roles in PROFESSIONAL_ROLE:
-        for page in range(0, max):
-            try:
-                params = [
-                    ("area", AREA),
-                    ("per_page", PER_PAGE),
-                    ("page", page)
-                ]
-                page += 1
-                # for role_id in vacancy_roles:
-                    # params.append(("professional_role", role_id))
+        for vacancy_roles in PROFESSIONAL_ROLE:
+            for page in range(0, MAX_PAGES):
+                try:
+                    params = [
+                        ("area", AREA),
+                        ("per_page", PER_PAGE),
+                        ("page", page)
+                    ]
+                    for role_id in vacancy_roles:
+                        params.append(("professional_role", role_id))
 
-                response = await client.get(API_URL, params=params)
-                response.raise_for_status()
-                data = response.json()
+                    response = await client.get(API_URL, params=params)
+                    response.raise_for_status()
+                    data = response.json()
 
-                items = data.get("items", [])
-                all_items.extend(items)
-                    
-            except httpx.HTTPError as e:
-                print(f"[{datetime.now()}] Ошибка HTTP: {e}")
-            except Exception as e:
-                print(f"[{datetime.now()}] Ошибка получения данных: {e}")
+                    items = data.get("items", [])
+                    all_items.extend(items)
+                        
+                except httpx.HTTPError as e:
+                    print(f"[{datetime.now()}] Ошибка HTTP: {e}.")
+                except Exception as e:
+                    print(f"[{datetime.now()}] Ошибка получения данных: {e}.")
 
     if all_items:
         save_vacancies_to_file({"items": all_items, "meta": {"total_fetched": len(all_items)}})
     else:
-        print(f"[{datetime.now()}] Данные не были получены")
+        print(f"[{datetime.now()}] Данные не были получены.")
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
+    # Запускает получение вакансий каждые INTERVAL_HOURS часов
     scheduler = AsyncIOScheduler()
     scheduler.add_job(
         fetch_vacancies,
@@ -83,20 +87,20 @@ async def lifespan(app: FastAPI):
         replace_existing=True,
     )
     scheduler.start()
-    print(f"[{datetime.now()}] Менеджер запущен. Данные собираются каждые {INTERVAL_HOURS} часов")
+    print(f"[{datetime.now()}] Менеджер запущен. Данные собираются каждые {INTERVAL_HOURS} часов.")
 
     asyncio.create_task(fetch_vacancies())
     
     yield
     
     scheduler.shutdown()
-    print(f"[{datetime.now()}] Менеджер остановлен")
+    print(f"[{datetime.now()}] Менеджер остановлен.")
 
 app = FastAPI(lifespan=lifespan)
 
 @app.get("/")
 async def root():
-    return {"message": "Приложение работает"}
+    return {"message": "Приложение работает."}
 
 if __name__ == "__main__":
     import uvicorn
