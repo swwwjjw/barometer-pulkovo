@@ -8,18 +8,19 @@ from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from apscheduler.triggers.interval import IntervalTrigger
 from contextlib import asynccontextmanager
 
-# Configuration
+# Настройки
 API_URL = "https://api.hh.ru/vacancies"
 OUTPUT_FOLDER = "final_folder"
 INTERVAL_HOURS = 12
-# GET request params
+# Параметры запроса к  hh.ru
 AREA = 2
 PER_PAGE = 2000
+PROFESSIONAL_ROLE = [[31, 52], [156, 150, 10], [165, 96], [63], [81], [128, 86], [70], [15, 24, 64], [111, 173, 44, 46], [130], [89], [89], [64], [114], [131, 81, 52], [90, 120], [111, 144], [90, 120, 95]]
 
 app = FastAPI()
 
 def save_vacancies_to_file(data: dict):
-    """Saves the fetched data to a .txt file in the final_folder."""
+    # Сохраняет полученные данные в .txt файл в /final_folder
     if not os.path.exists(OUTPUT_FOLDER):
         os.makedirs(OUTPUT_FOLDER)
     
@@ -30,56 +31,43 @@ def save_vacancies_to_file(data: dict):
     try:
         with open(filepath, "w", encoding="utf-8") as f:
             json.dump(data, f, ensure_ascii=False, indent=4)
-        print(f"[{datetime.now()}] Data successfully saved to {filepath}")
+        print(f"[{datetime.now()}] Данные сохранены в {filepath}")
     except Exception as e:
-        print(f"[{datetime.now()}] Error saving data: {e}")
+        print(f"[{datetime.now()}] Ошибка сохранения данных: {e}")
 
 async def fetch_vacancies():
-    """Fetches vacancies from the HH API."""
-    print(f"[{datetime.now()}] Fetching data from {API_URL}...")
+    # Получает данные с API hh.ru
+    print(f"[{datetime.now()}] Получение данных из {API_URL}...")
     
     all_items = []
-    pages_count = 600
 
     async with httpx.AsyncClient() as client:
-        for page in range(pages_count):
-            try:
-                params = {
-                    "area": AREA,
-                    "per_page": PER_PAGE,
-                    "page": page,
-                    "professional_role": 33
-                }
-                print(f"[{datetime.now()}] Fetching page {page + 1}/{pages_count}...")
-                response = await client.get(API_URL, params=params)
-                response.raise_for_status()
-                data = response.json()
+        try:
+            params = {
+                "area": AREA,
+                "per_page": PER_PAGE,
+                "professional_role": "33, 72"
+            }
+            response = await client.get(API_URL, params=params)
+            response.raise_for_status()
+            data = response.json()
 
-                items = data.get("items", [])
-                all_items.extend(items)
+            items = data.get("items", [])
+            all_items.extend(items)
                 
-                # Check if we reached the last page available in API
-                if page >= data.get("pages", 0) - 1:
-                    break
-                    
-            except httpx.HTTPError as e:
-                print(f"[{datetime.now()}] HTTP Error on page {page}: {e}")
-            except Exception as e:
-                print(f"[{datetime.now()}] Unexpected Error on page {page}: {e}")
+        except httpx.HTTPError as e:
+            print(f"[{datetime.now()}] Ошибка HTTP: {e}")
+        except Exception as e:
+            print(f"[{datetime.now()}] Ошибка получения данных: {e}")
 
     if all_items:
         save_vacancies_to_file({"items": all_items, "meta": {"total_fetched": len(all_items)}})
     else:
-        print(f"[{datetime.now()}] No data fetched.")
+        print(f"[{datetime.now()}] Данные не были получены")
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    # Startup: Initialize scheduler
     scheduler = AsyncIOScheduler()
-    # Run once immediately on startup for demonstration/testing or wait for interval?
-    # The prompt says "automatically access... once a day (12 hours)".
-    # Usually it's good to run it once on startup or schedule it.
-    # I'll schedule it to run every 12 hours.
     scheduler.add_job(
         fetch_vacancies,
         trigger=IntervalTrigger(hours=INTERVAL_HOURS),
@@ -88,22 +76,20 @@ async def lifespan(app: FastAPI):
         replace_existing=True,
     )
     scheduler.start()
-    print(f"[{datetime.now()}] Scheduler started. Job scheduled every {INTERVAL_HOURS} hours.")
-    
-    # Run fetch immediately so we don't wait 12 hours to see if it works
+    print(f"[{datetime.now()}] Менеджер запущен. Данные собираются каждые {INTERVAL_HOURS} часов")
+
     asyncio.create_task(fetch_vacancies())
     
     yield
     
-    # Shutdown
     scheduler.shutdown()
-    print(f"[{datetime.now()}] Scheduler shut down.")
+    print(f"[{datetime.now()}] Менеджер остановлен")
 
 app = FastAPI(lifespan=lifespan)
 
 @app.get("/")
 async def root():
-    return {"message": "HH Vacancies Fetcher Service is running."}
+    return {"message": "Приложение работает"}
 
 if __name__ == "__main__":
     import uvicorn
