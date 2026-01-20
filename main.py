@@ -12,7 +12,7 @@ from contextlib import asynccontextmanager
 API_URL = "https://api.hh.ru/vacancies"
 OUTPUT_FOLDER = "final_folder"
 INTERVAL_HOURS = 12
-MAX_PAGES = 20
+MAX_PAGES = 1
 # Параметры запроса к hh.ru
 AREA = 2
 PER_PAGE = 99 # Если указать 100, то будет 400 Bad request, 
