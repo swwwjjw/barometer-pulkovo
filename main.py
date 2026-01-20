@@ -42,23 +42,25 @@ async def fetch_vacancies():
     all_items = []
 
     async with httpx.AsyncClient() as client:
-        try:
-            params = {
-                "area": AREA,
-                "per_page": PER_PAGE,
-                "professional_role": "33, 72"
-            }
-            response = await client.get(API_URL, params=params)
-            response.raise_for_status()
-            data = response.json()
+        for vacancy_roles in PROFESSIONAL_ROLE:
+            try:
+                params = [
+                    ("area", AREA),
+                    ("per_page", PER_PAGE),
+                ]
+                for role_id in vacancy_roles:
+                    params.append(("professional_role", role_id))
+                response = await client.get(API_URL, params=params)
+                response.raise_for_status()
+                data = response.json()
 
-            items = data.get("items", [])
-            all_items.extend(items)
-                
-        except httpx.HTTPError as e:
-            print(f"[{datetime.now()}] Ошибка HTTP: {e}")
-        except Exception as e:
-            print(f"[{datetime.now()}] Ошибка получения данных: {e}")
+                items = data.get("items", [])
+                all_items.extend(items)
+                    
+            except httpx.HTTPError as e:
+                print(f"[{datetime.now()}] Ошибка HTTP: {e}")
+            except Exception as e:
+                print(f"[{datetime.now()}] Ошибка получения данных: {e}")
 
     if all_items:
         save_vacancies_to_file({"items": all_items, "meta": {"total_fetched": len(all_items)}})
