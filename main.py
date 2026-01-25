@@ -68,9 +68,9 @@ async def fetch_vacancies():
 
                     items = data.get("items", [])
 
-                    if len(items) == 0:
+                    if len(items) < PER_PAGE:
                         break
-                    
+
                     all_items.extend(items)
                         
                 except httpx.HTTPError as e:
