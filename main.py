@@ -67,6 +67,10 @@ async def fetch_vacancies():
                     data = response.json()
 
                     items = data.get("items", [])
+
+                    if len(items) == 0:
+                        break
+                    
                     all_items.extend(items)
                         
                 except httpx.HTTPError as e:
