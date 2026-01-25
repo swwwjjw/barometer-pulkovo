@@ -60,7 +60,7 @@ async def fetch_vacancies():
                     for role_id in vacancy_roles:
                         params.append(("professional_role", role_id))
 
-                    await asyncio.sleep(30)
+                    await asyncio.sleep(5)
 
                     response = await client.get(API_URL, params=params)
                     response.raise_for_status()
