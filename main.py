@@ -50,6 +50,8 @@ async def fetch_vacancies():
         for vacancy_roles in PROFESSIONAL_ROLE:
             for page in range(0, MAX_PAGES):
                 try:
+                    print(f"[{datetime.now()}] Обработка ролей: {vacancy_roles}, страница {page}.")
+
                     params = [
                         ("area", AREA),
                         ("per_page", PER_PAGE),
