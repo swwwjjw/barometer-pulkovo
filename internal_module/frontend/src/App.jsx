@@ -129,9 +129,9 @@ function App() {
                   <YAxis stroke="#94a3b8" />
                   <Tooltip />
                   <Legend />
-                  <Bar dataKey="salary">
+                  <Bar dataKey="salary" name="Зарплата">
                     {
-                      [{ name: 'Пулково' }, { name: 'Маркет' }].map((entry, index) => (
+                      [{ name: 'Пулково' }, { name: 'Рынок' }].map((entry, index) => (
                         <Cell key={`cell-${index}`} fill={index === 0 ? ACCENT_PRIMARY : '#22d3ee'} />
                       ))
                     }
@@ -151,7 +151,7 @@ function App() {
                   <XAxis dataKey="range" stroke="#94a3b8" />
                   <YAxis stroke="#94a3b8" />
                   <Tooltip />
-                  <Bar dataKey="count" fill={ACCENT_SECONDARY} />
+                  <Bar dataKey="count" fill={ACCENT_SECONDARY} name="Количество" />
                 </BarChart>
               </ResponsiveContainer>
             </div>
