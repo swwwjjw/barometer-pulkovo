@@ -101,15 +101,9 @@ def process_salary(item):
     if salary_range and salary_range.get("mode"):
         mode_id = salary_range["mode"].get("id")
         if mode_id == "SHIFT":
-            multiplier = 15 # Предположение: 15 смен в месяц
-        elif mode_id == "HOURLY": # Не уверен, что это точный ID, но логично
-            multiplier = 165 # 165 часов в месяц
-    
-    # Запасная эвристика, если режим не найден, но значения очень низкие
-    # Месячная зарплата обычно > 10000. 
-    # Если среднее < 1000, вероятно почасовая. Если < 10000 и > 1000, вероятно сменная?
-    # Но будем придерживаться явных данных или безопасных значений по умолчанию.
-    # Пример данных показал 'mode': {'id': 'SHIFT', ...} в диапазоне зарплат
+            multiplier = 20
+        elif mode_id == "HOUR":
+            multiplier = 156
     
     return {
         "from": val_from * multiplier,
