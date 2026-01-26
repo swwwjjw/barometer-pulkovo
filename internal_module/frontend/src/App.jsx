@@ -82,32 +82,32 @@ function App() {
         <>
           <div className="metrics-grid">
             <div className="metric-card">
-              <h3>Avg Salary</h3>
+              <h3>Среднее</h3>
               <div className="value">{Math.round(stats.metrics.avg).toLocaleString()}</div>
             </div>
             <div className="metric-card">
-              <h3>Median Salary</h3>
+              <h3>Медиана</h3>
               <div className="value">{Math.round(stats.metrics.median).toLocaleString()}</div>
             </div>
             <div className="metric-card">
-              <h3>Min Salary</h3>
+              <h3>Минимум</h3>
               <div className="value">{Math.round(stats.metrics.min).toLocaleString()}</div>
             </div>
             <div className="metric-card">
-              <h3>Max Salary</h3>
+              <h3>Максимум</h3>
               <div className="value">{Math.round(stats.metrics.max).toLocaleString()}</div>
             </div>
           </div>
 
           <div className="charts-grid">
             <div className="chart-card">
-              <h3>Salary vs Experience (Bubble)</h3>
+              <h3>Зарплата vs Опыт</h3>
               <ResponsiveContainer width="100%" height={300}>
                 <ScatterChart margin={{ top: 20, right: 20, bottom: 20, left: 20 }}>
                   <CartesianGrid strokeDasharray="3 3" opacity={0.3} />
-                  <XAxis type="number" dataKey="salary" name="Salary" unit="₽" stroke="#94a3b8" />
-                  <YAxis type="number" dataKey="experience" name="Experience (Years)" stroke="#94a3b8" />
-                  <ZAxis type="number" dataKey="count" range={[60, 400]} name="Vacancies" />
+                  <XAxis type="number" dataKey="salary" name="Зарплата" unit="₽" stroke="#94a3b8" />
+                  <YAxis type="number" dataKey="experience" name="Опыт" stroke="#94a3b8" />
+                  <ZAxis type="number" dataKey="count" range={[60, 400]} name="Вакансии" />
                   <Tooltip cursor={{ strokeDasharray: '3 3' }} />
                   <Scatter name="Vacancies" data={stats.bubble_data} fill={ACCENT_PRIMARY} />
                 </ScatterChart>
@@ -115,12 +115,12 @@ function App() {
             </div>
 
             <div className="chart-card">
-              <h3>Pulkovo vs Market</h3>
+              <h3>Пулково vs Рынок</h3>
               <ResponsiveContainer width="100%" height={300}>
                 <BarChart
                   data={[
-                    { name: 'Pulkovo', salary: stats.comparison.pulkovo },
-                    { name: 'Market', salary: stats.comparison.market }
+                    { name: 'Пулково', salary: stats.comparison.pulkovo },
+                    { name: 'Рынок', salary: stats.comparison.market }
                   ]}
                   margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
                 >
@@ -131,7 +131,7 @@ function App() {
                   <Legend />
                   <Bar dataKey="salary">
                     {
-                      [{ name: 'Pulkovo' }, { name: 'Market' }].map((entry, index) => (
+                      [{ name: 'Пулково' }, { name: 'Маркет' }].map((entry, index) => (
                         <Cell key={`cell-${index}`} fill={index === 0 ? ACCENT_PRIMARY : '#22d3ee'} />
                       ))
                     }
@@ -141,7 +141,7 @@ function App() {
             </div>
 
             <div className="chart-card">
-              <h3>Salary Distribution</h3>
+              <h3>Распределение зарплат</h3>
               <ResponsiveContainer width="100%" height={300}>
                 <BarChart
                   data={stats.salary_dist}
@@ -157,7 +157,7 @@ function App() {
             </div>
 
             <div className="chart-card">
-              <h3>Experience Distribution</h3>
+              <h3>Распределение опыта</h3>
               <ResponsiveContainer width="100%" height={300}>
                 <PieChart>
                   <Pie
