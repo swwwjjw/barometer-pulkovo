@@ -1,4 +1,4 @@
-# Stage 1: Build Frontend
+# Этап 1: Сборка фронтенда
 FROM node:18-alpine as frontend-builder
 
 WORKDIR /app/frontend
@@ -9,27 +9,27 @@ RUN npm install
 COPY internal_module/frontend/ .
 RUN npm run build
 
-# Stage 2: Runtime
+# Этап 2: Среда выполнения
 FROM python:3.10-slim
 
 WORKDIR /app
 
-# Install Python dependencies
+# Установка зависимостей Python
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copy backend code
+# Копирование кода бэкенда
 COPY internal_module/ internal_module/
 
-# Copy data folder
+# Копирование папки с данными
 COPY final_folder/ final_folder/
 
-# Copy built frontend from Stage 1
+# Копирование собранного фронтенда из Этапа 1
 COPY --from=frontend-builder /app/frontend/dist internal_module/frontend/dist
 
-# Expose the port
+# Открытие порта
 EXPOSE 8000
 
-# Run the application
-# We use the module path syntax. Since we are in /app, internal_module.internal_main should be resolvable.
+# Запуск приложения
+# Мы используем синтаксис пути модуля. Поскольку мы находимся в /app, internal_module.internal_main должен быть разрешим.
 CMD ["uvicorn", "internal_module.internal_main:app", "--host", "0.0.0.0", "--port", "8000"]
