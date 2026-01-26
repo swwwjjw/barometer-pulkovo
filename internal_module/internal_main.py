@@ -9,7 +9,7 @@ import numpy as np
 
 app = FastAPI()
 
-# Enable CORS for development
+# Включить CORS для разработки
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -20,7 +20,7 @@ app.add_middleware(
 
 DATA_FILE = os.path.join(os.path.dirname(__file__), "../final_folder/vacancies_20260125_144856.txt")
 
-# Predefined Roles Mapping
+# Предопределенное сопоставление ролей
 ROLES_CONFIG = [
     {"name": "Грузчик на склад", "ids": [31, 52]},
     {"name": "Аналитик данных", "ids": [156, 150, 10]},
@@ -42,7 +42,7 @@ ROLES_CONFIG = [
     {"name": "Инспектор Группы Быстрого Реагирования", "ids": [90, 120, 95]}
 ]
 
-# Experience Mapping (approximate years for sorting/plotting)
+# Сопоставление опыта (приблизительные годы для сортировки/построения графиков)
 EXPERIENCE_MAP = {
     "noExperience": 0,
     "between1And3": 2,
@@ -52,7 +52,7 @@ EXPERIENCE_MAP = {
 
 def load_data():
     if not os.path.exists(DATA_FILE):
-        # Fallback to absolute path if needed or just return empty
+        # Использовать абсолютный путь при необходимости или вернуть пустое значение
         if os.path.exists("/workspace/final_folder/vacancies_20260125_144856.txt"):
              with open("/workspace/final_folder/vacancies_20260125_144856.txt", "r", encoding="utf-8") as f:
                 return json.load(f).get("items", [])
@@ -65,15 +65,15 @@ VACANCIES = []
 
 def process_salary(item):
     """
-    Extracts and normalizes salary to monthly RUR.
-    Returns (min_salary, max_salary, avg_salary) or None if invalid.
+    Извлекает и нормализует зарплату в месячные рубли.
+    Возвращает (min_salary, max_salary, avg_salary) или None, если данные неверны.
     """
     salary = item.get("salary")
     if not salary:
         return None
     
     if salary.get("currency") != "RUR":
-        # Simple skip for non-RUR for now as no conversion rates provided
+        # Простой пропуск для валют, отличных от RUR, так как курсы конвертации не предоставлены
         return None
 
     s_from = salary.get("from")
@@ -82,29 +82,29 @@ def process_salary(item):
     if s_from is None and s_to is None:
         return None
     
-    # Calculate initial values
+    # Вычислить начальные значения
     val_from = s_from if s_from is not None else s_to
     val_to = s_to if s_to is not None else s_from
     
-    # Check for multiplier (Hourly/Shift)
-    # Check salary_range first
+    # Проверка множителя (Почасовая/Сменная)
+    # Сначала проверить диапазон зарплат
     salary_range = item.get("salary_range")
     multiplier = 1.0
     
-    # Heuristic detection based on API structure or values
-    # If explicit mode is present in salary_range
+    # Эвристическое определение на основе структуры API или значений
+    # Если явный режим присутствует в диапазоне зарплат
     if salary_range and salary_range.get("mode"):
         mode_id = salary_range["mode"].get("id")
         if mode_id == "SHIFT":
-            multiplier = 15 # 15 shifts/month assumption
-        elif mode_id == "HOURLY": # Not sure if this is the exact ID, but logical
-            multiplier = 165 # 165 hours/month
+            multiplier = 15 # Предположение: 15 смен в месяц
+        elif mode_id == "HOURLY": # Не уверен, что это точный ID, но логично
+            multiplier = 165 # 165 часов в месяц
     
-    # Fallback heuristic if mode not found but values are very low
-    # Monthly salary usually > 10000. 
-    # If avg < 1000, likely hourly. If < 10000 and > 1000, likely shift?
-    # But let's stick to explicit data or safe defaults.
-    # The example data showed 'mode': {'id': 'SHIFT', ...} in salary_range
+    # Запасная эвристика, если режим не найден, но значения очень низкие
+    # Месячная зарплата обычно > 10000. 
+    # Если среднее < 1000, вероятно почасовая. Если < 10000 и > 1000, вероятно сменная?
+    # Но будем придерживаться явных данных или безопасных значений по умолчанию.
+    # Пример данных показал 'mode': {'id': 'SHIFT', ...} в диапазоне зарплат
     
     return {
         "from": val_from * multiplier,
@@ -128,24 +128,24 @@ def get_stats(role_index: int):
         raise HTTPException(status_code=404, detail="Role not found")
     
     role_config = ROLES_CONFIG[role_index]
-    target_ids = set(map(str, role_config["ids"])) # IDs in data are likely strings
+    target_ids = set(map(str, role_config["ids"])) # ID в данных, скорее всего, строки
     
-    # Filter vacancies
-    # professional_roles is a list of objects {id, name}
+    # Фильтрация вакансий
+    # professional_roles - это список объектов {id, name}
     relevant_vacancies = []
     pulkovo_salaries = []
-    market_salaries = [] # All salaries for this role
+    market_salaries = [] # Все зарплаты для этой роли
     
     bubble_data = []
     salary_values = []
     experience_values = []
     
     for v in VACANCIES:
-        # Check roles
+        # Проверить роли
         v_roles = v.get("professional_roles", [])
         v_role_ids = {r.get("id") for r in v_roles}
         
-        # If intersection of target_ids and v_role_ids is not empty
+        # Если пересечение target_ids и v_role_ids не пусто
         if not target_ids.intersection(v_role_ids):
             continue
             
@@ -155,14 +155,14 @@ def get_stats(role_index: int):
             
         avg_salary = salary_info["avg"]
         
-        # Employer check
+        # Проверка работодателя
         employer_id = v.get("employer", {}).get("id")
         if employer_id == "666661":
             pulkovo_salaries.append(avg_salary)
         else:
-            market_salaries.append(avg_salary) # Should this include Pulkovo? "Pulkovo vs Market". Usually exclusive.
+            market_salaries.append(avg_salary) # Должно ли это включать Пулково? "Пулково против Рынка". Обычно эксклюзивно.
             
-        # Experience
+        # Опыт
         exp_obj = v.get("experience", {})
         exp_id = exp_obj.get("id", "noExperience")
         exp_name = exp_obj.get("name", "Нет опыта")
@@ -183,17 +183,17 @@ def get_stats(role_index: int):
     if not salary_values:
         return {"error": "No data found for this role"}
         
-    # Aggregate bubble data
+    # Агрегация данных для пузырьковой диаграммы
     bubble_df = pd.DataFrame(bubble_data)
     if not bubble_df.empty:
-        # Group by salary and experience, count
+        # Группировка по зарплате и опыту, подсчет
         bubble_agg = bubble_df.groupby(['salary', 'experience', 'experience_label']).size().reset_index(name='count')
-        # Scale count for bubble size if needed, or just pass count
+        # Масштабировать количество для размера пузырька, если нужно, или просто передать количество
         bubble_data_agg = bubble_agg.to_dict(orient='records')
     else:
         bubble_data_agg = []
 
-    # Metrics
+    # Метрики
     metrics = {
         "min": float(np.min(salary_values)),
         "max": float(np.max(salary_values)),
@@ -202,7 +202,7 @@ def get_stats(role_index: int):
         "count": len(salary_values)
     }
     
-    # Pulkovo vs Market
+    # Пулково против Рынка
     pulkovo_avg = float(np.mean(pulkovo_salaries)) if pulkovo_salaries else 0
     market_avg = float(np.mean(market_salaries)) if market_salaries else 0
     
@@ -211,8 +211,8 @@ def get_stats(role_index: int):
         "market": market_avg
     }
     
-    # Distributions
-    # Salary Hist (simple bins)
+    # Распределения
+    # Гистограмма зарплат (простые интервалы)
     hist, bin_edges = np.histogram(salary_values, bins=10)
     salary_dist = []
     for i in range(len(hist)):
@@ -221,7 +221,7 @@ def get_stats(role_index: int):
             "count": int(hist[i])
         })
         
-    # Experience Dist
+    # Распределение опыта
     exp_series = pd.Series(experience_values)
     exp_counts = exp_series.value_counts().to_dict()
     experience_dist = [{"name": k, "value": v} for k, v in exp_counts.items()]
@@ -235,8 +235,8 @@ def get_stats(role_index: int):
         "experience_dist": experience_dist
     }
 
-# Serve React App static files
-# Note: This expects the frontend to be built into 'frontend/dist'
+# Раздача статических файлов React приложения
+# Примечание: ожидается, что фронтенд собран в 'frontend/dist'
 frontend_path = os.path.join(os.path.dirname(__file__), "frontend/dist")
 if os.path.exists(frontend_path):
     app.mount("/", StaticFiles(directory=frontend_path, html=True), name="static")
