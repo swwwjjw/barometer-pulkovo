@@ -6,7 +6,17 @@ import {
 } from 'recharts'
 import './App.css'
 
-const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#8884d8'];
+// New color palette
+const COLORS = [
+  '#3b82f6', // Blue 500
+  '#22d3ee', // Cyan 400
+  '#a78bfa', // Violet 400
+  '#f472b6', // Pink 400
+  '#fbbf24'  // Amber 400
+];
+
+const ACCENT_PRIMARY = '#3b82f6';
+const ACCENT_SECONDARY = '#60a5fa';
 
 function App() {
   const [roles, setRoles] = useState([])
@@ -94,12 +104,12 @@ function App() {
               <h3>Salary vs Experience (Bubble)</h3>
               <ResponsiveContainer width="100%" height={300}>
                 <ScatterChart margin={{ top: 20, right: 20, bottom: 20, left: 20 }}>
-                  <CartesianGrid />
-                  <XAxis type="number" dataKey="salary" name="Salary" unit="₽" />
-                  <YAxis type="number" dataKey="experience" name="Experience (Years)" />
+                  <CartesianGrid strokeDasharray="3 3" opacity={0.3} />
+                  <XAxis type="number" dataKey="salary" name="Salary" unit="₽" stroke="#94a3b8" />
+                  <YAxis type="number" dataKey="experience" name="Experience (Years)" stroke="#94a3b8" />
                   <ZAxis type="number" dataKey="count" range={[60, 400]} name="Vacancies" />
                   <Tooltip cursor={{ strokeDasharray: '3 3' }} />
-                  <Scatter name="Vacancies" data={stats.bubble_data} fill="#8884d8" />
+                  <Scatter name="Vacancies" data={stats.bubble_data} fill={ACCENT_PRIMARY} />
                 </ScatterChart>
               </ResponsiveContainer>
             </div>
@@ -114,15 +124,15 @@ function App() {
                   ]}
                   margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
                 >
-                  <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis dataKey="name" />
-                  <YAxis />
+                  <CartesianGrid strokeDasharray="3 3" opacity={0.3} />
+                  <XAxis dataKey="name" stroke="#94a3b8" />
+                  <YAxis stroke="#94a3b8" />
                   <Tooltip />
                   <Legend />
-                  <Bar dataKey="salary" fill="#d00000">
+                  <Bar dataKey="salary">
                     {
                       [{ name: 'Pulkovo' }, { name: 'Market' }].map((entry, index) => (
-                        <Cell key={`cell-${index}`} fill={index === 0 ? '#d00000' : '#8884d8'} />
+                        <Cell key={`cell-${index}`} fill={index === 0 ? ACCENT_PRIMARY : '#22d3ee'} />
                       ))
                     }
                   </Bar>
@@ -137,11 +147,11 @@ function App() {
                   data={stats.salary_dist}
                   margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
                 >
-                  <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis dataKey="range" />
-                  <YAxis />
+                  <CartesianGrid strokeDasharray="3 3" opacity={0.3} />
+                  <XAxis dataKey="range" stroke="#94a3b8" />
+                  <YAxis stroke="#94a3b8" />
                   <Tooltip />
-                  <Bar dataKey="count" fill="#82ca9d" />
+                  <Bar dataKey="count" fill={ACCENT_SECONDARY} />
                 </BarChart>
               </ResponsiveContainer>
             </div>

@@ -1,48 +1,95 @@
 .container {
-  max-width: 1200px;
+  max-width: 1280px;
   margin: 0 auto;
-  padding: 20px;
-  font-family: Arial, sans-serif;
+  padding: 40px 20px;
+  width: 100%;
 }
 
 .header {
-  margin-bottom: 20px;
+  margin-bottom: 40px;
   display: flex;
   justify-content: space-between;
   align-items: center;
+  flex-wrap: wrap;
+  gap: 20px;
+  animation: fadeInDown 0.8s ease-out;
+}
+
+.header h1 {
+  margin: 0;
+  font-size: 2.5rem;
+  font-weight: 700;
+  background: linear-gradient(135deg, var(--accent-secondary), var(--accent-primary));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  letter-spacing: -0.025em;
 }
 
 .controls select {
-  padding: 10px;
+  padding: 12px 20px;
   font-size: 16px;
   width: 300px;
+  background-color: var(--bg-secondary);
+  color: var(--text-primary);
+  border: 1px solid var(--bg-tertiary);
+  border-radius: 12px;
+  cursor: pointer;
+  outline: none;
+  transition: all 0.2s ease;
+  box-shadow: var(--card-shadow);
+}
+
+.controls select:hover, .controls select:focus {
+  border-color: var(--accent-primary);
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.3);
 }
 
 .metrics-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 20px;
-  margin-bottom: 30px;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 24px;
+  margin-bottom: 40px;
 }
 
 .metric-card {
-  background: #f5f5f5;
-  padding: 20px;
-  border-radius: 8px;
-  text-align: center;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  background: rgba(30, 41, 59, 0.7); /* Translucent dark blue */
+  backdrop-filter: blur(10px);
+  padding: 24px;
+  border-radius: 16px;
+  text-align: left;
+  box-shadow: var(--card-shadow);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  animation: fadeInUp 0.6s ease-out backwards;
+}
+
+.metric-card:nth-child(1) { animation-delay: 0.1s; }
+.metric-card:nth-child(2) { animation-delay: 0.2s; }
+.metric-card:nth-child(3) { animation-delay: 0.3s; }
+.metric-card:nth-child(4) { animation-delay: 0.4s; }
+
+.metric-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.2), 0 4px 6px -2px rgba(0, 0, 0, 0.1);
+  border-color: var(--accent-primary);
 }
 
 .metric-card h3 {
-  margin: 0 0 10px 0;
-  color: #666;
-  font-size: 14px;
+  margin: 0 0 12px 0;
+  color: var(--text-muted);
+  font-size: 0.875rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-weight: 600;
 }
 
 .metric-card .value {
-  font-size: 24px;
-  font-weight: bold;
-  color: #333;
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  background: linear-gradient(to right, #fff, #cbd5e1);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
 }
 
 .charts-grid {
@@ -53,29 +100,107 @@
 }
 
 .chart-card {
-  background: #fff;
-  border: 1px solid #eee;
-  border-radius: 8px;
-  padding: 20px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+  background: var(--bg-secondary);
+  border: 1px solid var(--bg-tertiary);
+  border-radius: 20px;
+  padding: 24px;
+  box-shadow: var(--card-shadow);
+  transition: transform 0.2s ease;
+  animation: fadeIn 0.8s ease-out backwards;
+}
+
+.chart-card:nth-child(1) { animation-delay: 0.3s; }
+.chart-card:nth-child(2) { animation-delay: 0.4s; }
+.chart-card:nth-child(3) { animation-delay: 0.5s; }
+.chart-card:nth-child(4) { animation-delay: 0.6s; }
+
+.chart-card:hover {
+  border-color: var(--accent-primary);
 }
 
 .chart-card h3 {
   margin-top: 0;
-  margin-bottom: 20px;
-  text-align: center;
-  color: #444;
+  margin-bottom: 24px;
+  text-align: left;
+  color: var(--text-secondary);
+  font-size: 1.1rem;
+  font-weight: 600;
 }
 
 .loading {
   text-align: center;
   padding: 50px;
   font-size: 18px;
-  color: #666;
+  color: var(--text-muted);
+  animation: pulse 2s infinite;
 }
 
 .error {
-  color: red;
+  background-color: rgba(220, 38, 38, 0.1);
+  color: #ef4444;
   text-align: center;
   padding: 20px;
+  border-radius: 12px;
+  border: 1px solid rgba(220, 38, 38, 0.2);
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeInDown {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes pulse {
+  0% { opacity: 0.6; }
+  50% { opacity: 1; }
+  100% { opacity: 0.6; }
+}
+
+/* Recharts Customization Override */
+.recharts-cartesian-grid-horizontal line,
+.recharts-cartesian-grid-vertical line {
+  stroke: var(--bg-tertiary) !important;
+}
+
+.recharts-text {
+  fill: var(--text-muted) !important;
+}
+
+.recharts-tooltip-cursor {
+  fill: var(--bg-tertiary) !important;
+  opacity: 0.4;
+}
+
+.recharts-default-tooltip {
+  background-color: var(--bg-secondary) !important;
+  border-color: var(--bg-tertiary) !important;
+  color: var(--text-primary) !important;
+  border-radius: 8px !important;
+  box-shadow: var(--card-shadow) !important;
+}
+
+.recharts-tooltip-item {
+  color: var(--text-secondary) !important;
 }
