@@ -151,7 +151,7 @@ function App() {
                   <XAxis dataKey="range" stroke="#94a3b8" />
                   <YAxis stroke="#94a3b8" />
                   <Tooltip />
-                  <Bar dataKey="Количество" fill={ACCENT_SECONDARY} />
+                  <Bar dataKey="count" fill={ACCENT_SECONDARY} />
                 </BarChart>
               </ResponsiveContainer>
             </div>
