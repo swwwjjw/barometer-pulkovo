@@ -129,7 +129,7 @@ function App() {
                   <YAxis stroke="#94a3b8" />
                   <Tooltip />
                   <Legend />
-                  <Bar dataKey="Зарплата">
+                  <Bar dataKey="salary">
                     {
                       [{ name: 'Пулково' }, { name: 'Маркет' }].map((entry, index) => (
                         <Cell key={`cell-${index}`} fill={index === 0 ? ACCENT_PRIMARY : '#22d3ee'} />
