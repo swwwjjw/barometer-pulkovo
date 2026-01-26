@@ -10,7 +10,7 @@ from contextlib import asynccontextmanager
 
 # Настройки
 API_URL = "https://api.hh.ru/vacancies"
-OUTPUT_FOLDER = "final_folder"
+OUTPUT_FOLDER = os.path.join(os.path.dirname(os.path.abspath(__file__)), "../final_folder")
 INTERVAL_HOURS = 12
 MAX_PAGES = 20
 # Параметры запроса к hh.ru
@@ -112,4 +112,4 @@ async def root():
 
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run("main:app", host="0.0.0.0", port=1000, reload=True)
+    uvicorn.run("external_main:app", host="0.0.0.0", port=1000, reload=True)
