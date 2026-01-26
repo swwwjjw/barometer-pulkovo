@@ -129,7 +129,7 @@ function App() {
                   <YAxis stroke="#94a3b8" />
                   <Tooltip />
                   <Legend />
-                  <Bar dataKey="salary">
+                  <Bar dataKey="Зарплата">
                     {
                       [{ name: 'Пулково' }, { name: 'Маркет' }].map((entry, index) => (
                         <Cell key={`cell-${index}`} fill={index === 0 ? ACCENT_PRIMARY : '#22d3ee'} />
@@ -151,7 +151,7 @@ function App() {
                   <XAxis dataKey="range" stroke="#94a3b8" />
                   <YAxis stroke="#94a3b8" />
                   <Tooltip />
-                  <Bar dataKey="count" fill={ACCENT_SECONDARY} />
+                  <Bar dataKey="Количество" fill={ACCENT_SECONDARY} />
                 </BarChart>
               </ResponsiveContainer>
             </div>
@@ -161,7 +161,7 @@ function App() {
               <ResponsiveContainer width="100%" height={300}>
                 <PieChart>
                   <Pie
-                    data={stats.experience_dist}
+                    data={stats.experience_dist.filter(item => item.value > 0)}
                     cx="50%"
                     cy="50%"
                     labelLine={false}
@@ -170,7 +170,7 @@ function App() {
                     fill="#8884d8"
                     dataKey="value"
                   >
-                    {stats.experience_dist.map((entry, index) => (
+                    {stats.experience_dist.filter(item => item.value > 0).map((entry, index) => (
                       <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                     ))}
                   </Pie>
