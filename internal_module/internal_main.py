@@ -4,6 +4,7 @@ from typing import List, Dict, Optional, Any
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
+from fastapi.responses import FileResponse
 import pandas as pd
 import numpy as np
 
@@ -19,6 +20,10 @@ app.add_middleware(
 )
 
 DATA_FILE = os.path.join(os.path.dirname(__file__), "../final_folder/vacancies_20260125_144856.txt")
+
+# Раздача статических файлов React приложения
+# Примечание: ожидается, что фронтенд собран в 'frontend/dist'
+frontend_path = os.path.join(os.path.dirname(__file__), "frontend/dist")
 
 # Предопределенное сопоставление ролей
 ROLES_CONFIG = [
@@ -235,9 +240,12 @@ def get_stats(role_index: int):
         "experience_dist": experience_dist
     }
 
-# Раздача статических файлов React приложения
-# Примечание: ожидается, что фронтенд собран в 'frontend/dist'
-frontend_path = os.path.join(os.path.dirname(__file__), "frontend/dist")
+@app.get("/dashboard")
+async def dashboard():
+    if os.path.exists(os.path.join(frontend_path, "index.html")):
+        return FileResponse(os.path.join(frontend_path, "index.html"))
+    return {"error": "Frontend not found"}
+
 if os.path.exists(frontend_path):
     app.mount("/", StaticFiles(directory=frontend_path, html=True), name="static")
 else:
@@ -245,4 +253,4 @@ else:
 
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run("internal_main:app", host="0.0.0.0", port=6000, reload=True)
+    uvicorn.run("internal_main:app", host="0.0.0.0", port=8000, reload=True)
