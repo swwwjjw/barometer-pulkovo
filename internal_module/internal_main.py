@@ -131,7 +131,39 @@ def get_stats(role_index: int):
     
     # Фильтрация вакансий
     # professional_roles - это список объектов {id, name}
-    relevant_vacancies = []
+    candidates = []
+
+    for v in VACANCIES:
+        # Проверить роли
+        v_roles = v.get("professional_roles", [])
+        v_role_ids = {r.get("id") for r in v_roles}
+
+        # Если пересечение target_ids и v_role_ids не пусто
+        if not target_ids.intersection(v_role_ids):
+            continue
+
+        salary_info = process_salary(v)
+        if not salary_info:
+            continue
+
+        candidates.append({
+            "vacancy": v,
+            "avg_salary": salary_info["avg"],
+            "salary_info": salary_info
+        })
+    
+    # Filter outliers
+    if candidates:
+        salaries = [c["avg_salary"] for c in candidates]
+        q1 = np.percentile(salaries, 25)
+        q3 = np.percentile(salaries, 75)
+        iqr = q3 - q1
+        upper_bound = q3 + 1.5 * iqr
+        
+        filtered_candidates = [c for c in candidates if c["avg_salary"] <= upper_bound]
+    else:
+        filtered_candidates = []
+
     pulkovo_salaries = []
     market_salaries = [] # Все зарплаты для этой роли
     
@@ -139,20 +171,9 @@ def get_stats(role_index: int):
     salary_values = []
     experience_values = []
     
-    for v in VACANCIES:
-        # Проверить роли
-        v_roles = v.get("professional_roles", [])
-        v_role_ids = {r.get("id") for r in v_roles}
-        
-        # Если пересечение target_ids и v_role_ids не пусто
-        if not target_ids.intersection(v_role_ids):
-            continue
-            
-        salary_info = process_salary(v)
-        if not salary_info:
-            continue
-            
-        avg_salary = salary_info["avg"]
+    for c in filtered_candidates:
+        v = c["vacancy"]
+        avg_salary = c["avg_salary"]
         
         # Проверка работодателя
         employer_id = v.get("employer", {}).get("id")
@@ -167,7 +188,6 @@ def get_stats(role_index: int):
         exp_name = exp_obj.get("name", "Нет опыта")
         exp_numeric = EXPERIENCE_MAP.get(exp_id, 0)
         
-        relevant_vacancies.append(v)
         salary_values.append(avg_salary)
         experience_values.append(exp_name)
         
