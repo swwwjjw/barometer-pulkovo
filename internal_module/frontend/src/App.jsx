@@ -80,7 +80,7 @@ function App() {
       </div>
 
       {/* Market Salary Comparison Card */}
-      {!loading && stats && stats.metrics && (
+      {!loading && stats && stats.metrics && stats.comparison && (
         <div className="market-card">
           <div className="market-card-header">
             <h3>Сравнение с рынком по заработной плате</h3>
@@ -106,17 +106,21 @@ function App() {
               className="band-above" 
               style={{ left: '75%', width: '25%' }}
             ></div>
-            <div 
-              className="marker-pulkovo-line" 
-              style={{ left: `${Math.min(Math.max(((stats.metrics.median - stats.metrics.min) / (stats.metrics.max - stats.metrics.min)) * 100, 2), 98)}%` }}
-              title="Пулково зарплата"
-            ></div>
-            <div 
-              className="marker-pulkovo-label" 
-              style={{ left: `${Math.min(Math.max(((stats.metrics.median - stats.metrics.min) / (stats.metrics.max - stats.metrics.min)) * 100, 2), 98)}%` }}
-            >
-              {Math.round(stats.metrics.median).toLocaleString()} ₽
-            </div>
+            {stats.comparison.pulkovo > 0 && (
+              <>
+                <div 
+                  className="marker-pulkovo-line" 
+                  style={{ left: `${Math.min(Math.max(((stats.comparison.pulkovo - stats.metrics.min) / (stats.metrics.max - stats.metrics.min)) * 100, 2), 98)}%` }}
+                  title="Пулково зарплата"
+                ></div>
+                <div 
+                  className="marker-pulkovo-label" 
+                  style={{ left: `${Math.min(Math.max(((stats.comparison.pulkovo - stats.metrics.min) / (stats.metrics.max - stats.metrics.min)) * 100, 2), 98)}%` }}
+                >
+                  {Math.round(stats.comparison.pulkovo).toLocaleString()} ₽
+                </div>
+              </>
+            )}
           </div>
           <div className="market-ticks">
             <div className="val-p25">{Math.round(stats.metrics.min + (stats.metrics.max - stats.metrics.min) * 0.25).toLocaleString()} ₽</div>
