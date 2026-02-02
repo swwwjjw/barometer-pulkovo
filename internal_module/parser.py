@@ -160,7 +160,8 @@ def calculate_salary_median(vacancies: List[Dict[str, Any]]) -> Optional[float]:
 
 
 def filter_high_salary_outliers(vacancies: List[Dict[str, Any]], 
-                                 multiplier: float = 3.5) -> List[Dict[str, Any]]:
+                                 multiplier: float = 3.5,
+                                 return_stats: bool = False) -> Any:
     """
     Filter out vacancies with salaries that are higher than multiplier times the median.
     
@@ -170,9 +171,12 @@ def filter_high_salary_outliers(vacancies: List[Dict[str, Any]],
     Args:
         vacancies: List of vacancy items.
         multiplier: Salary threshold multiplier relative to median (default 3.5).
+        return_stats: If True, returns tuple (filtered_vacancies, stats_dict).
         
     Returns:
-        List of vacancies with salaries within acceptable range.
+        If return_stats=False: List of vacancies with salaries within acceptable range.
+        If return_stats=True: Tuple of (filtered_vacancies, stats_dict) where stats_dict
+            contains 'total_before', 'total_after', 'filtered_count', 'median', 'threshold'.
     """
     # First, collect all valid salaries to calculate median
     salaries_with_vacancies = []
@@ -187,6 +191,14 @@ def filter_high_salary_outliers(vacancies: List[Dict[str, Any]],
             vacancies_without_salary.append(v)
     
     if not salaries_with_vacancies:
+        if return_stats:
+            return vacancies_without_salary, {
+                "total_before": len(vacancies_without_salary),
+                "total_after": len(vacancies_without_salary),
+                "filtered_count": 0,
+                "median": None,
+                "threshold": None
+            }
         return vacancies_without_salary
     
     # Calculate median
@@ -196,12 +208,25 @@ def filter_high_salary_outliers(vacancies: List[Dict[str, Any]],
     
     # Filter out high outliers
     filtered = []
+    filtered_out_count = 0
     for v, salary in salaries_with_vacancies:
         if salary <= threshold:
             filtered.append(v)
+        else:
+            filtered_out_count += 1
     
     # Include vacancies without salary info
     filtered.extend(vacancies_without_salary)
+    
+    if return_stats:
+        total_before = len(salaries_with_vacancies) + len(vacancies_without_salary)
+        return filtered, {
+            "total_before": total_before,
+            "total_after": len(filtered),
+            "filtered_count": filtered_out_count,
+            "median": median_salary,
+            "threshold": threshold
+        }
     
     return filtered
 
@@ -221,13 +246,27 @@ def parse_vacancies_for_role(vacancies: List[Dict[str, Any]],
         
     Returns:
         Dictionary containing processed vacancy data and statistics.
+        Includes 'filter_stats' with counts before/after filtering.
     """
     # Filter by role
     role_vacancies = filter_vacancies_by_role(vacancies, role_ids)
     
+    # Track filtering statistics
+    filter_stats = {
+        "total_before_filter": len(role_vacancies),
+        "filtered_count": 0,
+        "median_salary": None,
+        "threshold_salary": None
+    }
+    
     # Optionally filter high salary outliers
     if filter_outliers:
-        role_vacancies = filter_high_salary_outliers(role_vacancies, outlier_multiplier)
+        role_vacancies, outlier_stats = filter_high_salary_outliers(
+            role_vacancies, outlier_multiplier, return_stats=True
+        )
+        filter_stats["filtered_count"] = outlier_stats["filtered_count"]
+        filter_stats["median_salary"] = outlier_stats["median"]
+        filter_stats["threshold_salary"] = outlier_stats["threshold"]
     
     # Process salaries and experience
     pulkovo_salaries = []
@@ -275,5 +314,6 @@ def parse_vacancies_for_role(vacancies: List[Dict[str, Any]],
         "market_salaries": market_salaries,
         "bubble_data": bubble_data,
         "salary_values": salary_values,
-        "experience_values": experience_values
+        "experience_values": experience_values,
+        "filter_stats": filter_stats
     }

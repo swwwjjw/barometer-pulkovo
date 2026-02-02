@@ -72,6 +72,7 @@ def get_stats(role_index: int, filter_outliers: bool = True):
     market_salaries = parsed_data["market_salaries"]
     bubble_data = parsed_data["bubble_data"]
     experience_values = parsed_data["experience_values"]
+    filter_stats = parsed_data["filter_stats"]
 
     if not salary_values:
         return {"error": "No data found for this role"}
@@ -126,7 +127,14 @@ def get_stats(role_index: int, filter_outliers: bool = True):
         "bubble_data": bubble_data_agg,
         "salary_dist": salary_dist,
         "experience_dist": experience_dist,
-        "outliers_filtered": filter_outliers
+        "outliers_filtered": filter_outliers,
+        "filter_stats": {
+            "total_before_filter": filter_stats["total_before_filter"],
+            "filtered_out_count": filter_stats["filtered_count"],
+            "total_after_filter": len(salary_values),
+            "median_salary_for_filter": filter_stats["median_salary"],
+            "threshold_salary": filter_stats["threshold_salary"]
+        }
     }
 
 @app.get("/dashboard")
