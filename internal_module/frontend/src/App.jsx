@@ -179,7 +179,7 @@ function App() {
                   margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
                 >
                   <CartesianGrid strokeDasharray="3 3" opacity={0.3} />
-                  <XAxis angle="-45" dataKey="range" stroke="#94a3b8" />
+                  <XAxis intervalangle="-45" dataKey="range" stroke="#94a3b8" />
                   <YAxis stroke="#94a3b8" />
                   <Tooltip />
                   <Bar dataKey="count" fill={ACCENT_SECONDARY} name="Количество" />
