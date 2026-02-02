@@ -166,11 +166,11 @@ def filter_high_salary_outliers(vacancies: List[Dict[str, Any]],
     Filter out vacancies with salaries that are higher than multiplier times the median.
     
     This function removes outlier vacancies where the average salary exceeds
-    the median salary multiplied by the given multiplier (default 3.5x).
+    the median salary multiplied by the given multiplier (default 3x).
     
     Args:
         vacancies: List of vacancy items.
-        multiplier: Salary threshold multiplier relative to median (default 3.5).
+        multiplier: Salary threshold multiplier relative to median (default 3).
         return_stats: If True, returns tuple (filtered_vacancies, stats_dict).
         
     Returns:
@@ -234,7 +234,7 @@ def filter_high_salary_outliers(vacancies: List[Dict[str, Any]],
 def parse_vacancies_for_role(vacancies: List[Dict[str, Any]], 
                               role_ids: set,
                               filter_outliers: bool = True,
-                              outlier_multiplier: float = 3.5) -> Dict[str, Any]:
+                              outlier_multiplier: float = 3) -> Dict[str, Any]:
     """
     Parse and process vacancies for a specific role with optional outlier filtering.
     
@@ -242,7 +242,7 @@ def parse_vacancies_for_role(vacancies: List[Dict[str, Any]],
         vacancies: List of all vacancy items.
         role_ids: Set of role IDs to filter by.
         filter_outliers: Whether to filter out high salary outliers.
-        outlier_multiplier: Multiplier for outlier threshold (default 3.5x median).
+        outlier_multiplier: Multiplier for outlier threshold (default 3x median).
         
     Returns:
         Dictionary containing processed vacancy data and statistics.
