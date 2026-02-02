@@ -104,10 +104,10 @@ def get_stats(role_index: int, filter_outliers: bool = True):
         "pulkovo": pulkovo_avg,
         "market": market_avg
     }
-    d = [50000, 80000, 100000, 120000]
+
     # Distributions
     # Salary histogram (simple bins)
-    hist, bin_edges = np.histogram(d, bins=4)
+    hist, bin_edges = np.histogram(salary_values, bins=10)
     salary_dist = []
     for i in range(len(hist)):
         salary_dist.append({
