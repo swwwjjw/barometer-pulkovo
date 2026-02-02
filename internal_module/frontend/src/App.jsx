@@ -71,6 +71,11 @@ function App() {
               <option key={idx} value={idx}>{role.name}</option>
             ))}
           </select>
+          {stats && stats.metrics && (
+            <div className="vacancy-count">
+              Всего вакансий: <span>{stats.metrics.count}</span>
+            </div>
+          )}
         </div>
       </div>
 
