@@ -106,38 +106,6 @@ function App() {
 
           <div className="charts-grid">
             <div className="chart-card">
-              <h3>Пулково vs Рынок</h3>
-              <ResponsiveContainer width="100%" height={200}>
-                <BarChart
-                  layout="vertical"
-                  data={[
-                    { name: 'Мин. рынок', salary: stats.metrics.min, fill: '#94a3b8' },
-                    { name: 'Пулково', salary: stats.comparison.pulkovo, fill: '#22d3ee' },
-                    { name: 'Макс. рынок', salary: stats.metrics.max, fill: '#94a3b8' }
-                  ]}
-                  margin={{ top: 5, right: 30, left: 100, bottom: 5 }}
-                >
-                  <CartesianGrid strokeDasharray="3 3" opacity={0.3} horizontal={true} vertical={false} />
-                  <XAxis type="number" stroke="#94a3b8" tickFormatter={(v) => v.toLocaleString()} />
-                  <YAxis type="category" dataKey="name" stroke="#94a3b8" width={90} />
-                  <Tooltip
-                    formatter={(value) => [`${Math.round(value).toLocaleString()} ₽`, 'Зарплата']}
-                    contentStyle={{ backgroundColor: 'var(--bg-secondary)', border: '1px solid var(--bg-tertiary)' }}
-                  />
-                  <Bar dataKey="salary" name="Зарплата">
-                    {[
-                      { name: 'Мин. рынок', salary: stats.metrics.min },
-                      { name: 'Пулково', salary: stats.comparison.pulkovo },
-                      { name: 'Макс. рынок', salary: stats.metrics.max }
-                    ].map((entry, index) => (
-                      <Cell key={`cell-${index}`} fill={index === 1 ? '#22d3ee' : '#64748b'} />
-                    ))}
-                  </Bar>
-                </BarChart>
-              </ResponsiveContainer>
-            </div>
-
-            <div className="chart-card">
               <h3>Зарплата vs Опыт</h3>
               <ResponsiveContainer width="100%" height={300}>
                 <ScatterChart margin={{ top: 20, right: 20, bottom: 20, left: 20 }}>
