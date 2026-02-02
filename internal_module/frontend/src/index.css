@@ -26,7 +26,8 @@
 body {
   margin: 0;
   display: flex;
-  place-items: flex-start; /* Changed from center to allow full scrolling */
+  justify-content: center;
+  align-items: flex-start;
   min-width: 320px;
   min-height: 100vh;
   background: linear-gradient(to bottom right, #0f172a, #1e1b4b); /* Dark blue gradient */
