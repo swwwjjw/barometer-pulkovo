@@ -64,7 +64,7 @@ def get_stats(role_index: int, filter_outliers: bool = True):
         VACANCIES, 
         target_ids, 
         filter_outliers=filter_outliers,
-        outlier_multiplier=3.5
+        outlier_multiplier=3
     )
     
     salary_values = parsed_data["salary_values"]
