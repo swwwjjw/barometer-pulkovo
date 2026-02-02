@@ -120,32 +120,6 @@ function App() {
             </div>
 
             <div className="chart-card">
-              <h3>Пулково vs Рынок</h3>
-              <ResponsiveContainer width="100%" height={300}>
-                <BarChart
-                  data={[
-                    { name: 'Пулково', salary: stats.comparison.pulkovo },
-                    { name: 'Рынок', salary: stats.comparison.market }
-                  ]}
-                  margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
-                >
-                  <CartesianGrid strokeDasharray="3 3" opacity={0.3} />
-                  <XAxis dataKey="name" stroke="#94a3b8" />
-                  <YAxis stroke="#94a3b8" />
-                  <Tooltip />
-                  <Legend />
-                  <Bar dataKey="salary" name="Зарплата">
-                    {
-                      [{ name: 'Пулково' }, { name: 'Рынок' }].map((entry, index) => (
-                        <Cell key={`cell-${index}`} fill={index === 0 ? ACCENT_PRIMARY : '#22d3ee'} />
-                      ))
-                    }
-                  </Bar>
-                </BarChart>
-              </ResponsiveContainer>
-            </div>
-
-            <div className="chart-card">
               <h3>Распределение зарплат</h3>
               <ResponsiveContainer width="100%" height={300}>
                 <BarChart
