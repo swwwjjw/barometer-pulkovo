@@ -111,7 +111,7 @@ def get_stats(role_index: int, filter_outliers: bool = True):
     salary_dist = []
     for i in range(len(hist)):
         salary_dist.append({
-            "range": f"{int(bin_edges[i])}", # - {int(bin_edges[i+1])}",
+            "range": f"{int(bin_edges[i])} - {int(bin_edges[i+1])}",
             "count": int(hist[i])
         })
         
