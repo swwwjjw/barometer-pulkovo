@@ -32,4 +32,4 @@ EXPOSE 8000
 
 # Запуск приложения
 # Мы используем синтаксис пути модуля. Поскольку мы находимся в /app, internal_module.internal_main должен быть разрешим.
-CMD ["uvicorn", "internal_module.internal_main:app", "--host", "0.0.0.0", "--port", "8000"]
+CMD ["uvicorn", "internal_module.internal_main:app", "--host", "0.0.0.0", "--port", "7777"]
