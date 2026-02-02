@@ -160,7 +160,7 @@ def calculate_salary_median(vacancies: List[Dict[str, Any]]) -> Optional[float]:
 
 
 def filter_high_salary_outliers(vacancies: List[Dict[str, Any]], 
-                                 multiplier: float = 2,
+                                 multiplier: float = 1,
                                  return_stats: bool = False) -> Any:
     """
     Filter out vacancies with salaries that are higher than multiplier times the median.
@@ -234,7 +234,7 @@ def filter_high_salary_outliers(vacancies: List[Dict[str, Any]],
 def parse_vacancies_for_role(vacancies: List[Dict[str, Any]], 
                               role_ids: set,
                               filter_outliers: bool = True,
-                              outlier_multiplier: float = 2) -> Dict[str, Any]:
+                              outlier_multiplier: float = 1) -> Dict[str, Any]:
     """
     Parse and process vacancies for a specific role with optional outlier filtering.
     
