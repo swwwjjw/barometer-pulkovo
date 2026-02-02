@@ -51,7 +51,7 @@ def get_stats(role_index: int, filter_outliers: bool = True):
     
     Args:
         role_index: Index of the role in ROLES_CONFIG.
-        filter_outliers: Whether to filter vacancies with salaries 3.5x higher than median.
+        filter_outliers: Whether to filter vacancies with salaries 3x higher than median.
     """
     if role_index < 0 or role_index >= len(ROLES_CONFIG):
         raise HTTPException(status_code=404, detail="Role not found")
