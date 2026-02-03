@@ -274,6 +274,8 @@ def parse_vacancies_for_role(vacancies: List[Dict[str, Any]],
     bubble_data = []
     salary_values = []
     experience_values = []
+    employment_values = []
+    schedule_values = []
     processed_vacancies = []
     
     for v in role_vacancies:
@@ -296,6 +298,16 @@ def parse_vacancies_for_role(vacancies: List[Dict[str, Any]],
         exp_name = exp_obj.get("name", "Нет опыта")
         exp_numeric = EXPERIENCE_MAP.get(exp_id, 0)
         
+        # Employment type
+        employment_obj = v.get("employment", {})
+        employment_name = employment_obj.get("name", "Не указано")
+        employment_values.append(employment_name)
+        
+        # Schedule type
+        schedule_obj = v.get("schedule", {})
+        schedule_name = schedule_obj.get("name", "Не указано")
+        schedule_values.append(schedule_name)
+        
         processed_vacancies.append(v)
         salary_values.append(avg_salary)
         experience_values.append(exp_name)
@@ -315,5 +327,7 @@ def parse_vacancies_for_role(vacancies: List[Dict[str, Any]],
         "bubble_data": bubble_data,
         "salary_values": salary_values,
         "experience_values": experience_values,
+        "employment_values": employment_values,
+        "schedule_values": schedule_values,
         "filter_stats": filter_stats
     }
