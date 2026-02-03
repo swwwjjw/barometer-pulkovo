@@ -72,6 +72,8 @@ def get_stats(role_index: int, filter_outliers: bool = True):
     market_salaries = parsed_data["market_salaries"]
     bubble_data = parsed_data["bubble_data"]
     experience_values = parsed_data["experience_values"]
+    employment_values = parsed_data["employment_values"]
+    schedule_values = parsed_data["schedule_values"]
     filter_stats = parsed_data["filter_stats"]
 
     if not salary_values:
@@ -120,6 +122,16 @@ def get_stats(role_index: int, filter_outliers: bool = True):
     exp_counts = exp_series.value_counts().to_dict()
     experience_dist = [{"name": k, "value": v} for k, v in exp_counts.items()]
     
+    # Employment distribution
+    emp_series = pd.Series(employment_values)
+    emp_counts = emp_series.value_counts().to_dict()
+    employment_dist = [{"name": k, "count": v} for k, v in emp_counts.items()]
+    
+    # Schedule distribution
+    sched_series = pd.Series(schedule_values)
+    sched_counts = sched_series.value_counts().to_dict()
+    schedule_dist = [{"name": k, "count": v} for k, v in sched_counts.items()]
+    
     return {
         "role": role_config["name"],
         "metrics": metrics,
@@ -127,6 +139,8 @@ def get_stats(role_index: int, filter_outliers: bool = True):
         "bubble_data": bubble_data_agg,
         "salary_dist": salary_dist,
         "experience_dist": experience_dist,
+        "employment_dist": employment_dist,
+        "schedule_dist": schedule_dist,
         "outliers_filtered": filter_outliers,
         "filter_stats": {
             "total_before_filter": filter_stats["total_before_filter"],
