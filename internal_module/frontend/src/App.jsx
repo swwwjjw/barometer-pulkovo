@@ -174,12 +174,43 @@ function App() {
             <div className="chart-card">
               <h3>Зарплата vs Опыт</h3>
               <ResponsiveContainer width="100%" height="65%">
-                <ScatterChart margin={{ top: 10, right: 10, bottom: 10, left: 10 }}>
+                <ScatterChart margin={{ top: 10, right: 10, bottom: 10, left: 80 }}>
                   <CartesianGrid strokeDasharray="3 3" stroke={CHART_COLORS.grid} opacity={0.3} />
                   <XAxis type="number" dataKey="salary" name="Зарплата" unit="₽" stroke={CHART_COLORS.axis} />
-                  <YAxis type="number" dataKey="experience" name="Опыт" stroke={CHART_COLORS.axis} />
+                  <YAxis 
+                    type="number" 
+                    dataKey="experience" 
+                    name="Опыт" 
+                    stroke={CHART_COLORS.axis}
+                    domain={[0, 8]}
+                    ticks={[0, 2, 4.5, 8]}
+                    tickFormatter={(value) => {
+                      const labels = {
+                        0: 'Нет опыта',
+                        2: 'От 1 года до 3 лет',
+                        4.5: 'От 3 до 6 лет',
+                        8: 'Более 6 лет'
+                      };
+                      return labels[value] || value;
+                    }}
+                    width={75}
+                  />
                   <ZAxis type="number" dataKey="count" range={[60, 400]} name="Вакансии" />
-                  <Tooltip cursor={{ strokeDasharray: '3 3' }} />
+                  <Tooltip 
+                    cursor={{ strokeDasharray: '3 3' }}
+                    formatter={(value, name) => {
+                      if (name === 'Опыт') {
+                        const labels = {
+                          0: 'Нет опыта',
+                          2: 'От 1 года до 3 лет',
+                          4.5: 'От 3 до 6 лет',
+                          8: 'Более 6 лет'
+                        };
+                        return labels[value] || value;
+                      }
+                      return value;
+                    }}
+                  />
                   <Scatter name="Vacancies" data={stats.bubble_data} fill={CHART_COLORS.primary} />
                 </ScatterChart>
               </ResponsiveContainer>
