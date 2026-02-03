@@ -158,7 +158,7 @@ function App() {
           <div className="charts-grid">
             <div className="chart-card">
               <h3>Зарплата vs Опыт</h3>
-              <ResponsiveContainer width="100%" height="100%">
+              <ResponsiveContainer width="100%" height="75%">
                 <ScatterChart margin={{ top: 10, right: 10, bottom: 10, left: 10 }}>
                   <CartesianGrid strokeDasharray="3 3" opacity={0.3} />
                   <XAxis type="number" dataKey="salary" name="Зарплата" unit="₽" stroke="#94a3b8" />
@@ -172,7 +172,7 @@ function App() {
 
             <div className="chart-card">
               <h3>Распределение зарплат</h3>
-              <ResponsiveContainer width="100%" height="100%">
+              <ResponsiveContainer width="100%" height="75%">
                 <BarChart
                   data={stats.salary_dist}
                   margin={{ top: 5, right: 20, left: 10, bottom: 5 }}
@@ -188,7 +188,7 @@ function App() {
 
             <div className="chart-card">
               <h3>Распределение опыта</h3>
-              <ResponsiveContainer width="100%" height="100%">
+              <ResponsiveContainer width="100%" height="75%">
                 <PieChart>
                   <Pie
                     data={stats.experience_dist.filter(item => item.value > 0)}
@@ -211,7 +211,7 @@ function App() {
 
             <div className="chart-card">
               <h3>Распределение по типу занятости</h3>
-              <ResponsiveContainer width="100%" height="100%">
+              <ResponsiveContainer width="100%" height="75%">
                 <BarChart
                   data={stats.employment_dist}
                   margin={{ top: 5, right: 20, left: 10, bottom: 5 }}
@@ -227,7 +227,7 @@ function App() {
 
             <div className="chart-card">
               <h3>Распределение по графику работы</h3>
-              <ResponsiveContainer width="100%" height="100%">
+              <ResponsiveContainer width="100%" height="75%">
                 <BarChart
                   data={stats.schedule_dist}
                   margin={{ top: 5, right: 20, left: 10, bottom: 5 }}
