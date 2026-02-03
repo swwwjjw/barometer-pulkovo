@@ -1,17 +1,17 @@
 .container {
-  max-width: 1600px;
-  margin: 0 auto;
-  padding: 40px 40px;
   width: 100%;
+  margin: 0;
+  padding: 20px;
+  box-sizing: border-box;
 }
 
 .header {
-  margin-bottom: 40px;
+  margin-bottom: 20px;
   display: flex;
   flex-direction: column;
   align-items: center;
   text-align: center;
-  gap: 20px;
+  gap: 12px;
   animation: fadeInDown 0.8s ease-out;
 }
 
@@ -67,16 +67,22 @@
 
 .metrics-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-  gap: 32px;
-  margin-bottom: 40px;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+@media (max-width: 900px) {
+  .metrics-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
 }
 
 .metric-card {
   background: rgba(30, 41, 59, 0.7); /* Translucent dark blue */
   backdrop-filter: blur(10px);
-  padding: 32px;
-  border-radius: 16px;
+  padding: 20px;
+  border-radius: 8px;
   text-align: center;
   box-shadow: var(--card-shadow);
   border: 1px solid rgba(255, 255, 255, 0.05);
@@ -116,8 +122,8 @@
 .charts-grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  gap: 36px;
-  margin-bottom: 30px;
+  gap: 16px;
+  margin-bottom: 20px;
 }
 
 @media (max-width: 1024px) {
@@ -128,12 +134,15 @@
 
 .chart-card {
   background: var(--bg-secondary);
-  border: 1px solid var(--bg-tertiary);
-  border-radius: 20px;
-  padding: 32px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 8px;
+  padding: 16px;
   box-shadow: var(--card-shadow);
   transition: transform 0.2s ease;
   animation: fadeIn 0.8s ease-out backwards;
+  min-height: 320px;
+  display: flex;
+  flex-direction: column;
 }
 
 .chart-card:nth-child(1) { animation-delay: 0.3s; }
@@ -147,11 +156,16 @@
 
 .chart-card h3 {
   margin-top: 0;
-  margin-bottom: 24px;
+  margin-bottom: 12px;
   text-align: center;
   color: var(--text-secondary);
-  font-size: 1.1rem;
+  font-size: 1rem;
   font-weight: 600;
+  flex-shrink: 0;
+}
+
+.chart-card .recharts-responsive-container {
+  flex: 1;
 }
 
 .loading {
@@ -234,16 +248,16 @@
 
 /* Market Card Styles */
 .market-card {
-  margin-top: 24px;
-  padding: 28px 32px;
+  margin-top: 16px;
+  padding: 16px 20px;
   background: rgba(30, 41, 59, 0.7);
   backdrop-filter: blur(10px);
-  border-radius: 16px;
+  border-radius: 8px;
   box-shadow: var(--card-shadow);
   border: 1px solid rgba(255, 255, 255, 0.05);
   animation: fadeInUp 0.6s ease-out backwards;
   animation-delay: 0.2s;
-  margin-bottom: 40px;
+  margin-bottom: 20px;
 }
 
 .market-card-header {

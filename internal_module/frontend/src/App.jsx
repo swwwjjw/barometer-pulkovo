@@ -159,8 +159,8 @@ function App() {
           <div className="charts-grid">
             <div className="chart-card">
               <h3>Зарплата vs Опыт</h3>
-              <ResponsiveContainer width="100%" height={250}>
-                <ScatterChart margin={{ top: 20, right: 20, bottom: 20, left: 20 }}>
+              <ResponsiveContainer width="100%" height="100%">
+                <ScatterChart margin={{ top: 10, right: 10, bottom: 10, left: 10 }}>
                   <CartesianGrid strokeDasharray="3 3" opacity={0.3} />
                   <XAxis type="number" dataKey="salary" name="Зарплата" unit="₽" stroke="#94a3b8" />
                   <YAxis type="number" dataKey="experience" name="Опыт" stroke="#94a3b8" />
@@ -173,10 +173,10 @@ function App() {
 
             <div className="chart-card">
               <h3>Распределение зарплат</h3>
-              <ResponsiveContainer width="100%" height={250}>
+              <ResponsiveContainer width="100%" height="100%">
                 <BarChart
                   data={stats.salary_dist}
-                  margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
+                  margin={{ top: 5, right: 20, left: 10, bottom: 5 }}
                 >
                   <CartesianGrid strokeDasharray="3 3" opacity={0.3} />
                   <XAxis interval={1} dataKey="range" stroke="#94a3b8" />
@@ -189,7 +189,7 @@ function App() {
 
             <div className="chart-card">
               <h3>Распределение опыта</h3>
-              <ResponsiveContainer width="100%" height={250}>
+              <ResponsiveContainer width="100%" height="100%">
                 <PieChart>
                   <Pie
                     data={stats.experience_dist.filter(item => item.value > 0)}
@@ -197,7 +197,7 @@ function App() {
                     cy="50%"
                     labelLine={false}
                     label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
-                    outerRadius={100}
+                    outerRadius="70%"
                     fill="#8884d8"
                     dataKey="value"
                   >
@@ -212,10 +212,10 @@ function App() {
 
             <div className="chart-card">
               <h3>Распределение по типу занятости</h3>
-              <ResponsiveContainer width="100%" height={250}>
+              <ResponsiveContainer width="100%" height="100%">
                 <BarChart
                   data={stats.employment_dist}
-                  margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
+                  margin={{ top: 5, right: 20, left: 10, bottom: 5 }}
                 >
                   <CartesianGrid strokeDasharray="3 3" opacity={0.3} />
                   <XAxis dataKey="name" stroke="#94a3b8" />
@@ -228,10 +228,10 @@ function App() {
 
             <div className="chart-card">
               <h3>Распределение по графику работы</h3>
-              <ResponsiveContainer width="100%" height={250}>
+              <ResponsiveContainer width="100%" height="100%">
                 <BarChart
                   data={stats.schedule_dist}
-                  margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
+                  margin={{ top: 5, right: 20, left: 10, bottom: 5 }}
                 >
                   <CartesianGrid strokeDasharray="3 3" opacity={0.3} />
                   <XAxis dataKey="name" stroke="#94a3b8" />
