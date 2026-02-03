@@ -171,22 +171,6 @@ function App() {
             </div>
 
             <div className="chart-card">
-              <h3>Распределение зарплат</h3>
-              <ResponsiveContainer width="100%" height="65%">
-                <BarChart
-                  data={stats.salary_dist}
-                  margin={{ top: 5, right: 20, left: 10, bottom: 5 }}
-                >
-                  <CartesianGrid strokeDasharray="3 3" opacity={0.3} />
-                  <XAxis interval={1} dataKey="range" stroke="#94a3b8" />
-                  <YAxis stroke="#94a3b8" />
-                  <Tooltip />
-                  <Bar dataKey="count" fill={ACCENT_PRIMARY} name="Количество" />
-                </BarChart>
-              </ResponsiveContainer>
-            </div>
-
-            <div className="chart-card">
               <h3>Распределение опыта</h3>
               <ResponsiveContainer width="100%" height="65%">
                 <PieChart>
@@ -206,6 +190,22 @@ function App() {
                   </Pie>
                   <Tooltip />
                 </PieChart>
+              </ResponsiveContainer>
+            </div>
+
+            <div className="chart-card chart-card-fullscreen">
+              <h3>Распределение зарплат</h3>
+              <ResponsiveContainer width="100%" height="65%">
+                <BarChart
+                  data={stats.salary_dist}
+                  margin={{ top: 5, right: 20, left: 10, bottom: 5 }}
+                >
+                  <CartesianGrid strokeDasharray="3 3" opacity={0.3} />
+                  <XAxis interval={1} dataKey="range" stroke="#94a3b8" />
+                  <YAxis stroke="#94a3b8" />
+                  <Tooltip />
+                  <Bar dataKey="count" fill={ACCENT_PRIMARY} name="Количество" />
+                </BarChart>
               </ResponsiveContainer>
             </div>
 
