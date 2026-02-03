@@ -1,8 +1,8 @@
 .container {
   width: 100%;
-  max-width: 1920px;
+  max-width: 2400px;
   margin: 0 auto;
-  padding: 20px 60px;
+  padding: 20px 40px;
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
@@ -32,9 +32,9 @@
 }
 
 .controls select {
-  padding: 16px 32px;
-  font-size: 17px;
-  width: 500px;
+  padding: 18px 40px;
+  font-size: 18px;
+  width: 650px;
   background-color: var(--bg-secondary);
   color: var(--text-primary);
   border: 1px solid var(--bg-tertiary);
@@ -58,9 +58,9 @@
 }
 
 .vacancy-count {
-  font-size: 1.1rem;
+  font-size: 1.15rem;
   color: var(--text-muted);
-  padding: 12px 32px;
+  padding: 14px 48px;
   background: rgba(59, 130, 246, 0.1);
   border-radius: 8px;
   border: 1px solid rgba(59, 130, 246, 0.2);
@@ -74,8 +74,8 @@
 .metrics-grid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  gap: 24px;
-  margin-bottom: 24px;
+  gap: 32px;
+  margin-bottom: 28px;
   width: 100%;
   box-sizing: border-box;
 }
@@ -89,13 +89,14 @@
 .metric-card {
   background: rgba(30, 41, 59, 0.7); /* Translucent dark blue */
   backdrop-filter: blur(10px);
-  padding: 28px 32px;
+  padding: 32px 48px;
   border-radius: 12px;
   text-align: center;
   box-shadow: var(--card-shadow);
   border: 1px solid rgba(255, 255, 255, 0.05);
   transition: transform 0.3s ease, box-shadow 0.3s ease;
   animation: fadeInUp 0.6s ease-out backwards;
+  min-width: 200px;
 }
 
 .metric-card:nth-child(1) { animation-delay: 0.1s; }
@@ -130,8 +131,8 @@
 .charts-grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  gap: 24px;
-  margin-bottom: 24px;
+  gap: 32px;
+  margin-bottom: 28px;
   width: 100%;
   box-sizing: border-box;
 }
@@ -146,11 +147,11 @@
   background: var(--bg-secondary);
   border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: 12px;
-  padding: 24px;
+  padding: 32px 40px;
   box-shadow: var(--card-shadow);
   transition: transform 0.2s ease;
   animation: fadeIn 0.8s ease-out backwards;
-  min-height: 280px;
+  min-height: 340px;
   display: flex;
   flex-direction: column;
 }
@@ -263,7 +264,7 @@
 /* Market Card Styles */
 .market-card {
   margin-top: 20px;
-  padding: 24px 32px;
+  padding: 32px 48px;
   background: rgba(30, 41, 59, 0.7);
   backdrop-filter: blur(10px);
   border-radius: 12px;
@@ -294,9 +295,9 @@
   background: linear-gradient(135deg, #10b981, #059669);
   color: white;
   border: none;
-  padding: 8px 16px;
-  border-radius: 6px;
-  font-size: 12px;
+  padding: 10px 24px;
+  border-radius: 8px;
+  font-size: 13px;
   font-weight: 500;
   cursor: pointer;
   transition: all 0.2s;
@@ -328,11 +329,11 @@
 
 .market-scale {
   position: relative;
-  height: 56px;
-  border-radius: 28px;
+  height: 64px;
+  border-radius: 32px;
   background: rgba(255, 255, 255, 0.1);
   overflow: visible;
-  margin-bottom: 20px;
+  margin-bottom: 24px;
   border: 1px solid rgba(59, 130, 246, 0.2);
 }
 
@@ -342,7 +343,7 @@
   top: 0;
   bottom: 0;
   background: #a78bfa;
-  border-radius: 24px 0 0 24px;
+  border-radius: 32px 0 0 32px;
 }
 
 .band-in {
@@ -358,7 +359,7 @@
   bottom: 0;
   right: 0;
   background: #22d3ee;
-  border-radius: 0 24px 24px 0;
+  border-radius: 0 32px 32px 0;
 }
 
 .marker-pulkovo-line {
@@ -374,11 +375,11 @@
 
 .marker-pulkovo-label {
   position: absolute;
-  top: 52px;
+  top: 60px;
   transform: translateX(-50%);
   color: #ffffff;
   font-weight: 800;
-  font-size: 13px;
+  font-size: 14px;
   white-space: nowrap;
   text-shadow: 0 0 4px rgba(59, 130, 246, 0.8), 0 0 8px rgba(59, 130, 246, 0.6);
 }
