@@ -150,7 +150,7 @@
   box-shadow: var(--card-shadow);
   transition: transform 0.2s ease;
   animation: fadeIn 0.8s ease-out backwards;
-  min-height: 380px;
+  min-height: 280px;
   display: flex;
   flex-direction: column;
 }
