@@ -279,7 +279,7 @@
 }
 
 .label-below {
-  color: #94a3b8;
+  color: #a78bfa;
 }
 
 .label-in {
@@ -287,7 +287,7 @@
 }
 
 .label-above {
-  color: #06b6d4;
+  color: #22d3ee;
 }
 
 .market-scale {
@@ -305,7 +305,7 @@
   left: 0;
   top: 0;
   bottom: 0;
-  background: #94a3b8;
+  background: #a78bfa;
   border-radius: 24px 0 0 24px;
 }
 
@@ -313,7 +313,7 @@
   position: absolute;
   top: 0;
   bottom: 0;
-  background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+  background: #3b82f6;
 }
 
 .band-above {
@@ -321,7 +321,7 @@
   top: 0;
   bottom: 0;
   right: 0;
-  background: linear-gradient(135deg, #06b6d4, #0891b2);
+  background: #22d3ee;
   border-radius: 0 24px 24px 0;
 }
 
@@ -355,7 +355,7 @@
 }
 
 .val-p25 {
-  color: #94a3b8;
+  color: #a78bfa;
 }
 
 .val-p50 {
@@ -367,5 +367,5 @@
 }
 
 .val-max {
-  color: #06b6d4;
+  color: #22d3ee;
 }
