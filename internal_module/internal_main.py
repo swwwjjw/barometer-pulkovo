@@ -151,6 +151,76 @@ def get_stats(role_index: int, filter_outliers: bool = True):
         }
     }
 
+@app.get("/api/overall-stats")
+def get_overall_stats():
+    """
+    Get statistics for ALL vacancies in the txt file.
+    """
+    if not VACANCIES:
+        return {"error": "No vacancies loaded"}
+    
+    salary_values = []
+    experience_values = []
+    employment_values = []
+    schedule_values = []
+    
+    for v in VACANCIES:
+        salary_info = process_salary(v)
+        if salary_info:
+            salary_values.append(salary_info["avg"])
+        
+        # Experience
+        exp_obj = v.get("experience", {})
+        exp_name = exp_obj.get("name", "Не указано")
+        experience_values.append(exp_name)
+        
+        # Employment type
+        employment_obj = v.get("employment", {})
+        employment_name = employment_obj.get("name", "Не указано")
+        employment_values.append(employment_name)
+        
+        # Schedule type
+        schedule_obj = v.get("schedule", {})
+        schedule_name = schedule_obj.get("name", "Не указано")
+        schedule_values.append(schedule_name)
+    
+    # Total count of ALL vacancies
+    total_count = len(VACANCIES)
+    
+    # Salary metrics (only for vacancies with salary)
+    metrics = {}
+    if salary_values:
+        metrics = {
+            "min": float(np.min(salary_values)),
+            "max": float(np.max(salary_values)),
+            "avg": float(np.mean(salary_values)),
+            "median": float(np.median(salary_values)),
+            "with_salary_count": len(salary_values)
+        }
+    
+    # Experience distribution
+    exp_series = pd.Series(experience_values)
+    exp_counts = exp_series.value_counts().to_dict()
+    experience_dist = [{"name": k, "value": v} for k, v in exp_counts.items()]
+    
+    # Employment distribution
+    emp_series = pd.Series(employment_values)
+    emp_counts = emp_series.value_counts().to_dict()
+    employment_dist = [{"name": k, "count": v} for k, v in emp_counts.items()]
+    
+    # Schedule distribution
+    sched_series = pd.Series(schedule_values)
+    sched_counts = sched_series.value_counts().to_dict()
+    schedule_dist = [{"name": k, "count": v} for k, v in sched_counts.items()]
+    
+    return {
+        "total_count": total_count,
+        "metrics": metrics,
+        "experience_dist": experience_dist,
+        "employment_dist": employment_dist,
+        "schedule_dist": schedule_dist
+    }
+
 @app.get("/dashboard")
 async def dashboard():
     if os.path.exists(os.path.join(frontend_path, "index.html")):
