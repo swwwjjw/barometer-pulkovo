@@ -80,7 +80,7 @@ function App() {
       </div>
 
       {!loading && stats && stats.metrics && stats.comparison && (
-        <div className="chart-card chart-card-fullscreen">
+        <div className="market-card">
           <h3>Сравнение с рынком по заработной плате</h3>
           <div className="market-card-header">
             <button className="team-project-btn">
