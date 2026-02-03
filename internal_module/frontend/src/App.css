@@ -380,25 +380,44 @@
 /* Market Ticks */
 .market-ticks {
   display: flex;
-  justify-content: space-between;
+  position: relative;
   font-family: var(--font-family-primary);
   font-size: var(--font-size-sm);
   font-weight: var(--font-weight-medium);
+  width: 100%;
+  height: 20px;
+}
+
+.market-ticks > div {
+  position: absolute;
+  transform: translateX(-50%);
+  white-space: nowrap;
+}
+
+.val-min {
+  left: 0%;
+  transform: translateX(0);
+  color: var(--chart-color-3);
 }
 
 .val-p25 {
+  left: 25%;
   color: var(--chart-color-3);
 }
 
 .val-p50 {
+  left: 50%;
   color: var(--chart-color-1);
 }
 
 .val-p75 {
+  left: 75%;
   color: var(--chart-color-1);
 }
 
 .val-max {
+  left: 100%;
+  transform: translateX(-100%);
   color: var(--chart-color-2);
 }
 

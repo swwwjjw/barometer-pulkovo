@@ -146,8 +146,9 @@ function App() {
             )}
           </div>
           <div className="market-ticks">
+            <div className="val-min">{Math.round(stats.metrics.min).toLocaleString()} ₽</div>
             <div className="val-p25">{Math.round(stats.metrics.min + (stats.metrics.max - stats.metrics.min) * 0.25).toLocaleString()} ₽</div>
-            <div className="val-p50">{Math.round(stats.metrics.median).toLocaleString()} ₽</div>
+            <div className="val-p50">{Math.round(stats.metrics.min + (stats.metrics.max - stats.metrics.min) * 0.50).toLocaleString()} ₽</div>
             <div className="val-p75">{Math.round(stats.metrics.min + (stats.metrics.max - stats.metrics.min) * 0.75).toLocaleString()} ₽</div>
             <div className="val-max">{Math.round(stats.metrics.max).toLocaleString()} ₽</div>
           </div>
