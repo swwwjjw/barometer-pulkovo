@@ -12,6 +12,7 @@ from internal_module.parser import (
     load_data,
     process_salary,
     filter_high_salary_outliers,
+    filter_salary_outliers,
     parse_vacancies_for_role,
     ROLES_CONFIG,
     EXPERIENCE_MAP
@@ -152,19 +153,49 @@ def get_stats(role_index: int, filter_outliers: bool = True):
     }
 
 @app.get("/api/overall-stats")
-def get_overall_stats():
+def get_overall_stats(filter_outliers: bool = True):
     """
     Get statistics for ALL vacancies in the txt file.
+    
+    Args:
+        filter_outliers: Whether to filter vacancies with too high or too low salaries
+                        (salaries > 3x median or < median/3).
     """
     if not VACANCIES:
         return {"error": "No vacancies loaded"}
+    
+    # Apply salary outlier filtering if enabled
+    vacancies_to_process = VACANCIES
+    filter_stats = {
+        "total_before_filter": len(VACANCIES),
+        "filtered_high_count": 0,
+        "filtered_low_count": 0,
+        "filtered_total_count": 0,
+        "median_salary": None,
+        "high_threshold": None,
+        "low_threshold": None
+    }
+    
+    if filter_outliers:
+        vacancies_to_process, outlier_stats = filter_salary_outliers(
+            VACANCIES, 
+            high_multiplier=3,
+            low_divisor=3,
+            return_stats=True
+        )
+        filter_stats["filtered_high_count"] = outlier_stats["filtered_high_count"]
+        filter_stats["filtered_low_count"] = outlier_stats["filtered_low_count"]
+        filter_stats["filtered_total_count"] = outlier_stats["filtered_total_count"]
+        filter_stats["median_salary"] = outlier_stats["median"]
+        filter_stats["high_threshold"] = outlier_stats["high_threshold"]
+        filter_stats["low_threshold"] = outlier_stats["low_threshold"]
     
     salary_values = []
     experience_values = []
     employment_values = []
     schedule_values = []
     
-    for v in VACANCIES:
+    for v in vacancies_to_process:
         salary_info = process_salary(v)
         if salary_info:
             salary_values.append(salary_info["avg"])
@@ -184,10 +215,10 @@ def get_overall_stats():
         schedule_name = schedule_obj.get("name", "Не указано")
         schedule_values.append(schedule_name)
     
-    # Total count of ALL vacancies
+    # Total count of ALL vacancies (before filtering)
     total_count = len(VACANCIES)
     
-    # Salary metrics (only for vacancies with salary)
+    # Salary metrics (only for vacancies with salary after filtering)
     metrics = {}
     if salary_values:
         metrics = {
@@ -218,7 +249,9 @@ def get_overall_stats():
         "metrics": metrics,
         "experience_dist": experience_dist,
         "employment_dist": employment_dist,
-        "schedule_dist": schedule_dist
+        "schedule_dist": schedule_dist,
+        "outliers_filtered": filter_outliers,
+        "filter_stats": filter_stats
     }
 
 @app.get("/dashboard")
