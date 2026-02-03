@@ -79,7 +79,6 @@ function App() {
         </div>
       </div>
 
-      {/* Market Salary Comparison Card */}
       {!loading && stats && stats.metrics && stats.comparison && (
         <div className="market-card">
           <div className="market-card-header">
