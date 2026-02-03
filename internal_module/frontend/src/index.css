@@ -1,19 +1,116 @@
 :root {
-  font-family: 'Inter', system-ui, Avenir, Helvetica, Arial, sans-serif;
+  /* ===== UNIFIED TYPOGRAPHY ===== */
+  --font-family-primary: 'Inter', system-ui, Avenir, Helvetica, Arial, sans-serif;
+  font-family: var(--font-family-primary);
   line-height: 1.5;
   font-weight: 400;
 
-  color-scheme: dark;
-  --bg-primary: #0f172a; /* Slate 900 */
-  --bg-secondary: #1e293b; /* Slate 800 */
-  --bg-tertiary: #334155; /* Slate 700 */
-  --accent-primary: #3b82f6; /* Blue 500 */
-  --accent-secondary: #60a5fa; /* Blue 400 */
-  --text-primary: #f8fafc; /* Slate 50 */
-  --text-secondary: #cbd5e1; /* Slate 300 */
-  --text-muted: #94a3b8; /* Slate 400 */
-  --card-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  /* Font Sizes - Unified Scale */
+  --font-size-xs: 0.75rem;    /* 12px */
+  --font-size-sm: 0.875rem;   /* 14px */
+  --font-size-base: 1rem;     /* 16px */
+  --font-size-lg: 1.125rem;   /* 18px */
+  --font-size-xl: 1.25rem;    /* 20px */
+  --font-size-2xl: 1.5rem;    /* 24px */
+  --font-size-3xl: 2rem;      /* 32px */
+  --font-size-4xl: 2.5rem;    /* 40px */
 
+  /* Font Weights */
+  --font-weight-normal: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
+  --font-weight-extrabold: 800;
+
+  /* Letter Spacing */
+  --letter-spacing-tight: -0.025em;
+  --letter-spacing-normal: 0;
+  --letter-spacing-wide: 0.05em;
+
+  /* ===== UNIFIED COLOR PALETTE ===== */
+  color-scheme: dark;
+  
+  /* Background Colors */
+  --bg-primary: #0f172a;      /* Slate 900 */
+  --bg-secondary: #1e293b;    /* Slate 800 */
+  --bg-tertiary: #334155;     /* Slate 700 */
+  --bg-card: rgba(30, 41, 59, 0.7);
+  
+  /* Accent Colors - Primary Palette */
+  --accent-primary: #3b82f6;    /* Blue 500 */
+  --accent-secondary: #60a5fa;  /* Blue 400 */
+  
+  /* Chart Colors - Unified Palette */
+  --chart-color-1: #3b82f6;   /* Blue 500 */
+  --chart-color-2: #22d3ee;   /* Cyan 400 */
+  --chart-color-3: #a78bfa;   /* Violet 400 */
+  --chart-color-4: #f472b6;   /* Pink 400 */
+  --chart-color-5: #fbbf24;   /* Amber 400 */
+  
+  /* Semantic Colors */
+  --color-success: #10b981;   /* Emerald 500 */
+  --color-success-dark: #059669; /* Emerald 600 */
+  --color-error: #ef4444;     /* Red 500 */
+  --color-error-bg: rgba(220, 38, 38, 0.1);
+  --color-error-border: rgba(220, 38, 38, 0.2);
+  
+  /* Text Colors */
+  --text-primary: #f8fafc;    /* Slate 50 */
+  --text-secondary: #cbd5e1;  /* Slate 300 */
+  --text-muted: #94a3b8;      /* Slate 400 */
+  
+  /* Border Colors */
+  --border-subtle: rgba(255, 255, 255, 0.05);
+  --border-light: rgba(255, 255, 255, 0.08);
+  --border-accent: rgba(59, 130, 246, 0.2);
+  --border-accent-hover: rgba(59, 130, 246, 0.3);
+  
+  /* ===== UNIFIED SHADOWS ===== */
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  --shadow-card: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  --shadow-card-hover: 0 10px 15px -3px rgba(0, 0, 0, 0.2), 0 4px 6px -2px rgba(0, 0, 0, 0.1);
+  --shadow-glow: 0 0 0 3px rgba(59, 130, 246, 0.3);
+  
+  /* Legacy alias for compatibility */
+  --card-shadow: var(--shadow-card);
+  
+  /* ===== UNIFIED SPACING ===== */
+  --spacing-xs: 4px;
+  --spacing-sm: 8px;
+  --spacing-md: 12px;
+  --spacing-lg: 16px;
+  --spacing-xl: 24px;
+  --spacing-2xl: 32px;
+  --spacing-3xl: 48px;
+  
+  /* ===== UNIFIED BORDER RADIUS ===== */
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-xl: 16px;
+  --radius-full: 9999px;
+  
+  /* ===== UNIFIED ANIMATIONS ===== */
+  /* Timing Functions */
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+  
+  /* Durations */
+  --duration-fast: 150ms;
+  --duration-normal: 200ms;
+  --duration-slow: 300ms;
+  --duration-entrance: 600ms;
+  
+  /* Animation Delays - Staggered */
+  --delay-1: 0.1s;
+  --delay-2: 0.15s;
+  --delay-3: 0.2s;
+  --delay-4: 0.25s;
+  --delay-5: 0.3s;
+  --delay-6: 0.35s;
+  
+  /* ===== BASE STYLES ===== */
   color: var(--text-primary);
   background-color: var(--bg-primary);
 

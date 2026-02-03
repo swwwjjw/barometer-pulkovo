@@ -6,17 +6,32 @@ import {
 } from 'recharts'
 import './App.css'
 
-// New color palette
-const COLORS = [
-  '#3b82f6', // Blue 500
-  '#22d3ee', // Cyan 400
-  '#a78bfa', // Violet 400
-  '#f472b6', // Pink 400
-  '#fbbf24'  // Amber 400
-];
+/**
+ * Unified Color Palette
+ * These values match the CSS variables defined in index.css
+ * Keeping them in sync ensures visual consistency across all charts and UI elements
+ */
+const CHART_COLORS = {
+  // Primary chart colors - used for pie charts and multi-series data
+  palette: [
+    '#3b82f6', // --chart-color-1: Blue 500
+    '#22d3ee', // --chart-color-2: Cyan 400
+    '#a78bfa', // --chart-color-3: Violet 400
+    '#f472b6', // --chart-color-4: Pink 400
+    '#fbbf24'  // --chart-color-5: Amber 400
+  ],
+  // Primary accent for single-color charts (bar charts, scatter plots)
+  primary: '#3b82f6',    // --accent-primary
+  secondary: '#60a5fa',  // --accent-secondary
+  // Axis and grid colors
+  axis: '#94a3b8',       // --text-muted
+  grid: '#334155'        // --bg-tertiary
+};
 
-const ACCENT_PRIMARY = '#3b82f6';
-const ACCENT_SECONDARY = '#60a5fa';
+// Legacy exports for backward compatibility
+const COLORS = CHART_COLORS.palette;
+const ACCENT_PRIMARY = CHART_COLORS.primary;
+const ACCENT_SECONDARY = CHART_COLORS.secondary;
 
 function App() {
   const [roles, setRoles] = useState([])
@@ -160,12 +175,12 @@ function App() {
               <h3>Зарплата vs Опыт</h3>
               <ResponsiveContainer width="100%" height="65%">
                 <ScatterChart margin={{ top: 10, right: 10, bottom: 10, left: 10 }}>
-                  <CartesianGrid strokeDasharray="3 3" opacity={0.3} />
-                  <XAxis type="number" dataKey="salary" name="Зарплата" unit="₽" stroke="#94a3b8" />
-                  <YAxis type="number" dataKey="experience" name="Опыт" stroke="#94a3b8" />
+                  <CartesianGrid strokeDasharray="3 3" stroke={CHART_COLORS.grid} opacity={0.3} />
+                  <XAxis type="number" dataKey="salary" name="Зарплата" unit="₽" stroke={CHART_COLORS.axis} />
+                  <YAxis type="number" dataKey="experience" name="Опыт" stroke={CHART_COLORS.axis} />
                   <ZAxis type="number" dataKey="count" range={[60, 400]} name="Вакансии" />
                   <Tooltip cursor={{ strokeDasharray: '3 3' }} />
-                  <Scatter name="Vacancies" data={stats.bubble_data} fill={ACCENT_PRIMARY} />
+                  <Scatter name="Vacancies" data={stats.bubble_data} fill={CHART_COLORS.primary} />
                 </ScatterChart>
               </ResponsiveContainer>
             </div>
@@ -181,11 +196,13 @@ function App() {
                     labelLine={false}
                     label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
                     outerRadius="70%"
-                    fill="#8884d8"
+                    fill={CHART_COLORS.primary}
                     dataKey="value"
+                    animationBegin={200}
+                    animationDuration={800}
                   >
                     {stats.experience_dist.filter(item => item.value > 0).map((entry, index) => (
-                      <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                      <Cell key={`cell-${index}`} fill={CHART_COLORS.palette[index % CHART_COLORS.palette.length]} />
                     ))}
                   </Pie>
                   <Tooltip />
@@ -200,11 +217,11 @@ function App() {
                   data={stats.salary_dist}
                   margin={{ top: 5, right: 20, left: 10, bottom: 5 }}
                 >
-                  <CartesianGrid strokeDasharray="3 3" opacity={0.3} />
-                  <XAxis interval="0" dataKey="range" stroke="#94a3b8" />
-                  <YAxis stroke="#94a3b8" />
+                  <CartesianGrid strokeDasharray="3 3" stroke={CHART_COLORS.grid} opacity={0.3} />
+                  <XAxis interval="0" dataKey="range" stroke={CHART_COLORS.axis} />
+                  <YAxis stroke={CHART_COLORS.axis} />
                   <Tooltip />
-                  <Bar dataKey="count" fill={ACCENT_PRIMARY} name="Количество" />
+                  <Bar dataKey="count" fill={CHART_COLORS.primary} name="Количество" radius={[4, 4, 0, 0]} />
                 </BarChart>
               </ResponsiveContainer>
             </div>
@@ -216,11 +233,11 @@ function App() {
                   data={stats.employment_dist}
                   margin={{ top: 5, right: 20, left: 10, bottom: 5 }}
                 >
-                  <CartesianGrid strokeDasharray="3 3" opacity={0.3} />
-                  <XAxis interval="0" dataKey="name" stroke="#94a3b8" />
-                  <YAxis stroke="#94a3b8" />
+                  <CartesianGrid strokeDasharray="3 3" stroke={CHART_COLORS.grid} opacity={0.3} />
+                  <XAxis interval="0" dataKey="name" stroke={CHART_COLORS.axis} />
+                  <YAxis stroke={CHART_COLORS.axis} />
                   <Tooltip />
-                  <Bar dataKey="count" fill={ACCENT_PRIMARY} name="Количество" />
+                  <Bar dataKey="count" fill={CHART_COLORS.primary} name="Количество" radius={[4, 4, 0, 0]} />
                 </BarChart>
               </ResponsiveContainer>
             </div>
@@ -232,11 +249,11 @@ function App() {
                   data={stats.schedule_dist}
                   margin={{ top: 5, right: 20, left: 10, bottom: 5 }}
                 >
-                  <CartesianGrid strokeDasharray="3 3" opacity={0.3} />
-                  <XAxis interval="0" dataKey="name" stroke="#94a3b8" />
-                  <YAxis stroke="#94a3b8" />
+                  <CartesianGrid strokeDasharray="3 3" stroke={CHART_COLORS.grid} opacity={0.3} />
+                  <XAxis interval="0" dataKey="name" stroke={CHART_COLORS.axis} />
+                  <YAxis stroke={CHART_COLORS.axis} />
                   <Tooltip />
-                  <Bar dataKey="count" fill={ACCENT_PRIMARY} name="Количество" />
+                  <Bar dataKey="count" fill={CHART_COLORS.primary} name="Количество" radius={[4, 4, 0, 0]} />
                 </BarChart>
               </ResponsiveContainer>
             </div>
