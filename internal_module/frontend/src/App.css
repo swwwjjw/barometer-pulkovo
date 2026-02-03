@@ -245,6 +245,8 @@
 }
 
 .market-card:hover {
+  transform: translateY(-5px);
+  box-shadow: var(--shadow-card-hover);
   border-color: var(--accent-primary);
 }
 
