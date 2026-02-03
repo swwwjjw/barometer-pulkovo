@@ -124,6 +124,9 @@
   grid-template-columns: repeat(2, 1fr);
   gap: 16px;
   margin-bottom: 20px;
+  width: calc(100% + 20px);
+  margin-left: -10px;
+  margin-right: -10px;
 }
 
 @media (max-width: 1024px) {
