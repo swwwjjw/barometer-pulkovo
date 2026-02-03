@@ -231,6 +231,91 @@ def filter_high_salary_outliers(vacancies: List[Dict[str, Any]],
     return filtered
 
 
+def filter_salary_outliers(vacancies: List[Dict[str, Any]], 
+                           high_multiplier: float = 3,
+                           low_divisor: float = 3,
+                           return_stats: bool = False) -> Any:
+    """
+    Filter out vacancies with salaries that are too high or too low compared to median.
+    
+    This function removes outlier vacancies where the average salary exceeds
+    the median salary multiplied by high_multiplier (default 3x) OR is below
+    the median salary divided by low_divisor (default median/3).
+    
+    Args:
+        vacancies: List of vacancy items.
+        high_multiplier: Upper threshold multiplier relative to median (default 3).
+        low_divisor: Lower threshold divisor relative to median (default 3).
+        return_stats: If True, returns tuple (filtered_vacancies, stats_dict).
+        
+    Returns:
+        If return_stats=False: List of vacancies with salaries within acceptable range.
+        If return_stats=True: Tuple of (filtered_vacancies, stats_dict) where stats_dict
+            contains filtering statistics for both high and low outliers.
+    """
+    # First, collect all valid salaries to calculate median
+    salaries_with_vacancies = []
+    vacancies_without_salary = []
+    
+    for v in vacancies:
+        salary_info = process_salary(v)
+        if salary_info:
+            salaries_with_vacancies.append((v, salary_info["avg"]))
+        else:
+            # Keep vacancies without salary info
+            vacancies_without_salary.append(v)
+    
+    if not salaries_with_vacancies:
+        if return_stats:
+            return vacancies_without_salary, {
+                "total_before": len(vacancies_without_salary),
+                "total_after": len(vacancies_without_salary),
+                "filtered_high_count": 0,
+                "filtered_low_count": 0,
+                "filtered_total_count": 0,
+                "median": None,
+                "high_threshold": None,
+                "low_threshold": None
+            }
+        return vacancies_without_salary
+    
+    # Calculate median and thresholds
+    salary_values = [s for _, s in salaries_with_vacancies]
+    median_salary = float(np.median(salary_values))
+    high_threshold = median_salary * high_multiplier
+    low_threshold = median_salary / low_divisor
+    
+    # Filter out high and low outliers
+    filtered = []
+    filtered_high_count = 0
+    filtered_low_count = 0
+    for v, salary in salaries_with_vacancies:
+        if salary > high_threshold:
+            filtered_high_count += 1
+        elif salary < low_threshold:
+            filtered_low_count += 1
+        else:
+            filtered.append(v)
+    
+    # Include vacancies without salary info
+    filtered.extend(vacancies_without_salary)
+    
+    if return_stats:
+        total_before = len(salaries_with_vacancies) + len(vacancies_without_salary)
+        return filtered, {
+            "total_before": total_before,
+            "total_after": len(filtered),
+            "filtered_high_count": filtered_high_count,
+            "filtered_low_count": filtered_low_count,
+            "filtered_total_count": filtered_high_count + filtered_low_count,
+            "median": median_salary,
+            "high_threshold": high_threshold,
+            "low_threshold": low_threshold
+        }
+    
+    return filtered
+
+
 def parse_vacancies_for_role(vacancies: List[Dict[str, Any]], 
                               role_ids: set,
                               filter_outliers: bool = True,
