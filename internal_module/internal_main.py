@@ -215,8 +215,8 @@ def get_overall_stats(filter_outliers: bool = True):
         schedule_name = schedule_obj.get("name", "Не указано")
         schedule_values.append(schedule_name)
     
-    # Total count of ALL vacancies (before filtering)
-    total_count = len(VACANCIES)
+    # Total count of vacancies (after filtering if enabled)
+    total_count = len(vacancies_to_process)
     
     # Salary metrics (only for vacancies with salary after filtering)
     metrics = {}
