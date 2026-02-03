@@ -80,9 +80,9 @@ function App() {
       </div>
 
       {!loading && stats && stats.metrics && stats.comparison && (
-        <div className="market-card">
+        <div className="chart-card">
+          <h3>Сравнение с рынком по заработной плате</h3>
           <div className="market-card-header">
-            <h3>Сравнение с рынком по заработной плате</h3>
             <button className="team-project-btn">
               С проектом "Мы команда"
             </button>
