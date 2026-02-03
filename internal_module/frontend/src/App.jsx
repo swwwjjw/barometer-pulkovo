@@ -88,7 +88,7 @@ function App() {
           </select>
           {stats && stats.metrics && (
             <div className="vacancy-count">
-              Всего вакансий: <span>{stats.metrics.count}</span>
+              Всего вакансий по профессии: <span>{stats.metrics.count}</span>
             </div>
           )}
         </div>
@@ -174,7 +174,7 @@ function App() {
             <div className="chart-card">
               <h3>Зарплата vs Опыт</h3>
               <ResponsiveContainer width="100%" height="65%">
-                <ScatterChart margin={{ top: 10, right: 10, bottom: 10, left: 20 }}>
+                <ScatterChart margin={{ top: 10, right: 10, bottom: 10, left: 10 }}>
                   <CartesianGrid strokeDasharray="3 3" stroke={CHART_COLORS.grid} opacity={0.3} />
                   <XAxis type="number" dataKey="salary" name="Зарплата" unit="₽" stroke={CHART_COLORS.axis} />
                   <YAxis 
@@ -291,6 +291,17 @@ function App() {
           </div>
         </>
       )}
+
+      <div className="header">
+        <h1>Общая статистика</h1>
+        <div className="controls">
+          {stats && stats.metrics && (
+            <div className="vacancy-count">
+              Всего вакансий: <span>{}</span>
+            </div>
+          )}
+        </div>
+      </div>
     </div>
   )
 }
