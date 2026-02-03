@@ -344,14 +344,14 @@ def parse_vacancies_for_role(vacancies: List[Dict[str, Any]],
         "threshold_salary": None
     }
     
-    # Optionally filter high salary outliers
+    # Optionally filter salary outliers (both high and low)
     if filter_outliers:
-        role_vacancies, outlier_stats = filter_high_salary_outliers(
-            role_vacancies, outlier_multiplier, return_stats=True
+        role_vacancies, outlier_stats = filter_salary_outliers(
+            role_vacancies, high_multiplier=outlier_multiplier, return_stats=True
         )
-        filter_stats["filtered_count"] = outlier_stats["filtered_count"]
+        filter_stats["filtered_count"] = outlier_stats["filtered_total_count"]
         filter_stats["median_salary"] = outlier_stats["median"]
-        filter_stats["threshold_salary"] = outlier_stats["threshold"]
+        filter_stats["threshold_salary"] = outlier_stats["high_threshold"]
     
     # Process salaries and experience
     pulkovo_salaries = []

@@ -11,7 +11,6 @@ import numpy as np
 from internal_module.parser import (
     load_data,
     process_salary,
-    filter_high_salary_outliers,
     filter_salary_outliers,
     parse_vacancies_for_role,
     ROLES_CONFIG,
