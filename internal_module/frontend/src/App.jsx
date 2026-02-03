@@ -221,7 +221,7 @@ function App() {
                   <XAxis dataKey="name" stroke="#94a3b8" />
                   <YAxis stroke="#94a3b8" />
                   <Tooltip />
-                  <Bar dataKey="count" fill="#22d3ee" name="Количество" />
+                  <Bar dataKey="count" fill={ACCENT_PRIMARY} name="Количество" />
                 </BarChart>
               </ResponsiveContainer>
             </div>
@@ -237,7 +237,7 @@ function App() {
                   <XAxis dataKey="name" stroke="#94a3b8" />
                   <YAxis stroke="#94a3b8" />
                   <Tooltip />
-                  <Bar dataKey="count" fill="#a78bfa" name="Количество" />
+                  <Bar dataKey="count" fill={ACCENT_PRIMARY} name="Количество" />
                 </BarChart>
               </ResponsiveContainer>
             </div>
