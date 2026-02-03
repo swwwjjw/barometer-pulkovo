@@ -64,7 +64,7 @@ function App() {
   return (
     <div className="container">
       <div className="header">
-        <h1>Барометр вакансий</h1>
+        <h1>Барометр вакансий ВВСС</h1>
         <div className="controls">
           <select value={selectedRoleIndex} onChange={handleRoleChange}>
             {roles.map((role, idx) => (
