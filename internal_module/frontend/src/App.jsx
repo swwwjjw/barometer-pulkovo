@@ -174,7 +174,7 @@ function App() {
             <div className="chart-card">
               <h3>Зарплата vs Опыт</h3>
               <ResponsiveContainer width="100%" height="65%">
-                <ScatterChart margin={{ top: 10, right: 10, bottom: 10, left: 80 }}>
+                <ScatterChart margin={{ top: 10, right: 10, bottom: 10, left: 20 }}>
                   <CartesianGrid strokeDasharray="3 3" stroke={CHART_COLORS.grid} opacity={0.3} />
                   <XAxis type="number" dataKey="salary" name="Зарплата" unit="₽" stroke={CHART_COLORS.axis} />
                   <YAxis 
