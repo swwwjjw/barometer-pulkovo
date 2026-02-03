@@ -158,79 +158,6 @@ def calculate_salary_median(vacancies: List[Dict[str, Any]]) -> Optional[float]:
     
     return float(np.median(salaries))
 
-
-def filter_high_salary_outliers(vacancies: List[Dict[str, Any]], 
-                                 multiplier: float = 3,
-                                 return_stats: bool = False) -> Any:
-    """
-    Filter out vacancies with salaries that are higher than multiplier times the median.
-    
-    This function removes outlier vacancies where the average salary exceeds
-    the median salary multiplied by the given multiplier (default 3x).
-    
-    Args:
-        vacancies: List of vacancy items.
-        multiplier: Salary threshold multiplier relative to median (default 3).
-        return_stats: If True, returns tuple (filtered_vacancies, stats_dict).
-        
-    Returns:
-        If return_stats=False: List of vacancies with salaries within acceptable range.
-        If return_stats=True: Tuple of (filtered_vacancies, stats_dict) where stats_dict
-            contains 'total_before', 'total_after', 'filtered_count', 'median', 'threshold'.
-    """
-    # First, collect all valid salaries to calculate median
-    salaries_with_vacancies = []
-    vacancies_without_salary = []
-    
-    for v in vacancies:
-        salary_info = process_salary(v)
-        if salary_info:
-            salaries_with_vacancies.append((v, salary_info["avg"]))
-        else:
-            # Keep vacancies without salary info
-            vacancies_without_salary.append(v)
-    
-    if not salaries_with_vacancies:
-        if return_stats:
-            return vacancies_without_salary, {
-                "total_before": len(vacancies_without_salary),
-                "total_after": len(vacancies_without_salary),
-                "filtered_count": 0,
-                "median": None,
-                "threshold": None
-            }
-        return vacancies_without_salary
-    
-    # Calculate median
-    salary_values = [s for _, s in salaries_with_vacancies]
-    median_salary = float(np.median(salary_values))
-    threshold = median_salary * multiplier
-    
-    # Filter out high outliers
-    filtered = []
-    filtered_out_count = 0
-    for v, salary in salaries_with_vacancies:
-        if salary <= threshold:
-            filtered.append(v)
-        else:
-            filtered_out_count += 1
-    
-    # Include vacancies without salary info
-    filtered.extend(vacancies_without_salary)
-    
-    if return_stats:
-        total_before = len(salaries_with_vacancies) + len(vacancies_without_salary)
-        return filtered, {
-            "total_before": total_before,
-            "total_after": len(filtered),
-            "filtered_count": filtered_out_count,
-            "median": median_salary,
-            "threshold": threshold
-        }
-    
-    return filtered
-
-
 def filter_salary_outliers(vacancies: List[Dict[str, Any]], 
                            high_multiplier: float = 3,
                            low_divisor: float = 3,
@@ -319,7 +246,8 @@ def filter_salary_outliers(vacancies: List[Dict[str, Any]],
 def parse_vacancies_for_role(vacancies: List[Dict[str, Any]], 
                               role_ids: set,
                               filter_outliers: bool = True,
-                              outlier_multiplier: float = 3) -> Dict[str, Any]:
+                              multiplier: float = 3,
+                              divisor: float = 5) -> Dict[str, Any]:
     """
     Parse and process vacancies for a specific role with optional outlier filtering.
     
@@ -347,7 +275,7 @@ def parse_vacancies_for_role(vacancies: List[Dict[str, Any]],
     # Optionally filter salary outliers (both high and low)
     if filter_outliers:
         role_vacancies, outlier_stats = filter_salary_outliers(
-            role_vacancies, high_multiplier=outlier_multiplier, return_stats=True
+            role_vacancies, high_multiplier=multiplier, low_divisor=divisor, return_stats=True
         )
         filter_stats["filtered_count"] = outlier_stats["filtered_total_count"]
         filter_stats["median_salary"] = outlier_stats["median"]
