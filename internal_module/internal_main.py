@@ -178,8 +178,6 @@ def get_overall_stats(filter_outliers: bool = True):
     if filter_outliers:
         vacancies_to_process, outlier_stats = filter_salary_outliers(
             VACANCIES, 
-            high_multiplier=3,
-            low_divisor=3,
             return_stats=True
         )
         filter_stats["filtered_high_count"] = outlier_stats["filtered_high_count"]
