@@ -201,7 +201,7 @@ function App() {
                   margin={{ top: 5, right: 20, left: 10, bottom: 5 }}
                 >
                   <CartesianGrid strokeDasharray="3 3" opacity={0.3} />
-                  <XAxis interval={1} dataKey="range" stroke="#94a3b8" />
+                  <XAxis interval="0" dataKey="range" stroke="#94a3b8" />
                   <YAxis stroke="#94a3b8" />
                   <Tooltip />
                   <Bar dataKey="count" fill={ACCENT_PRIMARY} name="Количество" />
@@ -217,7 +217,7 @@ function App() {
                   margin={{ top: 5, right: 20, left: 10, bottom: 5 }}
                 >
                   <CartesianGrid strokeDasharray="3 3" opacity={0.3} />
-                  <XAxis dataKey="name" stroke="#94a3b8" />
+                  <XAxis interval="0" dataKey="name" stroke="#94a3b8" />
                   <YAxis stroke="#94a3b8" />
                   <Tooltip />
                   <Bar dataKey="count" fill={ACCENT_PRIMARY} name="Количество" />
@@ -233,7 +233,7 @@ function App() {
                   margin={{ top: 5, right: 20, left: 10, bottom: 5 }}
                 >
                   <CartesianGrid strokeDasharray="3 3" opacity={0.3} />
-                  <XAxis dataKey="name" stroke="#94a3b8" />
+                  <XAxis interval="0" dataKey="name" stroke="#94a3b8" />
                   <YAxis stroke="#94a3b8" />
                   <Tooltip />
                   <Bar dataKey="count" fill={ACCENT_PRIMARY} name="Количество" />
