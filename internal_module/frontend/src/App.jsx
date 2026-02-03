@@ -39,8 +39,10 @@ function App() {
   const [stats, setStats] = useState(null)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState(null)
+  const [overallStats, setOverallStats] = useState(null)
 
   useEffect(() => {
+    // Fetch roles
     axios.get('/api/roles')
       .then(res => {
         setRoles(res.data)
@@ -49,6 +51,13 @@ function App() {
         }
       })
       .catch(err => setError("Failed to load roles"))
+    
+    // Fetch overall statistics for ALL vacancies
+    axios.get('/api/overall-stats')
+      .then(res => {
+        setOverallStats(res.data)
+      })
+      .catch(err => console.error("Failed to load overall stats"))
   }, [])
 
   const fetchStats = (index) => {
@@ -295,13 +304,34 @@ function App() {
       <div className="header">
         <h1>Общая статистика</h1>
         <div className="controls">
-          {stats && stats.metrics && (
+          {overallStats && (
             <div className="vacancy-count">
-              Всего вакансий: <span>{}</span>
+              Всего вакансий: <span>{overallStats.total_count}</span>
             </div>
           )}
         </div>
       </div>
+
+      {overallStats && overallStats.metrics && (
+        <div className="metrics-grid">
+          <div className="metric-card">
+            <h3>Среднее</h3>
+            <div className="value">{Math.round(overallStats.metrics.avg).toLocaleString()}</div>
+          </div>
+          <div className="metric-card">
+            <h3>Медиана</h3>
+            <div className="value">{Math.round(overallStats.metrics.median).toLocaleString()}</div>
+          </div>
+          <div className="metric-card">
+            <h3>Минимум</h3>
+            <div className="value">{Math.round(overallStats.metrics.min).toLocaleString()}</div>
+          </div>
+          <div className="metric-card">
+            <h3>Максимум</h3>
+            <div className="value">{Math.round(overallStats.metrics.max).toLocaleString()}</div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }
