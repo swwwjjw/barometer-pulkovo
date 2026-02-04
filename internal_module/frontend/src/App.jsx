@@ -129,26 +129,52 @@ function App() {
               className="band-above" 
               style={{ left: '75%', width: '25%' }}
             ></div>
-            {stats.comparison.pulkovo > 0 && (
-              <>
-                <div 
-                  className="marker-pulkovo-line" 
-                  style={{ left: `${Math.min(Math.max(((stats.comparison.pulkovo - stats.metrics.min) / (stats.metrics.max - stats.metrics.min)) * 100, 2), 98)}%` }}
-                  title="Пулково зарплата"
-                ></div>
-                <div 
-                  className="marker-pulkovo-label" 
-                  style={{ left: `${Math.min(Math.max(((stats.comparison.pulkovo - stats.metrics.min) / (stats.metrics.max - stats.metrics.min)) * 100, 2), 98)}%` }}
-                >
-                  {Math.round(stats.comparison.pulkovo).toLocaleString()} ₽
-                </div>
-              </>
-            )}
+            {/* Dynamic borders at 25% and 75% positions */}
+            <div 
+              className="market-border" 
+              style={{ left: '25%' }}
+              title="Граница нижнего рынка"
+            ></div>
+            <div 
+              className="market-border" 
+              style={{ left: '75%' }}
+              title="Граница верхнего рынка"
+            ></div>
+            {stats.comparison.pulkovo > 0 && (() => {
+              const minSalary = stats.metrics.min;
+              const maxSalary = stats.metrics.max;
+              const pulkovoSalary = stats.comparison.pulkovo;
+              const range = maxSalary - minSalary;
+              
+              // Calculate Pulkovo position as percentage of the market range
+              const pulkovoPosition = range > 0 
+                ? ((pulkovoSalary - minSalary) / range) * 100 
+                : 50;
+              
+              // Clamp position between 2% and 98% for visual clarity
+              const clampedPosition = Math.min(Math.max(pulkovoPosition, 2), 98);
+              
+              return (
+                <>
+                  <div 
+                    className="marker-pulkovo-line" 
+                    style={{ left: `${clampedPosition}%` }}
+                    title={`Пулково: ${Math.round(pulkovoSalary).toLocaleString()} ₽`}
+                  ></div>
+                  <div 
+                    className="marker-pulkovo-label" 
+                    style={{ left: `${clampedPosition}%` }}
+                  >
+                    {Math.round(pulkovoSalary).toLocaleString()} ₽
+                  </div>
+                </>
+              );
+            })()}
           </div>
           <div className="market-ticks">
-            <div className="val-p25">{Math.round(stats.metrics.min).toLocaleString()} ₽</div>
-            <div className="val-p50">{Math.round((stats.metrics.max - stats.metrics.min) * 0.25 + stats.metric.min).toLocaleString()} ₽</div>
-            <div className="val-p75">{Math.round(stats.metrics.min + (stats.metrics.max - stats.metrics.min) * 0.75).toLocaleString()} ₽</div>
+            <div className="val-min">{Math.round(stats.metrics.min).toLocaleString()} ₽</div>
+            <div className="val-p25">{Math.round((stats.metrics.max - stats.metrics.min) * 0.25 + stats.metrics.min).toLocaleString()} ₽</div>
+            <div className="val-p75">{Math.round((stats.metrics.max - stats.metrics.min) * 0.75 + stats.metrics.min).toLocaleString()} ₽</div>
             <div className="val-max">{Math.round(stats.metrics.max).toLocaleString()} ₽</div>
           </div>
         </div>
