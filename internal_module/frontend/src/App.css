@@ -416,22 +416,21 @@
   top: -16px;
   left: 50%;
   transform: translateX(-50%);
-  color: #fbbf24;
+  color: white;
   font-size: 12px;
-  text-shadow: 0 0 6px rgba(251, 191, 36, 0.8);
+  text-shadow: 0 0 6px rgba(255, 255, 255, 0.5);
 }
 
 .marker-pulkovo-label {
   position: absolute;
   top: 72px;
   transform: translateX(-50%);
-  color: #fbbf24;
+  color: white;
   font-family: var(--font-family-primary);
   font-weight: var(--font-weight-extrabold);
   font-size: var(--font-size-sm);
   white-space: nowrap;
-  text-shadow: 0 0 4px rgba(251, 191, 36, 0.8), 0 0 8px rgba(251, 191, 36, 0.6);
-  background: rgba(0, 0, 0, 0.5);
+  text-shadow: 0 0 4px rgba(209, 209, 209, 0.8), 0 0 8px rgba(153, 153, 153, 0.6);
   padding: 2px 8px;
   border-radius: var(--radius-sm);
   z-index: 10;
