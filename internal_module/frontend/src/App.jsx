@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import { useNavigate } from 'react-router-dom'
 import axios from 'axios'
 import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer,
@@ -39,26 +40,7 @@ function App() {
   const [stats, setStats] = useState(null)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState(null)
-  const [overallStats, setOverallStats] = useState(null)
-
-  useEffect(() => {
-    // Fetch roles
-    axios.get('/api/roles')
-      .then(res => {
-        setRoles(res.data)
-        if (res.data.length > 0) {
-          fetchStats(0)
-        }
-      })
-      .catch(err => setError("Failed to load roles"))
-    
-    // Fetch overall statistics for ALL vacancies
-    axios.get('/api/overall-stats')
-      .then(res => {
-        setOverallStats(res.data)
-      })
-      .catch(err => console.error("Failed to load overall stats"))
-  }, [])
+  const navigate = useNavigate()
 
   const fetchStats = (index) => {
     setLoading(true)
@@ -73,10 +55,26 @@ function App() {
         }
         setLoading(false)
       })
-      .catch(err => {
+      .catch(() => {
         setError("Failed to load stats")
         setLoading(false)
       })
+  }
+
+  useEffect(() => {
+    // Fetch roles
+    axios.get('/api/roles')
+      .then(res => {
+        setRoles(res.data)
+        if (res.data.length > 0) {
+          fetchStats(0)
+        }
+      })
+      .catch(() => setError("Failed to load roles"))
+  }, [])
+
+  const handleOverallStatsClick = () => {
+    navigate('/overall')
   }
 
   const handleRoleChange = (e) => {
@@ -100,6 +98,9 @@ function App() {
               Всего вакансий по профессии: <span>{stats.metrics.count}</span>
             </div>
           )}
+          <button className="overall-stats-btn" onClick={handleOverallStatsClick}>
+            Общая статистика
+          </button>
         </div>
       </div>
 
@@ -299,38 +300,6 @@ function App() {
             </div>
           </div>
         </>
-      )}
-
-      <div className="header">
-        <h1>Общая статистика</h1>
-        <div className="controls">
-          {overallStats && (
-            <div className="vacancy-count">
-              Всего вакансий: <span>{overallStats.total_count}</span>
-            </div>
-          )}
-        </div>
-      </div>
-
-      {overallStats && overallStats.metrics && (
-        <div className="metrics-grid">
-          <div className="metric-card">
-            <h3>Среднее</h3>
-            <div className="value">{Math.round(overallStats.metrics.avg).toLocaleString()}</div>
-          </div>
-          <div className="metric-card">
-            <h3>Медиана</h3>
-            <div className="value">{Math.round(overallStats.metrics.median).toLocaleString()}</div>
-          </div>
-          <div className="metric-card">
-            <h3>Минимум</h3>
-            <div className="value">{Math.round(overallStats.metrics.min).toLocaleString()}</div>
-          </div>
-          <div className="metric-card">
-            <h3>Максимум</h3>
-            <div className="value">{Math.round(overallStats.metrics.max).toLocaleString()}</div>
-          </div>
-        </div>
       )}
     </div>
   )

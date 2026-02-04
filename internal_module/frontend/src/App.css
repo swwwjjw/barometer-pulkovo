@@ -79,6 +79,49 @@
   color: var(--accent-secondary);
 }
 
+/* ===== NAVIGATION BUTTONS ===== */
+.overall-stats-btn {
+  background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+  color: white;
+  border: none;
+  padding: var(--spacing-md) var(--spacing-2xl);
+  border-radius: var(--radius-md);
+  font-family: var(--font-family-primary);
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-semibold);
+  cursor: pointer;
+  transition: transform var(--duration-normal) var(--ease-spring),
+              box-shadow var(--duration-normal) var(--ease-out);
+  box-shadow: var(--shadow-card);
+}
+
+.overall-stats-btn:hover {
+  transform: scale(1.05);
+  box-shadow: var(--shadow-glow), var(--shadow-card-hover);
+}
+
+.back-btn {
+  background: var(--bg-secondary);
+  color: var(--text-primary);
+  border: 1px solid var(--border-accent);
+  padding: var(--spacing-md) var(--spacing-2xl);
+  border-radius: var(--radius-md);
+  font-family: var(--font-family-primary);
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-medium);
+  cursor: pointer;
+  transition: transform var(--duration-normal) var(--ease-spring),
+              border-color var(--duration-normal) var(--ease-out),
+              background var(--duration-normal) var(--ease-out);
+  box-shadow: var(--shadow-card);
+}
+
+.back-btn:hover {
+  transform: scale(1.03);
+  border-color: var(--accent-primary);
+  background: var(--bg-tertiary);
+}
+
 /* ===== UNIFIED CARD BASE STYLES ===== */
 .card-base {
   background: var(--bg-card);

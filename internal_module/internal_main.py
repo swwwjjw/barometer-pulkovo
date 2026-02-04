@@ -257,6 +257,13 @@ async def dashboard():
         return FileResponse(os.path.join(frontend_path, "index.html"))
     return {"error": "Frontend not found"}
 
+@app.get("/overall")
+async def overall():
+    """Serve the overall statistics dashboard page."""
+    if os.path.exists(os.path.join(frontend_path, "index.html")):
+        return FileResponse(os.path.join(frontend_path, "index.html"))
+    return {"error": "Frontend not found"}
+
 if os.path.exists(frontend_path):
     app.mount("/", StaticFiles(directory=frontend_path, html=True), name="static")
 else:
