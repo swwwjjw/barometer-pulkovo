@@ -130,16 +130,6 @@ function App() {
               style={{ left: '75%', width: '25%' }}
             ></div>
             {/* Dynamic borders at 25% and 75% positions */}
-            <div 
-              className="market-border" 
-              style={{ left: '25%' }}
-              title="Граница нижнего рынка"
-            ></div>
-            <div 
-              className="market-border" 
-              style={{ left: '75%' }}
-              title="Граница верхнего рынка"
-            ></div>
             {stats.comparison.pulkovo > 0 && (() => {
               const minSalary = stats.metrics.min;
               const maxSalary = stats.metrics.max;
