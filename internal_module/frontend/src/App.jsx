@@ -90,11 +90,19 @@ function App() {
       <div className="header">
         <h1>Барометр вакансий ВВСС</h1>
         <div className="controls">
-          <select value={selectedRoleIndex} onChange={handleRoleChange}>
-            {roles.map((role, idx) => (
-              <option key={idx} value={idx}>{role.name}</option>
-            ))}
-          </select>
+          <div className="controls-row">
+            <select value={selectedRoleIndex} onChange={handleRoleChange}>
+              {roles.map((role, idx) => (
+                <option key={idx} value={idx}>{role.name}</option>
+              ))}
+            </select>
+            <button 
+              className="competitors-btn"
+              onClick={() => window.open('/competitors', '_blank')}
+            >
+              Конкуренты
+            </button>
+          </div>
           {stats && stats.metrics && (
             <div className="vacancy-count">
               Всего вакансий по профессии: <span>{stats.metrics.count}</span>
