@@ -53,7 +53,7 @@ function App() {
       .catch(err => setError("Failed to load roles"))
     
     // Fetch overall statistics for ALL vacancies
-    axios.get('/api/overall-stats')
+    axios.get('/api/overall')
       .then(res => {
         setOverallStats(res.data)
       })

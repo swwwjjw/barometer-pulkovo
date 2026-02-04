@@ -151,7 +151,7 @@ def get_stats(role_index: int, filter_outliers: bool = True):
         }
     }
 
-@app.get("/api/overall-stats")
+@app.get("/api/overall")
 def get_overall_stats(filter_outliers: bool = True):
     """
     Get statistics for ALL vacancies in the txt file.
