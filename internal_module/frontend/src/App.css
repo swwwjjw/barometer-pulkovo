@@ -515,3 +515,132 @@
   font-size: var(--font-size-xs) !important;
   fill: var(--text-primary) !important;
 }
+
+/* ===== COMPANY SALARY TABLE ===== */
+.company-table-card {
+  width: 100%;
+  box-sizing: border-box;
+  background: var(--bg-card);
+  backdrop-filter: blur(10px);
+  padding: var(--spacing-2xl) var(--spacing-3xl);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-card);
+  border: 1px solid var(--border-subtle);
+  transition: transform var(--duration-slow) var(--ease-out),
+              box-shadow var(--duration-slow) var(--ease-out),
+              border-color var(--duration-normal) var(--ease-out);
+  animation: fadeInUp var(--duration-entrance) var(--ease-out) backwards;
+  animation-delay: var(--delay-3);
+  margin-top: var(--spacing-xl);
+}
+
+.company-table-card:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-card-hover);
+  border-color: var(--accent-primary);
+}
+
+.company-table-card h3 {
+  margin-top: 0;
+  margin-bottom: var(--spacing-xl);
+  text-align: center;
+  color: var(--text-secondary);
+  font-family: var(--font-family-primary);
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-semibold);
+}
+
+.company-salary-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-family: var(--font-family-primary);
+}
+
+.company-salary-table thead {
+  background: var(--bg-tertiary);
+}
+
+.company-salary-table th {
+  padding: var(--spacing-lg) var(--spacing-xl);
+  text-align: left;
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+  color: var(--text-secondary);
+  border-bottom: 2px solid var(--border-accent);
+}
+
+.company-salary-table th:first-child {
+  border-radius: var(--radius-md) 0 0 0;
+}
+
+.company-salary-table th:last-child {
+  border-radius: 0 var(--radius-md) 0 0;
+  text-align: right;
+}
+
+.company-salary-table th:nth-child(2),
+.company-salary-table th:nth-child(3),
+.company-salary-table th:nth-child(4) {
+  text-align: right;
+}
+
+.company-salary-table tbody tr {
+  transition: background-color var(--duration-normal) var(--ease-out);
+}
+
+.company-salary-table tbody tr:nth-child(even) {
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.company-salary-table tbody tr:hover {
+  background: rgba(59, 130, 246, 0.1);
+}
+
+.company-salary-table td {
+  padding: var(--spacing-md) var(--spacing-xl);
+  font-size: var(--font-size-sm);
+  color: var(--text-primary);
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.company-salary-table td:first-child {
+  font-weight: var(--font-weight-medium);
+  color: var(--text-primary);
+}
+
+.company-salary-table td:nth-child(2),
+.company-salary-table td:nth-child(3),
+.company-salary-table td:nth-child(4) {
+  text-align: right;
+  font-family: var(--font-family-primary);
+  font-variant-numeric: tabular-nums;
+}
+
+.company-salary-table td:nth-child(2) {
+  color: var(--accent-secondary);
+  font-weight: var(--font-weight-semibold);
+}
+
+.company-salary-table td:nth-child(3) {
+  color: var(--chart-color-3);
+}
+
+.company-salary-table td:nth-child(4) {
+  color: var(--chart-color-2);
+}
+
+.company-salary-table tbody tr:last-child td:first-child {
+  border-radius: 0 0 0 var(--radius-md);
+}
+
+.company-salary-table tbody tr:last-child td:last-child {
+  border-radius: 0 0 var(--radius-md) 0;
+}
+
+@media (max-width: 768px) {
+  .company-salary-table th,
+  .company-salary-table td {
+    padding: var(--spacing-sm) var(--spacing-md);
+    font-size: var(--font-size-xs);
+  }
+}
