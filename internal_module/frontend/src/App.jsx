@@ -332,6 +332,37 @@ function App() {
           </div>
         </div>
       )}
+
+      <div className="company-table-card">
+        <h3>Зарплаты по компаниям</h3>
+        <table className="company-salary-table">
+          <thead>
+            <tr>
+              <th>Название компании</th>
+              <th>ЧТС</th>
+              <th>Минимальная зарплата</th>
+              <th>Максимальная зарплата</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>Яндекс Лавка</td><td>400</td><td>16 000</td><td>93 808</td></tr>
+            <tr><td>Яндекс Еда</td><td>400</td><td>16 000</td><td>101 516</td></tr>
+            <tr><td>Самокат</td><td>350</td><td>14 000</td><td>63 140</td></tr>
+            <tr><td>Яндекс Крауд</td><td>350</td><td>14 000</td><td>75 440</td></tr>
+            <tr><td>Т-Банк</td><td>330</td><td>13 200</td><td>65 600</td></tr>
+            <tr><td>Ozon</td><td>320</td><td>12 800</td><td>106 600</td></tr>
+            <tr><td>Улыбка радуги</td><td>300</td><td>12 000</td><td>49 200</td></tr>
+            <tr><td>Булочные Вольчека</td><td>300</td><td>12 000</td><td>49 200</td></tr>
+            <tr><td>Ростелеком</td><td>280</td><td>11 200</td><td>100 000</td></tr>
+            <tr><td>Burger King</td><td>280</td><td>11 200</td><td>98 333</td></tr>
+            <tr><td>Токио-сити</td><td>260</td><td>10 400</td><td>56 666</td></tr>
+            <tr><td>Додо пицца</td><td>250</td><td>10 000</td><td>41 000</td></tr>
+            <tr><td>ЛюдиЛюбят</td><td>250</td><td>10 000</td><td>50 400</td></tr>
+            <tr><td>Вкусно и точка</td><td>250</td><td>10 000</td><td>49 200</td></tr>
+            <tr><td>Теремок</td><td>240</td><td>9 600</td><td>83 640</td></tr>
+          </tbody>
+        </table>
+      </div>
     </div>
   )
 }
