@@ -4,3 +4,4 @@ httpx
 apscheduler
 pandas
 numpy
+openpyxl
