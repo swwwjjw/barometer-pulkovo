@@ -9,7 +9,7 @@
   align-items: center;
 }
 
-/* ===== HEADER SECTION ===== */
+/* Заголовки */
 .header {
   margin-bottom: var(--spacing-xl);
   display: flex;
@@ -33,7 +33,7 @@
   letter-spacing: var(--letter-spacing-tight);
 }
 
-/* ===== CONTROLS SECTION ===== */
+/* Контроллеры */
 .controls {
   display: flex;
   flex-direction: column;
@@ -79,7 +79,7 @@
   color: var(--accent-secondary);
 }
 
-/* ===== UNIFIED CARD BASE STYLES ===== */
+/* База для карточек */
 .card-base {
   background: var(--bg-card);
   backdrop-filter: blur(10px);
@@ -96,7 +96,7 @@
   border-color: var(--accent-primary);
 }
 
-/* ===== METRICS GRID ===== */
+/* Сетка для карточек метрик */
 .metrics-grid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
@@ -112,7 +112,7 @@
   }
 }
 
-/* ===== METRIC CARD ===== */
+/* Карточка метрики */
 .metric-card {
   background: var(--bg-card);
   backdrop-filter: blur(10px);
@@ -161,7 +161,7 @@
   background-clip: text;
 }
 
-/* ===== CHARTS GRID ===== */
+/* Сетка для карточек чартов */
 .charts-grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
@@ -177,7 +177,7 @@
   }
 }
 
-/* ===== CHART CARD ===== */
+/* Краточки чартов */
 .chart-card {
   background: var(--bg-secondary);
   border: 1px solid var(--border-light);
@@ -225,7 +225,7 @@
   flex: 1;
 }
 
-/* ===== MARKET COMPARISON CARD ===== */
+/* Карточка сравнения рынка */
 .market-card {
   margin-top: var(--spacing-xl);
   padding: var(--spacing-2xl) var(--spacing-3xl);
@@ -293,7 +293,7 @@
   transform: scale(1.05);
 }
 
-/* Market Labels */
+/* Подписи карточки сравнения рынка */
 .market-labels {
   display: flex;
   justify-content: space-between;
@@ -316,7 +316,7 @@
   color: var(--chart-color-2);
 }
 
-/* Market Scale */
+/* Масштаб рынка в карточке сравнения рынка*/
 .market-scale {
   position: relative;
   height: 64px;
@@ -352,7 +352,7 @@
   border-radius: 0 var(--radius-full) var(--radius-full) 0;
 }
 
-/* Dynamic Market Zone Borders */
+/* Динамические границы зон рынка в карточке сравнения рынка */
 .market-border {
   position: absolute;
   top: 0;
@@ -436,7 +436,7 @@
   z-index: 10;
 }
 
-/* Market Ticks */
+/* Тики рынка в карточке сравнения рынка */
 .market-ticks {
   display: flex;
   justify-content: space-between;
@@ -461,7 +461,7 @@
   color: var(--chart-color-2);
 }
 
-/* ===== LOADING & ERROR STATES ===== */
+/* Ошибки и загрузка */
 .loading {
   text-align: center;
   padding: 50px;
@@ -488,7 +488,7 @@
   box-sizing: border-box;
 }
 
-/* ===== UNIFIED ANIMATIONS ===== */
+/* Анимации */
 @keyframes fadeIn {
   from { opacity: 0; }
   to { opacity: 1; }
@@ -533,7 +533,7 @@
   }
 }
 
-/* ===== RECHARTS CUSTOMIZATION ===== */
+/* Кастомизация чартов */
 .recharts-cartesian-grid-horizontal line,
 .recharts-cartesian-grid-vertical line {
   stroke: var(--bg-tertiary) !important;
@@ -575,7 +575,7 @@
   fill: var(--text-primary) !important;
 }
 
-/* ===== COMPANY SALARY TABLE ===== */
+/* Таблица с конкурентами */
 .company-table-card {
   width: 100%;
   box-sizing: border-box;

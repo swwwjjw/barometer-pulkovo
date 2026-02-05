@@ -6,13 +6,9 @@ import {
 } from 'recharts'
 import './App.css'
 
-/**
- * Unified Color Palette
- * These values match the CSS variables defined in index.css
- * Keeping them in sync ensures visual consistency across all charts and UI elements
- */
+
 const CHART_COLORS = {
-  // Primary chart colors - used for pie charts and multi-series data
+  // Основные цвета для мультиколорных чартов
   palette: [
     '#3b82f6', // --chart-color-1: Blue 500
     '#22d3ee', // --chart-color-2: Cyan 400
@@ -20,18 +16,13 @@ const CHART_COLORS = {
     '#f472b6', // --chart-color-4: Pink 400
     '#fbbf24'  // --chart-color-5: Amber 400
   ],
-  // Primary accent for single-color charts (bar charts, scatter plots)
+  // Акцентные цвета для одноцветных чартов
   primary: '#3b82f6',    // --accent-primary
   secondary: '#60a5fa',  // --accent-secondary
-  // Axis and grid colors
+  // Цвета сеток и осей
   axis: '#94a3b8',       // --text-muted
   grid: '#334155'        // --bg-tertiary
 };
-
-// Legacy exports for backward compatibility
-const COLORS = CHART_COLORS.palette;
-const ACCENT_PRIMARY = CHART_COLORS.primary;
-const ACCENT_SECONDARY = CHART_COLORS.secondary;
 
 function App() {
   const [roles, setRoles] = useState([])
