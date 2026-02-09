@@ -179,8 +179,8 @@ def calculate_salary_median(vacancies: List[Dict[str, Any]]) -> Optional[float]:
     return float(np.median(salaries))
 
 def filter_salary_outliers(vacancies: List[Dict[str, Any]], 
-                           high_multiplier: float = 5,
-                           low_divisor: float = 5,
+                           high_multiplier: float = 1,
+                           low_divisor: float = 1,
                            return_stats: bool = False) -> Any:
     """
     Filter out vacancies with salaries that are too high or too low compared to median.
@@ -259,9 +259,7 @@ def filter_salary_outliers(vacancies: List[Dict[str, Any]],
             "high_threshold": high_threshold,
             "low_threshold": low_threshold
         }
-    print(total_before)
-    print(filtered_high_count)
-    print(filtered_low_count)
+    
     return filtered
 
 
