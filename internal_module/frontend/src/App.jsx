@@ -24,6 +24,29 @@ const CHART_COLORS = {
   grid: '#334155'        // --bg-tertiary
 };
 
+// Mapping of backend keywords to display names
+const ROLE_DISPLAY_NAMES = {
+  'грузчик нагрузки': 'Грузчик на склад',
+  'аналитик данных SQL': 'Аналитик данных',
+  'машинное обучение': 'ML инженер',
+  'машинист катка': 'Машинист катка',
+  'руководитель склада': 'Инженер склада',
+  'фельдшер помощь': 'Фельдшер / фельдшер скорой медицинской помощи',
+  'обслуживание воздушных судов': 'Специалист по обслуживанию ВС',
+  'мойщик посуды': 'Мойщик-уборщик',
+  'осмотр медицинской': 'Медицинская сестра/медицинский брат',
+  'системный виртуализация': 'Системный инженер',
+  'склад комплектовщик': 'Инспектор Перронного Контроля',
+  'кинолог': 'Кинолог',
+  'инженер холодильного': 'Инженер холодильных установок',
+  'гбр охрана': 'Инспектор Группы Быстрого Реагирования'
+};
+
+// Helper function to get display name for a role
+const getRoleDisplayName = (keywords) => {
+  return ROLE_DISPLAY_NAMES[keywords] || keywords;
+};
+
 function App() {
   const [groups, setGroups] = useState([])
   const [selectedGroupId, setSelectedGroupId] = useState(null)
@@ -84,7 +107,7 @@ function App() {
           <select value={selectedGroupId || ''} onChange={handleGroupChange}>
             {groups.map((group) => (
               <option key={group.id} value={group.id}>
-                {group.keywords} ({group.vacancy_count})
+                {getRoleDisplayName(group.keywords)} ({group.vacancy_count})
               </option>
             ))}
           </select>
