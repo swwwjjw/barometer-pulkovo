@@ -157,30 +157,6 @@ def process_salary(item: Dict[str, Any]) -> Optional[Dict[str, float]]:
         "avg": ((val_from + val_to) / 2) * multiplier
     }
 
-
-def filter_vacancies_by_role(vacancies: List[Dict[str, Any]], 
-                              role_ids: set) -> List[Dict[str, Any]]:
-    """
-    Filter vacancies by professional role IDs.
-    
-    Args:
-        vacancies: List of vacancy items.
-        role_ids: Set of role IDs to filter by.
-        
-    Returns:
-        List of vacancies matching the role IDs.
-    """
-    filtered = []
-    for v in vacancies:
-        v_roles = v.get("professional_roles", [])
-        v_role_ids = {r.get("id") for r in v_roles}
-        
-        if role_ids.intersection(v_role_ids):
-            filtered.append(v)
-    
-    return filtered
-
-
 def calculate_salary_median(vacancies: List[Dict[str, Any]]) -> Optional[float]:
     """
     Calculate median salary from a list of vacancies.
@@ -203,7 +179,7 @@ def calculate_salary_median(vacancies: List[Dict[str, Any]]) -> Optional[float]:
     return float(np.median(salaries))
 
 def filter_salary_outliers(vacancies: List[Dict[str, Any]], 
-                           high_multiplier: float = 3,
+                           high_multiplier: float = 5,
                            low_divisor: float = 5,
                            return_stats: bool = False) -> Any:
     """
