@@ -259,7 +259,9 @@ def filter_salary_outliers(vacancies: List[Dict[str, Any]],
             "high_threshold": high_threshold,
             "low_threshold": low_threshold
         }
-    
+    print(total_before)
+    print(filtered_high_count)
+    print(filtered_low_count)
     return filtered
 
 
