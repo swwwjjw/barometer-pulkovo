@@ -42,6 +42,24 @@ const ROLE_DISPLAY_NAMES = {
   'гбр охрана': 'Инспектор Группы Быстрого Реагирования'
 };
 
+// Team project salary bonuses for each role (in rubles)
+const TEAM_PROJECT_SALARY = {
+  'грузчик нагрузки': 5000,
+  'аналитик данных SQL': 15000,
+  'машинное обучение': 20000,
+  'машинист катка': 8000,
+  'руководитель склада': 12000,
+  'фельдшер помощь': 10000,
+  'обслуживание воздушных судов': 9000,
+  'мойщик посуды': 4000,
+  'осмотр медицинской': 10000,
+  'системный виртуализация': 18000,
+  'склад комплектовщик': 7000,
+  'кинолог': 8000,
+  'инженер холодильного': 11000,
+  'гбр охрана': 9000
+};
+
 // Helper function to get display name for a role
 const getRoleDisplayName = (keywords) => {
   return ROLE_DISPLAY_NAMES[keywords] || keywords;
@@ -54,6 +72,7 @@ function App() {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState(null)
   const [overallStats, setOverallStats] = useState(null)
+  const [teamProjectActive, setTeamProjectActive] = useState(false)
 
   useEffect(() => {
     axios.get('/api/groups')
@@ -99,6 +118,16 @@ function App() {
     fetchStats(groupId)
   }
 
+  const toggleTeamProject = () => {
+    setTeamProjectActive(!teamProjectActive)
+  }
+
+  const getTeamProjectBonus = () => {
+    if (!teamProjectActive || !stats) return 0
+    const currentKeywords = stats.keywords
+    return TEAM_PROJECT_SALARY[currentKeywords] || 0
+  }
+
   return (
     <div className="container">
       <div className="header">
@@ -123,8 +152,11 @@ function App() {
         <div className="market-card">
           <h3>Сравнение с рынком по заработной плате</h3>
           <div className="market-card-header">
-            <button className="team-project-btn">
-              С проектом "Мы команда"
+            <button 
+              className={`team-project-btn ${teamProjectActive ? 'active' : ''}`}
+              onClick={toggleTeamProject}
+            >
+              С проектом "Мы команда" {teamProjectActive ? '✓' : ''}
             </button>
           </div>
           <div className="market-labels">
@@ -148,7 +180,8 @@ function App() {
             {stats.comparison.pulkovo > 0 && (() => {
               const minSalary = stats.metrics.min;
               const maxSalary = stats.metrics.max;
-              const pulkovoSalary = stats.comparison.pulkovo;
+              const teamBonus = getTeamProjectBonus();
+              const pulkovoSalary = stats.comparison.pulkovo + teamBonus;
               const range = maxSalary - minSalary;
             
               const pulkovoPosition = range > 0 
@@ -162,7 +195,7 @@ function App() {
                   <div 
                     className="marker-pulkovo-line" 
                     style={{ left: `${clampedPosition}%` }}
-                    title={`Пулково: ${Math.round(pulkovoSalary).toLocaleString()} ₽`}
+                    title={`Пулково: ${Math.round(pulkovoSalary).toLocaleString()} ₽${teamBonus > 0 ? ` (+ ${teamBonus.toLocaleString()} ₽ от проекта "Мы команда")` : ''}`}
                   ></div>
                   <div 
                     className="marker-pulkovo-label" 
