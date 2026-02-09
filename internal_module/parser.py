@@ -8,8 +8,8 @@ from typing import List, Dict, Optional, Any
 import numpy as np
 
 
-# Data file path
-DATA_FILE = os.path.join(os.path.dirname(__file__), "../final_folder/vacancies_20260125_144856.txt")
+# Data file path - use latest available file
+DATA_FILE = os.path.join(os.path.dirname(__file__), "../final_folder/vacancies_20260209_145339.txt")
 
 # Predefined role mapping
 ROLES_CONFIG = [
@@ -45,24 +45,59 @@ EXPERIENCE_MAP = {
 def load_data(file_path: Optional[str] = None) -> List[Dict[str, Any]]:
     """
     Load vacancy data from a JSON file.
+    Supports both old format ({"items": [...]}) and new format ({"groups": {...}}).
     
     Args:
         file_path: Optional path to the data file. Uses default if not provided.
         
     Returns:
-        List of vacancy items.
+        List of vacancy items (flattened from all groups if new format).
     """
     target_file = file_path or DATA_FILE
     
     if not os.path.exists(target_file):
-        # Try absolute path as fallback
-        if os.path.exists("/workspace/final_folder/vacancies_20260125_144856.txt"):
-            with open("/workspace/final_folder/vacancies_20260125_144856.txt", "r", encoding="utf-8") as f:
-                return json.load(f).get("items", [])
-        return []
+        # Try absolute path as fallback for newest file
+        fallback_paths = [
+            "/workspace/final_folder/vacancies_20260209_145339.txt",
+            "/workspace/final_folder/vacancies_20260207_144420.txt",
+            "/workspace/final_folder/vacancies_20260125_144856.txt"
+        ]
+        for fallback in fallback_paths:
+            if os.path.exists(fallback):
+                target_file = fallback
+                break
+        else:
+            return []
     
     with open(target_file, "r", encoding="utf-8") as f:
-        return json.load(f).get("items", [])
+        data = json.load(f)
+    
+    # Check for new format (with groups)
+    if "groups" in data:
+        return _extract_vacancies_from_groups(data)
+    
+    # Old format (with items)
+    return data.get("items", [])
+
+
+def _extract_vacancies_from_groups(data: Dict[str, Any]) -> List[Dict[str, Any]]:
+    """
+    Extract and flatten all vacancies from the grouped format.
+    
+    Args:
+        data: The full JSON data with groups structure.
+        
+    Returns:
+        Flattened list of all vacancy items from all groups.
+    """
+    all_vacancies = []
+    groups = data.get("groups", {})
+    
+    for group_name, group_data in groups.items():
+        vacancies = group_data.get("vacancies", [])
+        all_vacancies.extend(vacancies)
+    
+    return all_vacancies
 
 
 def process_salary(item: Dict[str, Any]) -> Optional[Dict[str, float]]:
