@@ -25,22 +25,24 @@ const CHART_COLORS = {
 };
 
 function App() {
-  const [roles, setRoles] = useState([])
-  const [selectedRoleIndex, setSelectedRoleIndex] = useState(0)
+  const [groups, setGroups] = useState([])
+  const [selectedGroupId, setSelectedGroupId] = useState(null)
   const [stats, setStats] = useState(null)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState(null)
   const [overallStats, setOverallStats] = useState(null)
 
   useEffect(() => {
-    axios.get('/api/roles')
+    axios.get('/api/groups')
       .then(res => {
-        setRoles(res.data)
+        setGroups(res.data)
         if (res.data.length > 0) {
-          fetchStats(0)
+          const firstGroupId = res.data[0].id
+          setSelectedGroupId(firstGroupId)
+          fetchStats(firstGroupId)
         }
       })
-      .catch(err => setError("Failed to load roles"))
+      .catch(err => setError("Failed to load groups"))
     
     axios.get('/api/overall-stats')
       .then(res => {
@@ -49,10 +51,10 @@ function App() {
       .catch(err => console.error("Failed to load overall stats"))
   }, [])
 
-  const fetchStats = (index) => {
+  const fetchStats = (groupId) => {
     setLoading(true)
     setError(null)
-    axios.get(`/api/stats/${index}`)
+    axios.get(`/api/stats/${groupId}`)
       .then(res => {
         if (res.data.error) {
           setError(res.data.error)
@@ -68,10 +70,10 @@ function App() {
       })
   }
 
-  const handleRoleChange = (e) => {
-    const idx = parseInt(e.target.value)
-    setSelectedRoleIndex(idx)
-    fetchStats(idx)
+  const handleGroupChange = (e) => {
+    const groupId = e.target.value
+    setSelectedGroupId(groupId)
+    fetchStats(groupId)
   }
 
   return (
@@ -79,14 +81,16 @@ function App() {
       <div className="header">
         <h1>Барометр вакансий ВВСС</h1>
         <div className="controls">
-          <select value={selectedRoleIndex} onChange={handleRoleChange}>
-            {roles.map((role, idx) => (
-              <option key={idx} value={idx}>{role.name}</option>
+          <select value={selectedGroupId || ''} onChange={handleGroupChange}>
+            {groups.map((group) => (
+              <option key={group.id} value={group.id}>
+                {group.keywords} ({group.vacancy_count})
+              </option>
             ))}
           </select>
           {stats && stats.metrics && (
             <div className="vacancy-count">
-              Всего вакансий по профессии: <span>{stats.metrics.count}</span>
+              Всего вакансий в группе: <span>{stats.metrics.count}</span>
             </div>
           )}
         </div>

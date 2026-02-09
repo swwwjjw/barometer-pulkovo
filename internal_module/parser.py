@@ -42,7 +42,7 @@ EXPERIENCE_MAP = {
 }
 
 
-def load_data(file_path: Optional[str] = None) -> List[Dict[str, Any]]:
+def load_data(file_path: Optional[str] = None) -> Dict[str, Any]:
     """
     Load vacancy data from a JSON file.
     Supports both old format ({"items": [...]}) and new format ({"groups": {...}}).
@@ -51,7 +51,8 @@ def load_data(file_path: Optional[str] = None) -> List[Dict[str, Any]]:
         file_path: Optional path to the data file. Uses default if not provided.
         
     Returns:
-        List of vacancy items (flattened from all groups if new format).
+        Dictionary with 'metadata' and 'groups' keys (new format) or 
+        legacy format converted to groups structure.
     """
     target_file = file_path or DATA_FILE
     
@@ -67,37 +68,45 @@ def load_data(file_path: Optional[str] = None) -> List[Dict[str, Any]]:
                 target_file = fallback
                 break
         else:
-            return []
+            return {"metadata": {}, "groups": {}}
     
     with open(target_file, "r", encoding="utf-8") as f:
         data = json.load(f)
     
     # Check for new format (with groups)
     if "groups" in data:
-        return _extract_vacancies_from_groups(data)
+        return data
     
-    # Old format (with items)
-    return data.get("items", [])
+    # Old format (with items) - convert to groups structure
+    return {
+        "metadata": {"total_vacancies": len(data.get("items", []))},
+        "groups": {"all_vacancies": {"keywords": "all", "vacancies": data.get("items", [])}}
+    }
 
 
-def _extract_vacancies_from_groups(data: Dict[str, Any]) -> List[Dict[str, Any]]:
+def get_group_list(data: Dict[str, Any]) -> List[Dict[str, Any]]:
     """
-    Extract and flatten all vacancies from the grouped format.
+    Extract list of groups with their metadata.
     
     Args:
         data: The full JSON data with groups structure.
         
     Returns:
-        Flattened list of all vacancy items from all groups.
+        List of group dictionaries with name, keywords, and vacancy count.
     """
-    all_vacancies = []
     groups = data.get("groups", {})
+    group_list = []
     
-    for group_name, group_data in groups.items():
-        vacancies = group_data.get("vacancies", [])
-        all_vacancies.extend(vacancies)
+    for group_id, group_data in groups.items():
+        keywords = group_data.get("keywords", "")
+        vacancy_count = len(group_data.get("vacancies", []))
+        group_list.append({
+            "id": group_id,
+            "keywords": keywords,
+            "vacancy_count": vacancy_count
+        })
     
-    return all_vacancies
+    return group_list
 
 
 def process_salary(item: Dict[str, Any]) -> Optional[Dict[str, float]]:
@@ -278,29 +287,22 @@ def filter_salary_outliers(vacancies: List[Dict[str, Any]],
     return filtered
 
 
-def parse_vacancies_for_role(vacancies: List[Dict[str, Any]], 
-                              role_ids: set,
-                              filter_outliers: bool = True,
-                              outlier_multiplier: float = 3) -> Dict[str, Any]:
+def parse_vacancies_for_group(vacancies: List[Dict[str, Any]], 
+                               filter_outliers: bool = True) -> Dict[str, Any]:
     """
-    Parse and process vacancies for a specific role with optional outlier filtering.
+    Parse and process vacancies for a specific group with optional outlier filtering.
     
     Args:
-        vacancies: List of all vacancy items.
-        role_ids: Set of role IDs to filter by.
+        vacancies: List of vacancy items from a group.
         filter_outliers: Whether to filter out high salary outliers.
-        outlier_multiplier: Multiplier for outlier threshold (default 3x median).
         
     Returns:
         Dictionary containing processed vacancy data and statistics.
         Includes 'filter_stats' with counts before/after filtering.
     """
-    # Filter by role
-    role_vacancies = filter_vacancies_by_role(vacancies, role_ids)
-    
     # Track filtering statistics
     filter_stats = {
-        "total_before_filter": len(role_vacancies),
+        "total_before_filter": len(vacancies),
         "filtered_count": 0,
         "median_salary": None,
         "threshold_salary": None
@@ -308,8 +310,8 @@ def parse_vacancies_for_role(vacancies: List[Dict[str, Any]],
     
     # Optionally filter salary outliers (both high and low)
     if filter_outliers:
-        role_vacancies, outlier_stats = filter_salary_outliers(
-            role_vacancies, return_stats=True
+        vacancies, outlier_stats = filter_salary_outliers(
+            vacancies, return_stats=True
         )
         filter_stats["filtered_count"] = outlier_stats["filtered_total_count"]
         filter_stats["median_salary"] = outlier_stats["median"]
@@ -325,7 +327,7 @@ def parse_vacancies_for_role(vacancies: List[Dict[str, Any]],
     schedule_values = []
     processed_vacancies = []
     
-    for v in role_vacancies:
+    for v in vacancies:
         salary_info = process_salary(v)
         if not salary_info:
             continue
