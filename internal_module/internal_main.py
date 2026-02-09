@@ -12,8 +12,8 @@ from internal_module.parser import (
     load_data,
     process_salary,
     filter_salary_outliers,
-    parse_vacancies_for_role,
-    ROLES_CONFIG,
+    parse_vacancies_for_group,
+    get_group_list,
     EXPERIENCE_MAP
 )
 
@@ -32,39 +32,44 @@ app.add_middleware(
 # Note: frontend is expected to be built in 'frontend/dist'
 frontend_path = os.path.join(os.path.dirname(__file__), "frontend/dist")
 
-VACANCIES = []
+VACANCY_DATA = {}
 
 @app.on_event("startup")
 def startup_event():
-    global VACANCIES
-    VACANCIES = load_data()
-    print(f"Loaded {len(VACANCIES)} vacancies")
+    global VACANCY_DATA
+    VACANCY_DATA = load_data()
+    metadata = VACANCY_DATA.get("metadata", {})
+    total = metadata.get("total_vacancies", 0)
+    total_groups = metadata.get("total_groups", 0)
+    print(f"Loaded {total} vacancies in {total_groups} groups")
 
-@app.get("/api/roles")
-def get_roles():
-    return ROLES_CONFIG
+@app.get("/api/groups")
+def get_groups():
+    """Get list of all vacancy groups with metadata."""
+    return get_group_list(VACANCY_DATA)
 
-@app.get("/api/stats/{role_index}")
-def get_stats(role_index: int, filter_outliers: bool = True):
+@app.get("/api/stats/{group_id}")
+def get_stats(group_id: str, filter_outliers: bool = True):
     """
-    Get statistics for a specific role.
+    Get statistics for a specific vacancy group.
     
     Args:
-        role_index: Index of the role in ROLES_CONFIG.
+        group_id: ID of the group in the vacancy data.
         filter_outliers: Whether to filter vacancies with salaries 3x higher than median.
     """
-    if role_index < 0 or role_index >= len(ROLES_CONFIG):
-        raise HTTPException(status_code=404, detail="Role not found")
+    groups = VACANCY_DATA.get("groups", {})
     
-    role_config = ROLES_CONFIG[role_index]
-    target_ids = set(map(str, role_config["ids"]))  # IDs in data are likely strings
+    if group_id not in groups:
+        raise HTTPException(status_code=404, detail="Group not found")
+    
+    group_data = groups[group_id]
+    group_vacancies = group_data.get("vacancies", [])
+    group_keywords = group_data.get("keywords", "")
     
     # Use parser module to process vacancies with outlier filtering
-    parsed_data = parse_vacancies_for_role(
-        VACANCIES, 
-        target_ids, 
-        filter_outliers=filter_outliers,
-        outlier_multiplier=3
+    parsed_data = parse_vacancies_for_group(
+        group_vacancies, 
+        filter_outliers=filter_outliers
     )
     
     salary_values = parsed_data["salary_values"]
@@ -77,7 +82,7 @@ def get_stats(role_index: int, filter_outliers: bool = True):
     filter_stats = parsed_data["filter_stats"]
 
     if not salary_values:
-        return {"error": "No data found for this role"}
+        return {"error": "No data found for this group"}
         
     # Aggregate bubble chart data
     bubble_df = pd.DataFrame(bubble_data)
@@ -133,7 +138,8 @@ def get_stats(role_index: int, filter_outliers: bool = True):
     schedule_dist = [{"name": k, "count": v} for k, v in sched_counts.items()]
     
     return {
-        "role": role_config["name"],
+        "group_id": group_id,
+        "keywords": group_keywords,
         "metrics": metrics,
         "comparison": comparison,
         "bubble_data": bubble_data_agg,
@@ -160,13 +166,19 @@ def get_overall_stats(filter_outliers: bool = True):
         filter_outliers: Whether to filter vacancies with too high or too low salaries
                         (salaries > 3x median or < median/3).
     """
-    if not VACANCIES:
+    groups = VACANCY_DATA.get("groups", {})
+    if not groups:
         return {"error": "No vacancies loaded"}
     
+    # Flatten all vacancies from all groups
+    all_vacancies = []
+    for group_data in groups.values():
+        all_vacancies.extend(group_data.get("vacancies", []))
+    
     # Apply salary outlier filtering if enabled
-    vacancies_to_process = VACANCIES
+    vacancies_to_process = all_vacancies
     filter_stats = {
-        "total_before_filter": len(VACANCIES),
+        "total_before_filter": len(all_vacancies),
         "filtered_high_count": 0,
         "filtered_low_count": 0,
         "filtered_total_count": 0,
@@ -177,7 +189,7 @@ def get_overall_stats(filter_outliers: bool = True):
     
     if filter_outliers:
         vacancies_to_process, outlier_stats = filter_salary_outliers(
-            VACANCIES, 
+            all_vacancies, 
             return_stats=True
         )
         filter_stats["filtered_high_count"] = outlier_stats["filtered_high_count"]
