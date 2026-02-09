@@ -33,7 +33,6 @@ function App() {
   const [overallStats, setOverallStats] = useState(null)
 
   useEffect(() => {
-    // Fetch roles
     axios.get('/api/roles')
       .then(res => {
         setRoles(res.data)
@@ -43,7 +42,6 @@ function App() {
       })
       .catch(err => setError("Failed to load roles"))
     
-    // Fetch overall statistics for ALL vacancies
     axios.get('/api/overall-stats')
       .then(res => {
         setOverallStats(res.data)
@@ -120,19 +118,16 @@ function App() {
               className="band-above" 
               style={{ left: '75%', width: '25%' }}
             ></div>
-            {/* Dynamic borders at 25% and 75% positions */}
             {stats.comparison.pulkovo > 0 && (() => {
               const minSalary = stats.metrics.min;
               const maxSalary = stats.metrics.max;
               const pulkovoSalary = stats.comparison.pulkovo;
               const range = maxSalary - minSalary;
-              
-              // Calculate Pulkovo position as percentage of the market range
+            
               const pulkovoPosition = range > 0 
                 ? ((pulkovoSalary - minSalary) / range) * 100 
                 : 50;
               
-              // Clamp position between 2% and 98% for visual clarity
               const clampedPosition = Math.min(Math.max(pulkovoPosition, 2), 98);
               
               return (
