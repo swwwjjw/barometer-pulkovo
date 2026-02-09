@@ -113,7 +113,12 @@ function App() {
           </select>
           {stats && stats.metrics && (
             <div className="vacancy-count">
-              Всего вакансий в группе: <span>{stats.metrics.count}</span>
+              Всего вакансий в группе: <span>{stats.metrics.total_vacancies}</span>
+              {stats.metrics.vacancies_without_salary > 0 && (
+                <span style={{ fontSize: '0.85em', marginLeft: '8px', opacity: 0.7 }}>
+                  (с указанием зарплаты: {stats.metrics.vacancies_with_salary})
+                </span>
+              )}
             </div>
           )}
         </div>

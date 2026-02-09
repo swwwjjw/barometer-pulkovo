@@ -276,6 +276,9 @@ def parse_vacancies_for_group(vacancies: List[Dict[str, Any]],
         Dictionary containing processed vacancy data and statistics.
         Includes 'filter_stats' with counts before/after filtering.
     """
+    # Track total vacancies before any filtering
+    total_vacancies_initial = len(vacancies)
+    
     # Track filtering statistics
     filter_stats = {
         "total_before_filter": len(vacancies),
@@ -293,6 +296,9 @@ def parse_vacancies_for_group(vacancies: List[Dict[str, Any]],
         filter_stats["median_salary"] = outlier_stats["median"]
         filter_stats["threshold_salary"] = outlier_stats["high_threshold"]
     
+    # Total vacancies after outlier filtering
+    total_vacancies_after_outlier_filter = len(vacancies)
+    
     # Process salaries and experience
     pulkovo_salaries = []
     market_salaries = []
@@ -302,10 +308,12 @@ def parse_vacancies_for_group(vacancies: List[Dict[str, Any]],
     employment_values = []
     schedule_values = []
     processed_vacancies = []
+    vacancies_without_salary_count = 0
     
     for v in vacancies:
         salary_info = process_salary(v)
         if not salary_info:
+            vacancies_without_salary_count += 1
             continue
             
         avg_salary = salary_info["avg"]
@@ -354,5 +362,8 @@ def parse_vacancies_for_group(vacancies: List[Dict[str, Any]],
         "experience_values": experience_values,
         "employment_values": employment_values,
         "schedule_values": schedule_values,
-        "filter_stats": filter_stats
+        "filter_stats": filter_stats,
+        "total_vacancies": total_vacancies_initial,
+        "vacancies_with_salary": len(salary_values),
+        "vacancies_without_salary": vacancies_without_salary_count
     }

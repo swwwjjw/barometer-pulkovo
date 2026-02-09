@@ -100,7 +100,10 @@ def get_stats(group_id: str, filter_outliers: bool = True):
         "max": float(np.max(salary_values)),
         "avg": float(np.mean(salary_values)),
         "median": float(np.median(salary_values)),
-        "count": len(salary_values)
+        "count": len(salary_values),
+        "total_vacancies": parsed_data["total_vacancies"],
+        "vacancies_with_salary": parsed_data["vacancies_with_salary"],
+        "vacancies_without_salary": parsed_data["vacancies_without_salary"]
     }
     
     # Pulkovo vs Market
