@@ -86,12 +86,6 @@ async def fetch_vacancies():
                     
                     items = data.get("items", [])
                     
-                    # Добавляем вакансии в группу
-                    for item in items:
-                        # Добавляем информацию о группе ролей в каждую вакансию
-                        item["_group_keywords"] = vacancy_keywords
-                        item["_group_name"] = group_name
-                    
                     group_items.extend(items)
                     
                     # Если вакансий меньше, чем запрошено, значит страницы закончились
