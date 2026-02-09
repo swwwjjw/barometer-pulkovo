@@ -69,7 +69,7 @@ def get_stats(group_id: str, filter_outliers: bool = True):
     # Use parser module to process vacancies with outlier filtering
     parsed_data = parse_vacancies_for_group(
         group_vacancies, 
-        filter_outliers=filter_outliers
+        filter_outliers=False
     )
     
     salary_values = parsed_data["salary_values"]
