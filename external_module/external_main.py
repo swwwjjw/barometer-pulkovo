@@ -2,22 +2,19 @@ import os
 import json
 import asyncio
 from datetime import datetime
-from fastapi import FastAPI
 import httpx
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from apscheduler.triggers.interval import IntervalTrigger
-from contextlib import asynccontextmanager
 
-# Настройки
+# ==================== НАСТРОЙКИ ====================
 API_URL = "https://api.hh.ru/vacancies"
+# Папка, общая с внутренним модулем
 OUTPUT_FOLDER = os.path.join(os.path.dirname(os.path.abspath(__file__)), "../final_folder")
 INTERVAL_HOURS = 12
 MAX_PAGES = 20
-# Параметры запроса к hh.ru
 AREA = 2
 PER_PAGE = 99
 
-# Разделили на отдельные роли для группировки
 KEYWORDS = [
     'грузчик нагрузки',
     'аналитик данных SQL',
@@ -35,39 +32,46 @@ KEYWORDS = [
     'гбр охрана'
 ]
 
-app = FastAPI()
+# Имя постоянного файла (всегда перезаписывается)
+CURRENT_FILE = "vacancies_current.txt"
 
+# ==================== СОХРАНЕНИЕ (АТОМАРНАЯ ЗАПИСЬ) ====================
 def save_vacancies_to_file(grouped_data: dict):
-    """Сохраняет сгруппированные данные в .txt файл"""
+    """Сохраняет сгруппированные данные в файл vacancies_current.txt атомарно."""
     if not os.path.exists(OUTPUT_FOLDER):
         os.makedirs(OUTPUT_FOLDER)
-    
-    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-    filename = f"vacancies_{timestamp}.txt"
-    filepath = os.path.join(OUTPUT_FOLDER, filename)
-    
+
+    final_path = os.path.join(OUTPUT_FOLDER, CURRENT_FILE)
+    tmp_path = final_path + ".tmp"
+
     try:
-        with open(filepath, "w", encoding="utf-8") as f:
+        with open(tmp_path, "w", encoding="utf-8") as f:
             json.dump(grouped_data, f, ensure_ascii=False, indent=4)
-        print(f"[{datetime.now()}] Данные сохранены в {filepath}.")
+        os.replace(tmp_path, final_path)  # атомарная замена (POSIX, Windows)
+        print(f"[{datetime.now()}] Данные сохранены в {final_path}.")
     except Exception as e:
         print(f"[{datetime.now()}] Ошибка сохранения данных: {e}.")
+        # Если что-то пошло не так, пытаемся удалить временный файл
+        try:
+            os.remove(tmp_path)
+        except OSError:
+            pass
 
+# ==================== ПОЛУЧЕНИЕ ДАННЫХ С HH.RU ====================
 async def fetch_vacancies():
-    """Получает данные с API hh.ru и группирует по ролям"""
-    print(f"[{datetime.now()}] Получение данных из {API_URL}...")
-    
-    # Словарь для хранения сгруппированных данных
+    """Получает данные с API hh.ru, группирует по ролям и сохраняет."""
+    print(f"[{datetime.now()}] Запуск сбора данных из {API_URL}...")
+
     grouped_data = {}
     total_count = 0
-    
+
     async with httpx.AsyncClient() as client:
         for group_index, vacancy_keywords in enumerate(KEYWORDS):
             group_name = f"group_{group_index+1}_keywords_{vacancy_keywords.replace(' ', '_')}"
             print(f"[{datetime.now()}] Обработка группы {group_name}...")
-            
+
             group_items = []
-            
+
             for page in range(0, MAX_PAGES):
                 try:
                     params = [
@@ -76,42 +80,37 @@ async def fetch_vacancies():
                         ("page", page),
                         ("text", vacancy_keywords)
                     ]
-                    
-                    # Ждем между запросами
+
+                    # Задержка между запросами, чтобы не нагружать API
                     await asyncio.sleep(5)
-                    
+
                     response = await client.get(API_URL, params=params)
                     response.raise_for_status()
                     data = response.json()
-                    
+
                     items = data.get("items", [])
-                    
                     group_items.extend(items)
-                    
-                    # Если вакансий меньше, чем запрошено, значит страницы закончились
+
+                    # Если страница неполная – достигли конца
                     if len(items) < PER_PAGE:
                         break
-                        
+
                 except httpx.HTTPError as e:
-                    print(f"[{datetime.now()}] Ошибка HTTP в группе {group_name}, страница {page}: {e}.")
+                    print(f"[{datetime.now()}] HTTP ошибка в группе {group_name}, страница {page}: {e}.")
                     break
                 except Exception as e:
-                    print(f"[{datetime.now()}] Ошибка получения данных в группе {group_name}, страница {page}: {e}.")
+                    print(f"[{datetime.now()}] Неизвестная ошибка в группе {group_name}, страница {page}: {e}.")
                     break
-            
-            # Сохраняем группу в общий словарь
+
             grouped_data[group_name] = {
                 "keywords": vacancy_keywords,
                 "vacancies": group_items,
                 "count": len(group_items)
             }
-            
             total_count += len(group_items)
-            
             print(f"[{datetime.now()}] Группа {group_name} обработана, найдено {len(group_items)} вакансий.")
-    
+
     if grouped_data:
-        # Добавляем общую информацию
         result_data = {
             "metadata": {
                 "fetched_at": datetime.now().isoformat(),
@@ -120,37 +119,38 @@ async def fetch_vacancies():
             },
             "groups": grouped_data
         }
-        
         save_vacancies_to_file(result_data)
     else:
         print(f"[{datetime.now()}] Данные не были получены.")
 
-@asynccontextmanager
-async def lifespan(app: FastAPI):
+# ==================== ТОЧКА ВХОДА ====================
+async def main():
+    """Главная асинхронная функция: запуск планировщика и бесконечный цикл."""
     scheduler = AsyncIOScheduler()
+
+    # Добавляем задачу с интервалом
     scheduler.add_job(
         fetch_vacancies,
         trigger=IntervalTrigger(hours=INTERVAL_HOURS),
         id="fetch_vacancies_job",
-        name="Fetch vacancies every 12 hours",
+        name=f"Fetch vacancies every {INTERVAL_HOURS} hours",
         replace_existing=True,
     )
+
+    # Запускаем планировщик
     scheduler.start()
-    print(f"[{datetime.now()}] Менеджер запущен. Данные собираются каждые {INTERVAL_HOURS} часов.")
+    print(f"[{datetime.now()}] Планировщик запущен. Сбор данных каждые {INTERVAL_HOURS} часов.")
 
+    # Выполняем первый сбор сразу при старте
     asyncio.create_task(fetch_vacancies())
-    
-    yield
-    
-    scheduler.shutdown()
-    print(f"[{datetime.now()}] Менеджер остановлен.")
 
-app = FastAPI(lifespan=lifespan)
-
-@app.get("/")
-async def root():
-    return {"message": "Приложение работает."}
+    # Бесконечное ожидание (планировщик работает в фоне)
+    try:
+        while True:
+            await asyncio.sleep(3600)  # просыпаемся раз в час, чтобы не блокировать сигналы
+    except KeyboardInterrupt:
+        print(f"[{datetime.now()}] Получен сигнал остановки, завершаем работу...")
+        scheduler.shutdown()
 
 if __name__ == "__main__":
-    import uvicorn
-    uvicorn.run("external_main:app", host="0.0.0.0", port=5000, reload=True)
+    asyncio.run(main())
