@@ -269,22 +269,85 @@ function App() {
                   <ZAxis type="number" dataKey="count" range={[60, 400]} name="Вакансии" />
                   <Tooltip 
                     cursor={{ strokeDasharray: '3 3' }}
-                    formatter={(value, name) => {
-                      if (name === 'Опыт') {
-                        const labels = {
-                          0: 'Нет опыта',
-                          2: 'От 1 года до 3 лет',
-                          4.5: 'От 3 до 6 лет',
-                          8: 'Более 6 лет'
-                        };
-                        return labels[value] || value;
+                    content={({ active, payload }) => {
+                      if (active && payload && payload.length) {
+                        const data = payload[0].payload;
+                        return (
+                          <div className="custom-tooltip" style={{
+                            backgroundColor: 'rgba(30, 41, 59, 0.95)',
+                            padding: '12px',
+                            border: '1px solid #475569',
+                            borderRadius: '6px',
+                            color: '#e2e8f0'
+                          }}>
+                            <p style={{ margin: '0 0 8px 0', fontWeight: 'bold', fontSize: '14px', color: '#22d3ee' }}>
+                              {data.employer || 'Не указано'}
+                            </p>
+                            <p style={{ margin: '4px 0', fontSize: '13px' }}>
+                              <strong>Зарплата:</strong> {Math.round(data.salary).toLocaleString()} ₽
+                            </p>
+                            <p style={{ margin: '4px 0', fontSize: '13px' }}>
+                              <strong>Опыт:</strong> {data.experience_label}
+                            </p>
+                            <p style={{ margin: '4px 0', fontSize: '13px' }}>
+                              <strong>Вакансий:</strong> {data.count}
+                            </p>
+                          </div>
+                        );
                       }
-                      return value;
+                      return null;
                     }}
                   />
                   <Scatter name="Vacancies" data={stats.bubble_data} fill={CHART_COLORS.primary} />
                 </ScatterChart>
               </ResponsiveContainer>
+              <div className="employer-list">
+                <h4 style={{ 
+                  margin: '16px 0 12px 0', 
+                  fontSize: '14px', 
+                  fontWeight: '600', 
+                  color: 'var(--text-secondary)',
+                  textAlign: 'center'
+                }}>
+                  Работодатели в данной выборке
+                </h4>
+                <div style={{ 
+                  display: 'flex', 
+                  flexWrap: 'wrap', 
+                  gap: '8px', 
+                  justifyContent: 'center',
+                  maxHeight: '120px',
+                  overflowY: 'auto',
+                  padding: '8px'
+                }}>
+                  {(() => {
+                    const employerCounts = {};
+                    stats.bubble_data.forEach(item => {
+                      const employer = item.employer || 'Не указано';
+                      employerCounts[employer] = (employerCounts[employer] || 0) + item.count;
+                    });
+                    return Object.entries(employerCounts)
+                      .sort((a, b) => b[1] - a[1])
+                      .map(([employer, count], index) => (
+                        <div 
+                          key={index} 
+                          style={{
+                            backgroundColor: CHART_COLORS.palette[index % CHART_COLORS.palette.length],
+                            color: 'white',
+                            padding: '6px 12px',
+                            borderRadius: '16px',
+                            fontSize: '12px',
+                            fontWeight: '500',
+                            whiteSpace: 'nowrap',
+                            boxShadow: '0 2px 4px rgba(0,0,0,0.2)'
+                          }}
+                        >
+                          {employer} ({count})
+                        </div>
+                      ));
+                  })()}
+                </div>
+              </div>
             </div>
 
             <div className="chart-card">

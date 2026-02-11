@@ -95,11 +95,11 @@ def get_stats(group_id: str, filter_outliers: bool = True):
     if not salary_values:
         return {"error": "No data found for this group"}
         
-    # Aggregate bubble chart data
+    # Aggregate bubble chart data - group by salary, experience, and employer
     bubble_df = pd.DataFrame(bubble_data)
     if not bubble_df.empty:
-        # Group by salary and experience, count
-        bubble_agg = bubble_df.groupby(['salary', 'experience', 'experience_label']).size().reset_index(name='count')
+        # Group by salary, experience, and employer, then count occurrences
+        bubble_agg = bubble_df.groupby(['salary', 'experience', 'experience_label', 'employer']).size().reset_index(name='count')
         # Scale count for bubble size if needed, or just pass count
         bubble_data_agg = bubble_agg.to_dict(orient='records')
     else:
