@@ -242,7 +242,7 @@ function App() {
           </div>
 
           <div className="charts-grid">
-            <div className="chart-card">
+            <div className="chart-card chart-card-fullscreen">
               <h3>Зарплата vs Опыт</h3>
               <ResponsiveContainer width="100%" height="65%">
                 <ScatterChart margin={{ top: 10, right: 10, bottom: 10, left: 10 }}>
