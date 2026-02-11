@@ -272,6 +272,19 @@ function App() {
                     content={({ active, payload }) => {
                       if (active && payload && payload.length) {
                         const data = payload[0].payload;
+                        // Calculate employer color mapping
+                        const employerCounts = {};
+                        stats.bubble_data.forEach(item => {
+                          const employer = item.employer || 'Не указано';
+                          employerCounts[employer] = (employerCounts[employer] || 0) + item.count;
+                        });
+                        const sortedEmployers = Object.entries(employerCounts)
+                          .sort((a, b) => b[1] - a[1])
+                          .map(([employer]) => employer);
+                        const currentEmployer = data.employer || 'Не указано';
+                        const employerIndex = sortedEmployers.indexOf(currentEmployer);
+                        const employerColor = CHART_COLORS.palette[employerIndex % CHART_COLORS.palette.length];
+                        
                         return (
                           <div className="custom-tooltip" style={{
                             backgroundColor: 'rgba(30, 41, 59, 0.95)',
@@ -280,8 +293,8 @@ function App() {
                             borderRadius: '6px',
                             color: '#e2e8f0'
                           }}>
-                            <p style={{ margin: '0 0 8px 0', fontWeight: 'bold', fontSize: '14px', color: '#22d3ee' }}>
-                              {data.employer || 'Не указано'}
+                            <p style={{ margin: '0 0 8px 0', fontWeight: 'bold', fontSize: '14px', color: employerColor }}>
+                              {currentEmployer}
                             </p>
                             <p style={{ margin: '4px 0', fontSize: '13px' }}>
                               <strong>Зарплата:</strong> {Math.round(data.salary).toLocaleString()} ₽
