@@ -28,7 +28,7 @@ const CHART_COLORS = {
 const ROLE_DISPLAY_NAMES = {
   'грузчик нагрузки': 'Грузчик на склад',
   'аналитик данных SQL': 'Аналитик данных',
-  'машинное обучение': 'ML инженер',
+  'ml engineer': 'ML инженер',
   'машинист катка': 'Машинист катка',
   'руководитель склада': 'Инженер склада',
   'фельдшер помощь': 'Фельдшер / фельдшер скорой медицинской помощи',
@@ -46,7 +46,7 @@ const ROLE_DISPLAY_NAMES = {
 const TEAM_PROJECT_SALARY = {
   'грузчик нагрузки': 32000,
   'аналитик данных SQL': 0,
-  'машинное обучение': 0,
+  'ml engineer': 0,
   'машинист катка': 0,
   'руководитель склада': 0,
   'фельдшер помощь': 0,
@@ -242,7 +242,7 @@ function App() {
           </div>
 
           <div className="charts-grid">
-            <div className="chart-card">
+            <div className="chart-card chart-card-fullscreen">
               <h3>Зарплата vs Опыт</h3>
               <ResponsiveContainer width="100%" height="65%">
                 <ScatterChart margin={{ top: 10, right: 10, bottom: 10, left: 10 }}>
