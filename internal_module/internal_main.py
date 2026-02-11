@@ -1,4 +1,5 @@
 import os
+import json
 from typing import List, Dict, Optional, Any
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
@@ -18,6 +19,16 @@ from internal_module.parser import (
 )
 
 app = FastAPI()
+
+# Load B1 data
+B1_DATA = []
+b1_data_path = os.path.join(os.path.dirname(__file__), "b1_data.json")
+if os.path.exists(b1_data_path):
+    with open(b1_data_path, 'r', encoding='utf-8') as f:
+        B1_DATA = json.load(f)
+    print(f"Loaded B1 data: {len(B1_DATA)} blocks")
+else:
+    print(f"B1 data file not found: {b1_data_path}")
 
 # Enable CORS for development
 app.add_middleware(
@@ -263,8 +274,33 @@ def get_overall_stats(filter_outliers: bool = True):
         "filter_stats": filter_stats
     }
 
+@app.get("/api/b1/blocks")
+def get_b1_blocks():
+    """Get all B1 blocks with their statistics"""
+    return [{
+        "name": block["name"],
+        "stats": block["stats"],
+        "positions_count": len(block["positions"])
+    } for block in B1_DATA]
+
+@app.get("/api/b1/blocks/{block_index}")
+def get_b1_block_details(block_index: int):
+    """Get detailed information about a specific B1 block including all positions"""
+    if block_index < 0 or block_index >= len(B1_DATA):
+        raise HTTPException(status_code=404, detail="Block not found")
+    
+    block = B1_DATA[block_index]
+    return block
+
 @app.get("/dashboard")
 async def dashboard():
+    if os.path.exists(os.path.join(frontend_path, "index.html")):
+        return FileResponse(os.path.join(frontend_path, "index.html"))
+    return {"error": "Frontend not found"}
+
+@app.get("/b1")
+async def b1_page():
+    """Separate endpoint for B1 salary review"""
     if os.path.exists(os.path.join(frontend_path, "index.html")):
         return FileResponse(os.path.join(frontend_path, "index.html"))
     return {"error": "Frontend not found"}
@@ -277,3 +313,4 @@ else:
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run("internal_main:app", host="0.0.0.0", port=7777, reload=True)
+
