@@ -9,7 +9,7 @@ import numpy as np
 
 
 # Data file path - use latest available file
-DATA_FILE = os.path.join(os.path.dirname(__file__), "../final_folder/vacancies_20260209_145339.txt")
+DATA_FILE = os.path.join(os.path.dirname(__file__), "../final_folder/vacancies_current.txt")
 
 # Experience mapping (approximate years for sorting/charting)
 EXPERIENCE_MAP = {
