@@ -62,7 +62,7 @@ const TEAM_PROJECT_SALARY = {
 
 // Helper function to get display name for a role
 const getRoleDisplayName = (keywords) => {
-  return ROLE_DISPLAY_NAMES[keywords] || keywords;
+  return ROLE_DISPLAY_NAMES[keywords];
 };
 
 function App() {
