@@ -136,7 +136,7 @@ function App() {
           <select value={selectedGroupId || ''} onChange={handleGroupChange}>
             {groups.map((group) => (
               <option key={group.id} value={group.id}>
-                {getRoleDisplayName(group.keywords)}
+                {getRoleDisplayName(keywords)}
               </option>
             ))}
           </select>
