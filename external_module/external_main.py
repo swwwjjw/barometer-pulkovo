@@ -47,7 +47,7 @@ def save_vacancies_to_file(grouped_data: dict):
     try:
         with open(tmp_path, "w", encoding="utf-8") as f:
             json.dump(grouped_data, f, ensure_ascii=False, indent=4)
-        os.replace(tmp_path, final_path)  # атомарная замена (POSIX, Windows)
+        os.replace(tmp_path, final_path)  # Атомарная замена (POSIX, Windows)
         print(f"[{datetime.now()}] Данные сохранены в {final_path}.")
     except Exception as e:
         print(f"[{datetime.now()}] Ошибка сохранения данных: {e}.")
@@ -81,7 +81,7 @@ async def fetch_vacancies():
                         ("text", vacancy_keywords)
                     ]
 
-                    # Задержка между запросами, чтобы не нагружать API
+                    # Задержка между запросами для снижения нагрузки на API
                     await asyncio.sleep(5)
 
                     response = await client.get(API_URL, params=params)
@@ -144,7 +144,7 @@ async def main():
     # Выполняем первый сбор сразу при старте
     asyncio.create_task(fetch_vacancies())
 
-    # Бесконечное ожидание (планировщик работает в фоне)
+    # Бесконечное ожидание (планировщик работает в фоновом режиме)
     try:
         while True:
             await asyncio.sleep(3600)  # Просыпаемся раз в час, чтобы не блокировать сигналы

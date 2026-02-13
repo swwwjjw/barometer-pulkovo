@@ -8,7 +8,7 @@ from fastapi.responses import FileResponse
 import pandas as pd
 import numpy as np
 
-# Import parser module
+# Импорт модуля парсера
 from internal_module.parser import (
     load_data,
     process_salary,
@@ -20,7 +20,7 @@ from internal_module.parser import (
 
 app = FastAPI()
 
-# Load B1 data
+# Загрузка данных B1
 B1_DATA = []
 b1_data_path = os.path.join(os.path.dirname(__file__), "b1_data.json")
 if os.path.exists(b1_data_path):
@@ -30,7 +30,7 @@ if os.path.exists(b1_data_path):
 else:
     print(f"B1 data file not found: {b1_data_path}")
 
-# Enable CORS for development
+# Включение CORS для разработки
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -39,8 +39,8 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Serve static files for React app
-# Note: frontend is expected to be built in 'frontend/dist'
+# Обслуживание статических файлов для React приложения
+# Примечание: фронтенд должен быть собран в 'frontend/dist'
 frontend_path = os.path.join(os.path.dirname(__file__), "frontend/dist")
 
 VACANCY_DATA = {}
@@ -56,17 +56,17 @@ def startup_event():
 
 @app.get("/api/groups")
 def get_groups():
-    """Get list of all vacancy groups with metadata."""
+    """Получить список всех групп вакансий с метаданными."""
     return get_group_list(VACANCY_DATA)
 
 @app.get("/api/stats/{group_id}")
 def get_stats(group_id: str, filter_outliers: bool = True):
     """
-    Get statistics for a specific vacancy group.
+    Получить статистику для конкретной группы вакансий.
     
     Args:
-        group_id: ID of the group in the vacancy data.
-        filter_outliers: Whether to filter vacancies with salaries 3x higher than median.
+        group_id: ID группы в данных вакансий.
+        filter_outliers: Фильтровать ли вакансии с зарплатами в 3 раза выше медианы.
     """
     groups = VACANCY_DATA.get("groups", {})
     
@@ -77,7 +77,7 @@ def get_stats(group_id: str, filter_outliers: bool = True):
     group_vacancies = group_data.get("vacancies", [])
     group_keywords = group_data.get("keywords", "")
     
-    # Use parser module to process vacancies with outlier filtering
+    # Использование модуля парсера для обработки вакансий с фильтрацией выбросов
     parsed_data = parse_vacancies_for_group(
         group_vacancies, 
         filter_outliers=filter_outliers
@@ -95,17 +95,17 @@ def get_stats(group_id: str, filter_outliers: bool = True):
     if not salary_values:
         return {"error": "No data found for this group"}
         
-    # Aggregate bubble chart data - group by salary, experience, and employer
+    # Агрегация данных для пузырькового графика - группировка по зарплате, опыту и работодателю
     bubble_df = pd.DataFrame(bubble_data)
     if not bubble_df.empty:
-        # Group by salary, experience, and employer, then count occurrences
+        # Группировка по зарплате, опыту и работодателю, подсчет вхождений
         bubble_agg = bubble_df.groupby(['salary', 'experience', 'experience_label', 'employer']).size().reset_index(name='count')
-        # Scale count for bubble size if needed, or just pass count
+        # Масштабирование счетчика для размера пузырька при необходимости
         bubble_data_agg = bubble_agg.to_dict(orient='records')
     else:
         bubble_data_agg = []
 
-    # Metrics
+    # Метрики
     metrics = {
         "min": float(np.min(salary_values)),
         "max": float(np.max(salary_values)),
@@ -114,7 +114,7 @@ def get_stats(group_id: str, filter_outliers: bool = True):
         "count": len(salary_values)
     }
     
-    # Pulkovo vs Market
+    # Пулково vs Рынок
     pulkovo_avg = float(np.mean(pulkovo_salaries)) if pulkovo_salaries else 0
     market_avg = float(np.mean(market_salaries)) if market_salaries else 0
     
@@ -123,8 +123,8 @@ def get_stats(group_id: str, filter_outliers: bool = True):
         "market": market_avg
     }
 
-    # Distributions
-    # Salary histogram (simple bins)
+    # Распределения
+    # Гистограмма зарплат (простые интервалы)
     hist, bin_edges = np.histogram(salary_values, bins=8)
     salary_dist = []
     for i in range(len(hist)):
@@ -133,7 +133,7 @@ def get_stats(group_id: str, filter_outliers: bool = True):
             "count": int(hist[i])
         })
         
-    # Experience distribution
+    # Распределение по опыту
     exp_series = pd.Series(experience_values)
     exp_counts = exp_series.value_counts().to_dict()
     experience_dist = [{"name": k, "value": v} for k, v in exp_counts.items()]
@@ -171,22 +171,22 @@ def get_stats(group_id: str, filter_outliers: bool = True):
 @app.get("/api/overall-stats")
 def get_overall_stats(filter_outliers: bool = True):
     """
-    Get statistics for ALL vacancies in the txt file.
+    Получить статистику для ВСЕХ вакансий в txt файле.
     
     Args:
-        filter_outliers: Whether to filter vacancies with too high or too low salaries
-                        (salaries > 3x median or < median/3).
+        filter_outliers: Фильтровать ли вакансии со слишком высокими или низкими зарплатами
+                        (зарплаты > 3x медианы или < медианы/3).
     """
     groups = VACANCY_DATA.get("groups", {})
     if not groups:
         return {"error": "No vacancies loaded"}
     
-    # Flatten all vacancies from all groups
+    # Объединение всех вакансий из всех групп
     all_vacancies = []
     for group_data in groups.values():
         all_vacancies.extend(group_data.get("vacancies", []))
     
-    # Apply salary outlier filtering if enabled
+    # Применение фильтрации выбросов зарплат при включенной опции
     vacancies_to_process = all_vacancies
     filter_stats = {
         "total_before_filter": len(all_vacancies),
@@ -235,10 +235,10 @@ def get_overall_stats(filter_outliers: bool = True):
         schedule_name = schedule_obj.get("name", "Не указано")
         schedule_values.append(schedule_name)
     
-    # Total count of vacancies
+    # Общее количество вакансий
     total_count = len(vacancies_to_process)
     
-    # Salary metrics (only for vacancies with salary after filtering)
+    # Метрики зарплат (только для вакансий с указанной зарплатой после фильтрации)
     metrics = {}
     if salary_values:
         metrics = {
@@ -249,17 +249,17 @@ def get_overall_stats(filter_outliers: bool = True):
             "with_salary_count": len(salary_values)
         }
     
-    # Experience distribution
+    # Распределение по опыту
     exp_series = pd.Series(experience_values)
     exp_counts = exp_series.value_counts().to_dict()
     experience_dist = [{"name": k, "value": v} for k, v in exp_counts.items()]
     
-    # Employment distribution
+    # Распределение по типу занятости
     emp_series = pd.Series(employment_values)
     emp_counts = emp_series.value_counts().to_dict()
     employment_dist = [{"name": k, "count": v} for k, v in emp_counts.items()]
     
-    # Schedule distribution
+    # Распределение по графику работы
     sched_series = pd.Series(schedule_values)
     sched_counts = sched_series.value_counts().to_dict()
     schedule_dist = [{"name": k, "count": v} for k, v in sched_counts.items()]
@@ -276,7 +276,7 @@ def get_overall_stats(filter_outliers: bool = True):
 
 @app.get("/api/b1/blocks")
 def get_b1_blocks():
-    """Get all B1 blocks with their statistics"""
+    """Получить все блоки B1 с их статистикой"""
     return [{
         "name": block["name"],
         "stats": block["stats"],
@@ -285,7 +285,7 @@ def get_b1_blocks():
 
 @app.get("/api/b1/blocks/{block_index}")
 def get_b1_block_details(block_index: int):
-    """Get detailed information about a specific B1 block including all positions"""
+    """Получить детальную информацию о конкретном блоке B1, включая все позиции"""
     if block_index < 0 or block_index >= len(B1_DATA):
         raise HTTPException(status_code=404, detail="Block not found")
     
@@ -300,7 +300,7 @@ async def dashboard():
 
 @app.get("/b1")
 async def b1_page():
-    """Separate endpoint for B1 salary review"""
+    """Отдельный эндпоинт для обзора зарплат B1"""
     if os.path.exists(os.path.join(frontend_path, "index.html")):
         return FileResponse(os.path.join(frontend_path, "index.html"))
     return {"error": "Frontend not found"}
