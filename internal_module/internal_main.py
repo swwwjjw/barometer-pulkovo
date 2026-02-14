@@ -280,7 +280,6 @@ def get_b1_blocks():
     """Получить все блоки B1 с их статистикой"""
     return [{
         "name": block["name"],
-        "stats": block["stats"],
         "stats": {
             "avg": block["stats"]["avg_monthly_salary"],
             "median": block["stats"]["median_monthly_salary"],
@@ -297,7 +296,6 @@ def get_b1_block_details(block_index: int):
         raise HTTPException(status_code=404, detail="Block not found")
     
     block = B1_DATA[block_index]
-    return block
     
     # Transform the data to match frontend expectations
     return {
