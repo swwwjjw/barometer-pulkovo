@@ -279,7 +279,12 @@ def get_b1_blocks():
     """Получить все блоки B1 с их статистикой"""
     return [{
         "name": block["name"],
-        "stats": block["stats"],
+        "stats": {
+            "avg": block["stats"]["avg_monthly_salary"],
+            "median": block["stats"]["median_monthly_salary"],
+            "min": block["stats"]["min_monthly_salary"],
+            "max": block["stats"]["max_monthly_salary"]
+        },
         "positions_count": len(block["positions"])
     } for block in B1_DATA]
 
@@ -290,7 +295,21 @@ def get_b1_block_details(block_index: int):
         raise HTTPException(status_code=404, detail="Block not found")
     
     block = B1_DATA[block_index]
-    return block
+    
+    # Transform the data to match frontend expectations
+    return {
+        "name": block["name"],
+        "stats": {
+            "avg": block["stats"]["avg_monthly_salary"],
+            "median": block["stats"]["median_monthly_salary"],
+            "min": block["stats"]["min_monthly_salary"],
+            "max": block["stats"]["max_monthly_salary"]
+        },
+        "positions": [{
+            "name": position["name"],
+            "salary": position["monthly_salary"]["median"]
+        } for position in block["positions"]]
+    }
 
 @app.get("/dashboard")
 async def dashboard():
