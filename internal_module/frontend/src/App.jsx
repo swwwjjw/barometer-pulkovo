@@ -10,21 +10,21 @@ import './App.css'
 const CHART_COLORS = {
   // Основные цвета для мультиколорных чартов
   palette: [
-    '#3b82f6', // --chart-color-1: Blue 500
-    '#22d3ee', // --chart-color-2: Cyan 400
-    '#a78bfa', // --chart-color-3: Violet 400
-    '#f472b6', // --chart-color-4: Pink 400
-    '#fbbf24'  // --chart-color-5: Amber 400
+    '#3b82f6', // Синий 500
+    '#22d3ee', // Голубой 400
+    '#a78bfa', // Фиолетовый 400
+    '#f472b6', // Розовый 400
+    '#fbbf24'  // Янтарный 400
   ],
   // Акцентные цвета для одноцветных чартов
-  primary: '#3b82f6',    // --accent-primary
-  secondary: '#60a5fa',  // --accent-secondary
+  primary: '#3b82f6',    // Основной акцент
+  secondary: '#60a5fa',  // Вторичный акцент
   // Цвета сеток и осей
-  axis: '#94a3b8',       // --text-muted
-  grid: '#334155'        // --bg-tertiary
+  axis: '#94a3b8',       // Приглушенный текст
+  grid: '#334155'        // Третичный фон
 };
 
-// Mapping of backend keywords to display names
+// Соответствие ключевых слов бэкенда отображаемым названиям
 const ROLE_DISPLAY_NAMES = {
   'грузчик нагрузки': 'Грузчик на склад',
   'аналитик данных SQL': 'Аналитик данных',
@@ -42,7 +42,7 @@ const ROLE_DISPLAY_NAMES = {
   'гбр охрана': 'Инспектор Группы Быстрого Реагирования'
 };
 
-// Team project salary bonuses for each role (in rubles)
+// Надбавки по проекту "Мы команда" для каждой роли (в рублях)
 const TEAM_PROJECT_SALARY = {
   'грузчик нагрузки': 32000,
   'аналитик данных SQL': 0,
@@ -60,7 +60,7 @@ const TEAM_PROJECT_SALARY = {
   'гбр охрана': 0
 };
 
-// Helper function to get display name for a role
+// Вспомогательная функция для получения отображаемого названия роли
 const getRoleDisplayName = (keywords) => {
   return ROLE_DISPLAY_NAMES[keywords];
 };

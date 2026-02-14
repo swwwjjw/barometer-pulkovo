@@ -1,6 +1,6 @@
 """
-Parser module for vacancy data processing.
-Contains functions for loading, parsing and filtering vacancy data.
+Модуль парсера для обработки данных вакансий.
+Содержит функции для загрузки, парсинга и фильтрации данных вакансий.
 """
 import json
 import os
@@ -8,10 +8,10 @@ from typing import List, Dict, Optional, Any
 import numpy as np
 
 
-# Data file path - use latest available file
+# Путь к файлу данных - использовать последний доступный файл
 DATA_FILE = os.path.join(os.path.dirname(__file__), "../final_folder/vacancies_current.txt")
 
-# Experience mapping (approximate years for sorting/charting)
+# Маппинг опыта (примерные годы для сортировки/построения графиков)
 EXPERIENCE_MAP = {
     "noExperience": 0,
     "between1And3": 2,
@@ -22,20 +22,20 @@ EXPERIENCE_MAP = {
 
 def load_data(file_path: Optional[str] = None) -> Dict[str, Any]:
     """
-    Load vacancy data from a JSON file.
-    Supports both old format ({"items": [...]}) and new format ({"groups": {...}}).
+    Загрузить данные вакансий из JSON файла.
+    Поддерживает старый формат ({"items": [...]}) и новый формат ({"groups": {...}}).
     
     Args:
-        file_path: Optional path to the data file. Uses default if not provided.
+        file_path: Опциональный путь к файлу данных. Использует значение по умолчанию, если не указан.
         
     Returns:
-        Dictionary with 'metadata' and 'groups' keys (new format) or 
-        legacy format converted to groups structure.
+        Словарь с ключами 'metadata' и 'groups' (новый формат) или
+        старый формат, преобразованный в структуру groups.
     """
     target_file = file_path or DATA_FILE
     
     if not os.path.exists(target_file):
-        # Try absolute path as fallback for newest file
+        # Попытка использовать абсолютный путь как запасной вариант для новейшего файла
         fallback_paths = [
             "/workspace/final_folder/vacancies_20260209_145339.txt",
             "/workspace/final_folder/vacancies_20260207_144420.txt",
@@ -51,11 +51,11 @@ def load_data(file_path: Optional[str] = None) -> Dict[str, Any]:
     with open(target_file, "r", encoding="utf-8") as f:
         data = json.load(f)
     
-    # Check for new format (with groups)
+    # Проверка на новый формат (с группами)
     if "groups" in data:
         return data
     
-    # Old format (with items) - convert to groups structure
+    # Старый формат (с элементами) - преобразование в структуру groups
     return {
         "metadata": {"total_vacancies": len(data.get("items", []))},
         "groups": {"all_vacancies": {"keywords": "all", "vacancies": data.get("items", [])}}
@@ -64,13 +64,13 @@ def load_data(file_path: Optional[str] = None) -> Dict[str, Any]:
 
 def get_group_list(data: Dict[str, Any]) -> List[Dict[str, Any]]:
     """
-    Extract list of groups with their metadata.
+    Извлечь список групп с их метаданными.
     
     Args:
-        data: The full JSON data with groups structure.
+        data: Полные JSON данные со структурой групп.
         
     Returns:
-        List of group dictionaries with name, keywords, and vacancy count.
+        Список словарей групп с названием, ключевыми словами и количеством вакансий.
     """
     groups = data.get("groups", {})
     group_list = []
@@ -89,20 +89,20 @@ def get_group_list(data: Dict[str, Any]) -> List[Dict[str, Any]]:
 
 def process_salary(item: Dict[str, Any]) -> Optional[Dict[str, float]]:
     """
-    Extract and normalize salary to monthly rubles.
+    Извлечь и нормализовать зарплату до месячных рублей.
     
     Args:
-        item: Vacancy item dictionary.
+        item: Словарь элемента вакансии.
         
     Returns:
-        Dictionary with 'from', 'to', 'avg' salary values, or None if invalid.
+        Словарь со значениями зарплаты 'from', 'to', 'avg', или None если невалидно.
     """
     salary = item.get("salary")
     if not salary:
         return None
     
     if salary.get("currency") != "RUR":
-        # Simple skip for non-RUR currencies as conversion rates are not provided
+        # Простой пропуск для валют, отличных от RUR, так как курсы конверсии не предоставлены
         return None
 
     s_from = salary.get("from")
@@ -111,17 +111,17 @@ def process_salary(item: Dict[str, Any]) -> Optional[Dict[str, float]]:
     if s_from is None and s_to is None:
         return None
     
-    # Calculate initial values
+    # Расчет начальных значений
     val_from = s_from if s_from is not None else s_to
     val_to = s_to if s_to is not None else s_from
     
-    # Check multiplier (Hourly/Shift)
-    # First check salary range
+    # Проверка множителя (Почасовая/Сменная)
+    # Сначала проверка диапазона зарплаты
     salary_range = item.get("salary_range")
     multiplier = 1.0
     
-    # Heuristic detection based on API structure or values
-    # If explicit mode is present in salary range
+    # Эвристическое определение на основе структуры API или значений
+    # Если явный режим присутствует в диапазоне зарплаты
     if salary_range and salary_range.get("mode"):
         mode_id = salary_range["mode"].get("id")
         if mode_id == "SHIFT":
@@ -137,13 +137,13 @@ def process_salary(item: Dict[str, Any]) -> Optional[Dict[str, float]]:
 
 def calculate_salary_median(vacancies: List[Dict[str, Any]]) -> Optional[float]:
     """
-    Calculate median salary from a list of vacancies.
+    Рассчитать медианную зарплату из списка вакансий.
     
     Args:
-        vacancies: List of vacancy items.
+        vacancies: Список элементов вакансий.
         
     Returns:
-        Median salary value or None if no valid salaries found.
+        Значение медианной зарплаты или None, если не найдено валидных зарплат.
     """
     salaries = []
     for v in vacancies:
@@ -161,24 +161,24 @@ def filter_salary_outliers(vacancies: List[Dict[str, Any]],
                            low_divisor: float = 5,
                            return_stats: bool = False) -> Any:
     """
-    Filter out vacancies with salaries that are too high or too low compared to median.
+    Отфильтровать вакансии с зарплатами, которые слишком высокие или низкие по сравнению с медианой.
     
-    This function removes outlier vacancies where the average salary exceeds
-    the median salary multiplied by high_multiplier (default 3x) OR is below
-    the median salary divided by low_divisor (default median/3).
+    Эта функция удаляет выбросы вакансий, где средняя зарплата превышает
+    медианную зарплату, умноженную на high_multiplier (по умолчанию 3x) ИЛИ ниже
+    медианной зарплаты, деленной на low_divisor (по умолчанию медиана/3).
     
     Args:
-        vacancies: List of vacancy items.
-        high_multiplier: Upper threshold multiplier relative to median (default 3).
-        low_divisor: Lower threshold divisor relative to median (default 3).
-        return_stats: If True, returns tuple (filtered_vacancies, stats_dict).
+        vacancies: Список элементов вакансий.
+        high_multiplier: Множитель верхнего порога относительно медианы (по умолчанию 3).
+        low_divisor: Делитель нижнего порога относительно медианы (по умолчанию 3).
+        return_stats: Если True, возвращает кортеж (filtered_vacancies, stats_dict).
         
     Returns:
-        If return_stats=False: List of vacancies with salaries within acceptable range.
-        If return_stats=True: Tuple of (filtered_vacancies, stats_dict) where stats_dict
-            contains filtering statistics for both high and low outliers.
+        Если return_stats=False: Список вакансий с зарплатами в приемлемом диапазоне.
+        Если return_stats=True: Кортеж (filtered_vacancies, stats_dict), где stats_dict
+            содержит статистику фильтрации как для высоких, так и для низких выбросов.
     """
-    # First, collect all valid salaries to calculate median
+    # Сначала собрать все валидные зарплаты для расчета медианы
     salaries_with_vacancies = []
     vacancies_without_salary = []
     
@@ -187,7 +187,7 @@ def filter_salary_outliers(vacancies: List[Dict[str, Any]],
         if salary_info:
             salaries_with_vacancies.append((v, salary_info["avg"]))
         else:
-            # Keep vacancies without salary info
+            # Сохранить вакансии без информации о зарплате
             vacancies_without_salary.append(v)
     
     if not salaries_with_vacancies:
@@ -204,13 +204,13 @@ def filter_salary_outliers(vacancies: List[Dict[str, Any]],
             }
         return vacancies_without_salary
     
-    # Calculate median and thresholds
+    # Расчет медианы и порогов
     salary_values = [s for _, s in salaries_with_vacancies]
     median_salary = float(np.median(salary_values))
     high_threshold = median_salary * high_multiplier
     low_threshold = median_salary / low_divisor
     
-    # Filter out high and low outliers
+    # Фильтрация высоких и низких выбросов
     filtered = []
     filtered_high_count = 0
     filtered_low_count = 0
@@ -222,7 +222,7 @@ def filter_salary_outliers(vacancies: List[Dict[str, Any]],
         else:
             filtered.append(v)
     
-    # Include vacancies without salary info
+    # Включить вакансии без информации о зарплате
     filtered.extend(vacancies_without_salary)
     
     if return_stats:
@@ -244,17 +244,17 @@ def filter_salary_outliers(vacancies: List[Dict[str, Any]],
 def parse_vacancies_for_group(vacancies: List[Dict[str, Any]], 
                                filter_outliers: bool = True) -> Dict[str, Any]:
     """
-    Parse and process vacancies for a specific group with optional outlier filtering.
+    Парсить и обработать вакансии для конкретной группы с опциональной фильтрацией выбросов.
     
     Args:
-        vacancies: List of vacancy items from a group.
-        filter_outliers: Whether to filter out high salary outliers.
+        vacancies: Список элементов вакансий из группы.
+        filter_outliers: Фильтровать ли выбросы высоких зарплат.
         
     Returns:
-        Dictionary containing processed vacancy data and statistics.
-        Includes 'filter_stats' with counts before/after filtering.
+        Словарь, содержащий обработанные данные вакансий и статистику.
+        Включает 'filter_stats' с подсчетами до/после фильтрации.
     """
-    # Track filtering statistics
+    # Отслеживание статистики фильтрации
     filter_stats = {
         "total_before_filter": len(vacancies),
         "filtered_count": 0,
@@ -262,7 +262,7 @@ def parse_vacancies_for_group(vacancies: List[Dict[str, Any]],
         "threshold_salary": None
     }
     
-    # Optionally filter salary outliers (both high and low)
+    # Опционально фильтровать выбросы зарплат (как высокие, так и низкие)
     if filter_outliers:
         vacancies, outlier_stats = filter_salary_outliers(
             vacancies, return_stats=True
@@ -271,7 +271,7 @@ def parse_vacancies_for_group(vacancies: List[Dict[str, Any]],
         filter_stats["median_salary"] = outlier_stats["median"]
         filter_stats["threshold_salary"] = outlier_stats["high_threshold"]
     
-    # Process salaries and experience
+    # Обработка зарплат и опыта
     pulkovo_salaries = []
     market_salaries = []
     bubble_data = []
@@ -288,25 +288,25 @@ def parse_vacancies_for_group(vacancies: List[Dict[str, Any]],
             
         avg_salary = salary_info["avg"]
         
-        # Check employer
+        # Проверка работодателя
         employer_id = v.get("employer", {}).get("id")
         if employer_id == "666661":
             pulkovo_salaries.append(avg_salary)
         else:
             market_salaries.append(avg_salary)
             
-        # Experience
+        # Опыт
         exp_obj = v.get("experience", {})
         exp_id = exp_obj.get("id", "noExperience")
         exp_name = exp_obj.get("name", "Нет опыта")
         exp_numeric = EXPERIENCE_MAP.get(exp_id, 0)
         
-        # Employment type
+        # Тип занятости
         employment_obj = v.get("employment", {})
         employment_name = employment_obj.get("name", "Не указано")
         employment_values.append(employment_name)
         
-        # Schedule type
+        # Тип графика
         schedule_obj = v.get("schedule", {})
         schedule_name = schedule_obj.get("name", "Не указано")
         schedule_values.append(schedule_name)
@@ -315,7 +315,7 @@ def parse_vacancies_for_group(vacancies: List[Dict[str, Any]],
         salary_values.append(avg_salary)
         experience_values.append(exp_name)
         
-        # Get employer information
+        # Получение информации о работодателе
         employer_obj = v.get("employer", {})
         employer_name = employer_obj.get("name", "Не указано")
         
