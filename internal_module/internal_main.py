@@ -201,7 +201,8 @@ def get_overall_stats(filter_outliers: bool = True):
     if filter_outliers:
         vacancies_to_process, outlier_stats = filter_salary_outliers(
             all_vacancies, 
-            return_stats=True
+            return_stats=True,
+            high_multiplier=10
         )
         filter_stats["filtered_high_count"] = outlier_stats["filtered_high_count"]
         filter_stats["filtered_low_count"] = outlier_stats["filtered_low_count"]
@@ -279,12 +280,7 @@ def get_b1_blocks():
     """Получить все блоки B1 с их статистикой"""
     return [{
         "name": block["name"],
-        "stats": {
-            "avg": block["stats"]["avg_monthly_salary"],
-            "median": block["stats"]["median_monthly_salary"],
-            "min": block["stats"]["min_monthly_salary"],
-            "max": block["stats"]["max_monthly_salary"]
-        },
+        "stats": block["stats"],
         "positions_count": len(block["positions"])
     } for block in B1_DATA]
 
@@ -295,21 +291,7 @@ def get_b1_block_details(block_index: int):
         raise HTTPException(status_code=404, detail="Block not found")
     
     block = B1_DATA[block_index]
-    
-    # Transform the data to match frontend expectations
-    return {
-        "name": block["name"],
-        "stats": {
-            "avg": block["stats"]["avg_monthly_salary"],
-            "median": block["stats"]["median_monthly_salary"],
-            "min": block["stats"]["min_monthly_salary"],
-            "max": block["stats"]["max_monthly_salary"]
-        },
-        "positions": [{
-            "name": position["name"],
-            "salary": position["monthly_salary"]["median"]
-        } for position in block["positions"]]
-    }
+    return block
 
 @app.get("/dashboard")
 async def dashboard():
