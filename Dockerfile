@@ -24,9 +24,6 @@ COPY internal_module/ internal_module/
 # Копирование папки с данными
 COPY final_folder/ final_folder/
 
-# Копирование данных для b1
-COPY b1_data.json /internal_module
-
 # Копирование собранного фронтенда из Этапа 1
 COPY --from=frontend-builder /app/frontend/dist internal_module/frontend/dist
 
