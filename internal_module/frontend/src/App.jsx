@@ -268,7 +268,7 @@ function App() {
           className={`tab-btn ${activeTab === 'vvss' ? 'active' : ''}`}
           onClick={() => setActiveTab('vvss')}
         >
-          ВВСС
+          HH
         </button>
         <button 
           className={`tab-btn ${activeTab === 'b1' ? 'active' : ''}`}
