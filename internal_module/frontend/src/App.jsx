@@ -10,27 +10,27 @@ import './App.css'
 const CHART_COLORS = {
   // Основные цвета для мультиколорных чартов
   palette: [
-    '#3b82f6', // Синий 500
-    '#22d3ee', // Голубой 400
-    '#a78bfa', // Фиолетовый 400
-    '#f472b6', // Розовый 400
-    '#fbbf24'  // Янтарный 400
+    '#3b82f6', // --chart-color-1: Blue 500
+    '#22d3ee', // --chart-color-2: Cyan 400
+    '#a78bfa', // --chart-color-3: Violet 400
+    '#f472b6', // --chart-color-4: Pink 400
+    '#fbbf24'  // --chart-color-5: Amber 400
   ],
   // Акцентные цвета для одноцветных чартов
-  primary: '#3b82f6',    // Основной акцент
-  secondary: '#60a5fa',  // Вторичный акцент
+  primary: '#3b82f6',    // --accent-primary
+  secondary: '#60a5fa',  // --accent-secondary
   // Цвета сеток и осей
-  axis: '#94a3b8',       // Приглушенный текст
-  grid: '#334155'        // Третичный фон
+  axis: '#94a3b8',       // --text-muted
+  grid: '#334155'        // --bg-tertiary
 };
 
-// Соответствие ключевых слов бэкенда отображаемым названиям
+// Mapping of backend keywords to display names
 const ROLE_DISPLAY_NAMES = {
   'грузчик нагрузки': 'Грузчик на склад',
   'аналитик данных SQL': 'Аналитик данных',
   'ml engineer': 'ML инженер',
   'машинист катка': 'Машинист катка',
-  'руководитель склада OR NAME:(инженер склада)': 'Инженер склада',
+  'руководитель склада': 'Инженер склада',
   'фельдшер помощь': 'Фельдшер / фельдшер скорой медицинской помощи',
   'обслуживание воздушных судов': 'Специалист по обслуживанию ВС',
   'мойщик посуды': 'Мойщик-уборщик',
@@ -42,13 +42,13 @@ const ROLE_DISPLAY_NAMES = {
   'гбр охрана': 'Инспектор Группы Быстрого Реагирования'
 };
 
-// Надбавки по проекту "Мы команда" для каждой роли (в рублях)
+// Team project salary bonuses for each role (in rubles)
 const TEAM_PROJECT_SALARY = {
   'грузчик нагрузки': 32000,
   'аналитик данных SQL': 0,
   'ml engineer': 0,
   'машинист катка': 0,
-  'руководитель склада OR NAME:(инженер склада)': 0,
+  'руководитель склада': 0,
   'фельдшер помощь': 0,
   'обслуживание воздушных судов': 32000,
   'мойщик посуды': 24000,
@@ -60,12 +60,22 @@ const TEAM_PROJECT_SALARY = {
   'гбр охрана': 0
 };
 
-// Вспомогательная функция для получения отображаемого названия роли
+// Helper function to get display name for a role
 const getRoleDisplayName = (keywords) => {
-  return ROLE_DISPLAY_NAMES[keywords];
+  return ROLE_DISPLAY_NAMES[keywords] || keywords;
 };
 
 function App() {
+  // Tab state - detect from URL path
+  const [activeTab, setActiveTab] = useState(() => {
+    const path = window.location.pathname;
+    if (path.startsWith('/b1')) {
+      return 'b1';
+    }
+    return 'vvss';
+  });
+  
+  // VVSS state
   const [groups, setGroups] = useState([])
   const [selectedGroupId, setSelectedGroupId] = useState(null)
   const [stats, setStats] = useState(null)
@@ -73,8 +83,25 @@ function App() {
   const [error, setError] = useState(null)
   const [overallStats, setOverallStats] = useState(null)
   const [teamProjectActive, setTeamProjectActive] = useState(false)
+  
+  // B1 state
+  const [b1Blocks, setB1Blocks] = useState([])
+  const [selectedBlockIndex, setSelectedBlockIndex] = useState(null)
+  const [selectedBlock, setSelectedBlock] = useState(null)
+  const [b1Loading, setB1Loading] = useState(false)
+  const [b1Error, setB1Error] = useState(null)
 
+  // Update URL when tab changes
   useEffect(() => {
+    const path = activeTab === 'b1' ? '/b1' : '/';
+    if (window.location.pathname !== path) {
+      window.history.pushState({}, '', path);
+    }
+  }, [activeTab]);
+
+  // Load VVSS data when tab is vvss
+  useEffect(() => {
+    if (activeTab !== 'vvss') return;
     axios.get('/api/groups')
       .then(res => {
         setGroups(res.data)
@@ -91,7 +118,48 @@ function App() {
         setOverallStats(res.data)
       })
       .catch(err => console.error("Failed to load overall stats"))
-  }, [])
+  }, [activeTab])
+  
+  // Load B1 data when tab is b1
+  useEffect(() => {
+    if (activeTab !== 'b1') return;
+    
+    setB1Loading(true);
+    setB1Error(null);
+    
+    axios.get('/api/b1/blocks')
+      .then(res => {
+        setB1Blocks(res.data);
+        if (res.data.length > 0) {
+          setSelectedBlockIndex(0);
+          fetchBlockDetails(0);
+        }
+        setB1Loading(false);
+      })
+      .catch(err => {
+        setB1Error("Ошибка загрузки данных Б1");
+        setB1Loading(false);
+      });
+  }, [activeTab])
+  
+  const fetchBlockDetails = (blockIndex) => {
+    setB1Loading(true);
+    axios.get(`/api/b1/blocks/${blockIndex}`)
+      .then(res => {
+        setSelectedBlock(res.data);
+        setB1Loading(false);
+      })
+      .catch(err => {
+        setB1Error("Ошибка загрузки блока");
+        setB1Loading(false);
+      });
+  }
+  
+  const handleBlockChange = (e) => {
+    const index = parseInt(e.target.value);
+    setSelectedBlockIndex(index);
+    fetchBlockDetails(index);
+  }
 
   const fetchStats = (groupId) => {
     setLoading(true)
@@ -128,8 +196,90 @@ function App() {
     return TEAM_PROJECT_SALARY[currentKeywords] || 0
   }
 
+  // Render B1 content
+  const renderB1Content = () => (
+    <>
+      <div className="header">
+        <h1>Обзор зарплат Б1</h1>
+        <div className="controls">
+          <select 
+            value={selectedBlockIndex ?? ''} 
+            onChange={handleBlockChange}
+            disabled={b1Loading}
+          >
+            {b1Blocks.map((block, index) => (
+              <option key={index} value={index}>
+                {block.name}
+              </option>
+            ))}
+          </select>
+        </div>
+      </div>
+      
+      {b1Loading && <div className="loading">Загрузка...</div>}
+      {b1Error && <div className="error">{b1Error}</div>}
+      
+      {!b1Loading && selectedBlock && (
+        <>
+          <div className="metrics-grid">
+            <div className="metric-card">
+              <h3>Среднее</h3>
+              <div className="value">{Math.round(selectedBlock.stats.avg).toLocaleString()}</div>
+            </div>
+            <div className="metric-card">
+              <h3>Медиана</h3>
+              <div className="value">{Math.round(selectedBlock.stats.median).toLocaleString()}</div>
+            </div>
+            <div className="metric-card">
+              <h3>Минимум</h3>
+              <div className="value">{Math.round(selectedBlock.stats.min).toLocaleString()}</div>
+            </div>
+            <div className="metric-card">
+              <h3>Максимум</h3>
+              <div className="value">{Math.round(selectedBlock.stats.max).toLocaleString()}</div>
+            </div>
+          </div>
+          
+          <div className="b1-positions-card">
+            <h3>Должности в блоке "{selectedBlock.name}"</h3>
+            <div className="b1-positions-table">
+              <div className="b1-table-header">
+                <div className="b1-col-name">Должность</div>
+                <div className="b1-col-salary">Зарплата</div>
+              </div>
+              {selectedBlock.positions.map((position, idx) => (
+                <div key={idx} className="b1-table-row">
+                  <div className="b1-col-name">{position.name}</div>
+                  <div className="b1-col-salary">{Math.round(position.salary).toLocaleString()} ₽</div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </>
+      )}
+    </>
+  );
+
   return (
     <div className="container">
+      {/* Tab Navigation */}
+      <div className="tab-navigation">
+        <button 
+          className={`tab-btn ${activeTab === 'vvss' ? 'active' : ''}`}
+          onClick={() => setActiveTab('vvss')}
+        >
+          ВВСС
+        </button>
+        <button 
+          className={`tab-btn ${activeTab === 'b1' ? 'active' : ''}`}
+          onClick={() => setActiveTab('b1')}
+        >
+          Б1
+        </button>
+      </div>
+      
+      {activeTab === 'b1' ? renderB1Content() : (
+      <>
       <div className="header">
         <h1>Барометр вакансий ВВСС</h1>
         <div className="controls">
@@ -501,6 +651,8 @@ function App() {
           </tbody>
         </table>
       </div>
+      </>
+      )}
     </div>
   )
 }
