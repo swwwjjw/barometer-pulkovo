@@ -24,11 +24,14 @@ COPY internal_module/ internal_module/
 # Копирование папки с данными
 COPY final_folder/ final_folder/
 
+# Копирование данных для b1
+COPY b1_data.json
+
 # Копирование собранного фронтенда из Этапа 1
 COPY --from=frontend-builder /app/frontend/dist internal_module/frontend/dist
 
 # Открытие порта
-EXPOSE 8000
+EXPOSE 7777
 
 # Запуск приложения
 # Мы используем синтаксис пути модуля. Поскольку мы находимся в /app, internal_module.internal_main должен быть разрешим.
