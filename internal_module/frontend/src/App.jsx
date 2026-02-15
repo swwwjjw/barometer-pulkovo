@@ -6,7 +6,6 @@ import {
 } from 'recharts'
 import './App.css'
 
-
 const CHART_COLORS = {
   // Основные цвета для мультиколорных чартов
   palette: [
@@ -24,7 +23,7 @@ const CHART_COLORS = {
   grid: '#334155'        // --bg-tertiary
 };
 
-// Mapping of backend keywords to display names
+// Сопоставление ключевых слов с бэкенда и отображаемых названий
 const ROLE_DISPLAY_NAMES = {
   'грузчик нагрузки': 'Грузчик на склад',
   'аналитик данных SQL': 'Аналитик данных',
@@ -47,7 +46,7 @@ const ROLE_DISPLAY_NAMES = {
   'товаровед качество': 'Товаровед магазина'
 };
 
-// Team project salary bonuses for each role (in rubles)
+// Надбавки к зарплате для каждой роли (в рублях)
 const TEAM_PROJECT_SALARY = {
   'грузчик нагрузки': 32000,
   'аналитик данных SQL': 0,
@@ -70,22 +69,22 @@ const TEAM_PROJECT_SALARY = {
   'товаровед качество': 0
 };
 
-// Helper function to get display name for a role
+// Получить отображаемое название для роли по ключевым словам
 const getRoleDisplayName = (keywords) => {
   return ROLE_DISPLAY_NAMES[keywords] || keywords;
 };
 
 function App() {
-  // Tab state - detect from URL path
+  // Состояние вкладки - определяем из пути URL
   const [activeTab, setActiveTab] = useState(() => {
     const path = window.location.pathname;
     if (path.startsWith('/b1')) {
       return 'b1';
     }
-    return 'vvss';
+    return 'hh';
   });
   
-  // VVSS state
+  // Состояние для вкладки HH
   const [groups, setGroups] = useState([])
   const [selectedGroupId, setSelectedGroupId] = useState(null)
   const [stats, setStats] = useState(null)
@@ -94,14 +93,14 @@ function App() {
   const [overallStats, setOverallStats] = useState(null)
   const [teamProjectActive, setTeamProjectActive] = useState(false)
   
-  // B1 state
+  // Состояние для вкладки B1
   const [b1Blocks, setB1Blocks] = useState([])
   const [selectedBlockIndex, setSelectedBlockIndex] = useState(null)
   const [selectedBlock, setSelectedBlock] = useState(null)
   const [b1Loading, setB1Loading] = useState(false)
   const [b1Error, setB1Error] = useState(null)
 
-  // Update URL when tab changes
+  // Обновление URL при смене вкладки
   useEffect(() => {
     const path = activeTab === 'b1' ? '/b1' : '/';
     if (window.location.pathname !== path) {
@@ -109,9 +108,9 @@ function App() {
     }
   }, [activeTab]);
 
-  // Load VVSS data when tab is vvss
+  // Загрузка данных HH при активной вкладке hh
   useEffect(() => {
-    if (activeTab !== 'vvss') return;
+    if (activeTab !== 'hh') return;
     axios.get('/api/groups')
       .then(res => {
         setGroups(res.data)
@@ -121,16 +120,16 @@ function App() {
           fetchStats(firstGroupId)
         }
       })
-      .catch(err => setError("Failed to load groups"))
+      .catch(err => setError("Не удалось загрузить группы"))
     
     axios.get('/api/overall-stats')
       .then(res => {
         setOverallStats(res.data)
       })
-      .catch(err => console.error("Failed to load overall stats"))
+      .catch(err => console.error("Не удалось загрузить общую статистику"))
   }, [activeTab])
   
-  // Load B1 data when tab is b1
+  // Загрузка данных B1 при активной вкладке b1
   useEffect(() => {
     if (activeTab !== 'b1') return;
     
@@ -151,7 +150,7 @@ function App() {
         setB1Loading(false);
       });
   }, [activeTab])
-  
+
   const fetchBlockDetails = (blockIndex) => {
     setB1Loading(true);
     axios.get(`/api/b1/blocks/${blockIndex}`)
@@ -185,7 +184,7 @@ function App() {
         setLoading(false)
       })
       .catch(err => {
-        setError("Failed to load stats")
+        setError("Не удалось загрузить статистику")
         setLoading(false)
       })
   }
@@ -206,7 +205,6 @@ function App() {
     return TEAM_PROJECT_SALARY[currentKeywords] || 0
   }
 
-  // Render B1 content
   const renderB1Content = () => (
     <>
       <div className="header">
@@ -272,11 +270,10 @@ function App() {
 
   return (
     <div className="container">
-      {/* Tab Navigation */}
       <div className="tab-navigation">
         <button 
-          className={`tab-btn ${activeTab === 'vvss' ? 'active' : ''}`}
-          onClick={() => setActiveTab('vvss')}
+          className={`tab-btn ${activeTab === 'hh' ? 'active' : ''}`}
+          onClick={() => setActiveTab('hh')}
         >
           HH
         </button>
@@ -376,7 +373,7 @@ function App() {
         </div>
       )}
 
-      {loading && <div className="loading">Loading...</div>}
+      {loading && <div className="loading">Загрузка...</div>}
       
       {error && <div className="error">{error}</div>}
 
@@ -432,7 +429,7 @@ function App() {
                     content={({ active, payload }) => {
                       if (active && payload && payload.length) {
                         const data = payload[0].payload;
-                        // Calculate employer color mapping
+                        // Подсчёт количества вакансий по работодателям для цветовой карты
                         const employerCounts = {};
                         stats.bubble_data.forEach(item => {
                           const employer = item.employer || 'Не указано';

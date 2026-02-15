@@ -26,9 +26,9 @@ b1_data_path = os.path.join(os.path.dirname(__file__), "b1_data.json")
 if os.path.exists(b1_data_path):
     with open(b1_data_path, 'r', encoding='utf-8') as f:
         B1_DATA = json.load(f)
-    print(f"Loaded B1 data: {len(B1_DATA)} blocks")
+    print(f"Загружено блоков B1: {len(B1_DATA)}")
 else:
-    print(f"B1 data file not found: {b1_data_path}")
+    print(f"Файл с данными B1 не найден: {b1_data_path}")
 
 # Включение CORS для разработки
 app.add_middleware(
@@ -52,7 +52,7 @@ def startup_event():
     metadata = VACANCY_DATA.get("metadata", {})
     total = metadata.get("total_vacancies", 0)
     total_groups = metadata.get("total_groups", 0)
-    print(f"Loaded {total} vacancies in {total_groups} groups")
+    print(f"Загружено {total} вакансий в {total_groups} группах")
 
 @app.get("/api/groups")
 def get_groups():
@@ -61,17 +61,11 @@ def get_groups():
 
 @app.get("/api/stats/{group_id}")
 def get_stats(group_id: str, filter_outliers: bool = True):
-    """
-    Получить статистику для конкретной группы вакансий.
-    
-    Args:
-        group_id: ID группы в данных вакансий.
-        filter_outliers: Фильтровать ли вакансии с зарплатами в 3 раза выше медианы.
-    """
+    """Получить статистику для конкретной группы вакансий."""
     groups = VACANCY_DATA.get("groups", {})
     
     if group_id not in groups:
-        raise HTTPException(status_code=404, detail="Group not found")
+        raise HTTPException(status_code=404, detail="Группа не найдена")
     
     group_data = groups[group_id]
     group_vacancies = group_data.get("vacancies", [])
@@ -93,7 +87,7 @@ def get_stats(group_id: str, filter_outliers: bool = True):
     filter_stats = parsed_data["filter_stats"]
 
     if not salary_values:
-        return {"error": "No data found for this group"}
+        return {"error": "Нет данных для этой группы"}
         
     # Агрегация данных для пузырькового графика - группировка по зарплате, опыту и работодателю
     bubble_df = pd.DataFrame(bubble_data)
@@ -138,12 +132,12 @@ def get_stats(group_id: str, filter_outliers: bool = True):
     exp_counts = exp_series.value_counts().to_dict()
     experience_dist = [{"name": k, "value": v} for k, v in exp_counts.items()]
     
-    # Employment distribution
+    # Распределение по типу занятости
     emp_series = pd.Series(employment_values)
     emp_counts = emp_series.value_counts().to_dict()
     employment_dist = [{"name": k, "count": v} for k, v in emp_counts.items()]
     
-    # Schedule distribution
+    # Распределение по графику работы
     sched_series = pd.Series(schedule_values)
     sched_counts = sched_series.value_counts().to_dict()
     schedule_dist = [{"name": k, "count": v} for k, v in sched_counts.items()]
@@ -170,16 +164,10 @@ def get_stats(group_id: str, filter_outliers: bool = True):
 
 @app.get("/api/overall-stats")
 def get_overall_stats(filter_outliers: bool = True):
-    """
-    Получить статистику для ВСЕХ вакансий в txt файле.
-    
-    Args:
-        filter_outliers: Фильтровать ли вакансии со слишком высокими или низкими зарплатами
-                        (зарплаты > 3x медианы или < медианы/3).
-    """
+    """Получить статистику для ВСЕХ вакансий в txt файле."""
     groups = VACANCY_DATA.get("groups", {})
     if not groups:
-        return {"error": "No vacancies loaded"}
+        return {"error": "Нет загруженных вакансий"}
     
     # Объединение всех вакансий из всех групп
     all_vacancies = []
@@ -221,17 +209,17 @@ def get_overall_stats(filter_outliers: bool = True):
         if salary_info:
             salary_values.append(salary_info["avg"])
         
-        # Experience
+        # Опыт
         exp_obj = v.get("experience", {})
         exp_name = exp_obj.get("name", "Не указано")
         experience_values.append(exp_name)
         
-        # Employment type
+        # Тип занятости
         employment_obj = v.get("employment", {})
         employment_name = employment_obj.get("name", "Не указано")
         employment_values.append(employment_name)
         
-        # Schedule type
+        # График работы
         schedule_obj = v.get("schedule", {})
         schedule_name = schedule_obj.get("name", "Не указано")
         schedule_values.append(schedule_name)
@@ -293,11 +281,11 @@ def get_b1_blocks():
 def get_b1_block_details(block_index: int):
     """Получить детальную информацию о конкретном блоке B1, включая все позиции"""
     if block_index < 0 or block_index >= len(B1_DATA):
-        raise HTTPException(status_code=404, detail="Block not found")
+        raise HTTPException(status_code=404, detail="Блок не найден")
     
     block = B1_DATA[block_index]
     
-    # Transform the data to match frontend expectations
+    # Преобразование данных в формат, ожидаемый фронтендом
     return {
         "name": block["name"],
         "stats": {
@@ -314,21 +302,22 @@ def get_b1_block_details(block_index: int):
 
 @app.get("/dashboard")
 async def dashboard():
+    """Отображение основного дашборда"""
     if os.path.exists(os.path.join(frontend_path, "index.html")):
         return FileResponse(os.path.join(frontend_path, "index.html"))
-    return {"error": "Frontend not found"}
+    return {"error": "Фронтенд не найден"}
 
 @app.get("/b1")
 async def b1_page():
     """Отдельный эндпоинт для обзора зарплат B1"""
     if os.path.exists(os.path.join(frontend_path, "index.html")):
         return FileResponse(os.path.join(frontend_path, "index.html"))
-    return {"error": "Frontend not found"}
+    return {"error": "Фронтенд не найден"}
 
 if os.path.exists(frontend_path):
     app.mount("/", StaticFiles(directory=frontend_path, html=True), name="static")
 else:
-    print("Frontend build not found. Run 'npm run build' in frontend directory.")
+    print("Сборка фронтенда не найдена. Выполните 'npm run build' в папке frontend.")
 
 if __name__ == "__main__":
     import uvicorn

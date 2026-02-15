@@ -1,7 +1,3 @@
-"""
-Модуль парсера для обработки данных вакансий.
-Содержит функции для загрузки, парсинга и фильтрации данных вакансий.
-"""
 import json
 import os
 from typing import List, Dict, Optional, Any
@@ -21,17 +17,7 @@ EXPERIENCE_MAP = {
 
 
 def load_data(file_path: Optional[str] = None) -> Dict[str, Any]:
-    """
-    Загрузить данные вакансий из JSON файла.
-    Поддерживает старый формат ({"items": [...]}) и новый формат ({"groups": {...}}).
-    
-    Args:
-        file_path: Опциональный путь к файлу данных. Использует значение по умолчанию, если не указан.
-        
-    Returns:
-        Словарь с ключами 'metadata' и 'groups' (новый формат) или
-        старый формат, преобразованный в структуру groups.
-    """
+    """Загрузить данные вакансий из JSON файла."""
     target_file = file_path or DATA_FILE
     
     if not os.path.exists(target_file):
@@ -63,15 +49,7 @@ def load_data(file_path: Optional[str] = None) -> Dict[str, Any]:
 
 
 def get_group_list(data: Dict[str, Any]) -> List[Dict[str, Any]]:
-    """
-    Извлечь список групп с их метаданными.
-    
-    Args:
-        data: Полные JSON данные со структурой групп.
-        
-    Returns:
-        Список словарей групп с названием, ключевыми словами и количеством вакансий.
-    """
+    """Извлечь список групп с их метаданными."""
     groups = data.get("groups", {})
     group_list = []
     
@@ -88,15 +66,7 @@ def get_group_list(data: Dict[str, Any]) -> List[Dict[str, Any]]:
 
 
 def process_salary(item: Dict[str, Any]) -> Optional[Dict[str, float]]:
-    """
-    Извлечь и нормализовать зарплату до месячных рублей.
-    
-    Args:
-        item: Словарь элемента вакансии.
-        
-    Returns:
-        Словарь со значениями зарплаты 'from', 'to', 'avg', или None если невалидно.
-    """
+    """Извлечь и нормализовать зарплату до месячных рублей."""
     salary = item.get("salary")
     if not salary:
         return None
@@ -136,15 +106,7 @@ def process_salary(item: Dict[str, Any]) -> Optional[Dict[str, float]]:
     }
 
 def calculate_salary_median(vacancies: List[Dict[str, Any]]) -> Optional[float]:
-    """
-    Рассчитать медианную зарплату из списка вакансий.
-    
-    Args:
-        vacancies: Список элементов вакансий.
-        
-    Returns:
-        Значение медианной зарплаты или None, если не найдено валидных зарплат.
-    """
+    """Рассчитать медианную зарплату из списка вакансий."""
     salaries = []
     for v in vacancies:
         salary_info = process_salary(v)
@@ -160,24 +122,7 @@ def filter_salary_outliers(vacancies: List[Dict[str, Any]],
                            high_multiplier: float = 3,
                            low_divisor: float = 5,
                            return_stats: bool = False) -> Any:
-    """
-    Отфильтровать вакансии с зарплатами, которые слишком высокие или низкие по сравнению с медианой.
-    
-    Эта функция удаляет выбросы вакансий, где средняя зарплата превышает
-    медианную зарплату, умноженную на high_multiplier (по умолчанию 3x) ИЛИ ниже
-    медианной зарплаты, деленной на low_divisor (по умолчанию медиана/3).
-    
-    Args:
-        vacancies: Список элементов вакансий.
-        high_multiplier: Множитель верхнего порога относительно медианы (по умолчанию 3).
-        low_divisor: Делитель нижнего порога относительно медианы (по умолчанию 3).
-        return_stats: Если True, возвращает кортеж (filtered_vacancies, stats_dict).
-        
-    Returns:
-        Если return_stats=False: Список вакансий с зарплатами в приемлемом диапазоне.
-        Если return_stats=True: Кортеж (filtered_vacancies, stats_dict), где stats_dict
-            содержит статистику фильтрации как для высоких, так и для низких выбросов.
-    """
+    """Отфильтровать вакансии с зарплатами, которые слишком высокие или низкие по сравнению с медианой."""
     # Сначала собрать все валидные зарплаты для расчета медианы
     salaries_with_vacancies = []
     vacancies_without_salary = []
@@ -243,17 +188,7 @@ def filter_salary_outliers(vacancies: List[Dict[str, Any]],
 
 def parse_vacancies_for_group(vacancies: List[Dict[str, Any]], 
                                filter_outliers: bool = True) -> Dict[str, Any]:
-    """
-    Парсить и обработать вакансии для конкретной группы с опциональной фильтрацией выбросов.
-    
-    Args:
-        vacancies: Список элементов вакансий из группы.
-        filter_outliers: Фильтровать ли выбросы высоких зарплат.
-        
-    Returns:
-        Словарь, содержащий обработанные данные вакансий и статистику.
-        Включает 'filter_stats' с подсчетами до/после фильтрации.
-    """
+    """Парсить и обработать вакансии для конкретной группы с опциональной фильтрацией выбросов."""
     # Отслеживание статистики фильтрации
     filter_stats = {
         "total_before_filter": len(vacancies),

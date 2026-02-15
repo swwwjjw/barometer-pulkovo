@@ -177,7 +177,7 @@
   }
 }
 
-/* Краточки чартов */
+/* Карточки чартов */
 .chart-card {
   background: var(--bg-secondary);
   border: 1px solid var(--border-light);
@@ -328,7 +328,7 @@
   color: var(--chart-color-2);
 }
 
-/* Масштаб рынка в карточке сравнения рынка*/
+/* Масштаб рынка в карточке сравнения рынка */
 .market-scale {
   position: relative;
   height: 64px;
@@ -716,7 +716,7 @@
   }
 }
 
-/* Tab Navigation */
+/* Навигация по вкладкам */
 .tab-navigation {
   display: flex;
   gap: var(--spacing-sm);
@@ -749,7 +749,7 @@
   color: white;
 }
 
-/* B1 Section Styles */
+/* Стили для раздела B1 */
 .b1-positions-card {
   width: 100%;
   max-width: 900px;

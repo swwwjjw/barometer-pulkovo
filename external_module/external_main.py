@@ -6,15 +6,16 @@ import httpx
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from apscheduler.triggers.interval import IntervalTrigger
 
-# ==================== НАСТРОЙКИ ====================
-API_URL = "https://api.hh.ru/vacancies"
-# Папка, общая с внутренним модулем
+# Настройки для работы с файловой системой
 OUTPUT_FOLDER = os.path.join(os.path.dirname(os.path.abspath(__file__)), "../final_folder")
+CURRENT_FILE = "vacancies_current.txt"
+
+# Настройки для работы с API
+API_URL = "https://api.hh.ru/vacancies"
 INTERVAL_HOURS = 12
 MAX_PAGES = 20
 AREA = 2
 PER_PAGE = 99
-
 KEYWORDS = [
     'грузчик нагрузки',
     'аналитик данных SQL',
@@ -37,10 +38,6 @@ KEYWORDS = [
     'товаровед качество'
 ]
 
-# Имя постоянного файла (всегда перезаписывается)
-CURRENT_FILE = "vacancies_current.txt"
-
-# ==================== СОХРАНЕНИЕ (АТОМАРНАЯ ЗАПИСЬ) ====================
 def save_vacancies_to_file(grouped_data: dict):
     """Сохраняет сгруппированные данные в файл vacancies_current.txt атомарно."""
     if not os.path.exists(OUTPUT_FOLDER):
@@ -62,7 +59,6 @@ def save_vacancies_to_file(grouped_data: dict):
         except OSError:
             pass
 
-# ==================== ПОЛУЧЕНИЕ ДАННЫХ С HH.RU ====================
 async def fetch_vacancies():
     """Получает данные с API hh.ru, группирует по ролям и сохраняет."""
     print(f"[{datetime.now()}] Запуск сбора данных из {API_URL}...")
@@ -128,7 +124,6 @@ async def fetch_vacancies():
     else:
         print(f"[{datetime.now()}] Данные не были получены.")
 
-# ==================== ТОЧКА ВХОДА ====================
 async def main():
     """Главная асинхронная функция: запуск планировщика и бесконечный цикл."""
     scheduler = AsyncIOScheduler()
