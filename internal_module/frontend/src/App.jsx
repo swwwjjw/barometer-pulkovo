@@ -471,12 +471,24 @@ function App() {
                   <Scatter 
                     name="Vacancies" 
                     data={stats.bubble_data} 
-                    fill={(entry) => {
-                    if (entry.employer?.trim() === 'Аэропорт Пулково (ООО Воздушные Ворота Северной Столицы)') {
-                      return '#22d3ee';
-                    }
-                    return '#3b82f6';
-                  }} />
+                    shape={(props) => {
+                      const { cx, cy, payload } = props;
+                      const radius = props.r || 5;
+                      const isPulkovo = payload.employer?.trim() === 'Аэропорт Пулково (ООО Воздушные Ворота Северной Столицы)';
+                      const fillColor = isPulkovo ? '#22d3ee' : '#3b82f6';
+                      return (
+                        <circle
+                          cx={cx}
+                          cy={cy}
+                          r={radius}
+                          fill={fillColor}
+                          fillOpacity={0.8}
+                          stroke={fillColor}
+                          strokeWidth={1}
+                        />
+                      );
+                    }}
+                  />
                 </ScatterChart>
               </ResponsiveContainer>
               <div className="employer-list">
