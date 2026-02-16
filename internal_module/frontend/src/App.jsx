@@ -472,10 +472,10 @@ function App() {
                     name="Vacancies" 
                     data={stats.bubble_data} 
                     fill={(entry) => {
-                    if (entry.employer === 'Аэропорт Пулково (ООО Воздушные Ворота Северной Столицы)') {
+                    if (entry.employer?.trim() === 'Аэропорт Пулково (ООО Воздушные Ворота Северной Столицы)') {
                       return '#22d3ee';
                     }
-                    return CHART_COLORS.primary;
+                    return '#3b82f6';
                   }} />
                 </ScatterChart>
               </ResponsiveContainer>
