@@ -429,26 +429,18 @@ function App() {
                     content={({ active, payload }) => {
                       if (active && payload && payload.length) {
                         const data = payload[0].payload;
-                        // Pulkovo (employer_id=666661) gets cyan color
-                        const isPulkovo = data.employer_id === "666661";
-                        let employerColor;
-                        
-                        if (isPulkovo) {
-                          employerColor = CHART_COLORS.palette[1];  // Cyan (--chart-color-2)
-                        } else {
-                          // Подсчёт количества вакансий по работодателям для цветовой карты
-                          const employerCounts = {};
-                          stats.bubble_data.forEach(item => {
-                            const employer = item.employer || 'Не указано';
-                            employerCounts[employer] = (employerCounts[employer] || 0) + item.count;
-                          });
-                          const sortedEmployers = Object.entries(employerCounts)
-                            .sort((a, b) => b[1] - a[1])
-                            .map(([employer]) => employer);
-                          const currentEmployer = data.employer || 'Не указано';
-                          const employerIndex = sortedEmployers.indexOf(currentEmployer);
-                          employerColor = CHART_COLORS.palette[employerIndex % CHART_COLORS.palette.length];
-                        }
+                        // Подсчёт количества вакансий по работодателям для цветовой карты
+                        const employerCounts = {};
+                        stats.bubble_data.forEach(item => {
+                          const employer = item.employer || 'Не указано';
+                          employerCounts[employer] = (employerCounts[employer] || 0) + item.count;
+                        });
+                        const sortedEmployers = Object.entries(employerCounts)
+                          .sort((a, b) => b[1] - a[1])
+                          .map(([employer]) => employer);
+                        const currentEmployer = data.employer || 'Не указано';
+                        const employerIndex = sortedEmployers.indexOf(currentEmployer);
+                        const employerColor = CHART_COLORS.palette[employerIndex % CHART_COLORS.palette.length];
                         
                         return (
                           <div className="custom-tooltip" style={{
@@ -476,30 +468,7 @@ function App() {
                       return null;
                     }}
                   />
-                  <Scatter 
-                    name="Vacancies" 
-                    data={stats.bubble_data} 
-                    fill={CHART_COLORS.primary}
-                    shape={(props) => {
-                      const { cx, cy, payload } = props;
-                      // Pulkovo (employer_id=666661) gets cyan color
-                      const fillColor = payload.employer_id === "666661" 
-                        ? CHART_COLORS.palette[1]  // Cyan (--chart-color-2)
-                        : CHART_COLORS.primary;
-                      
-                      return (
-                        <circle
-                          cx={cx}
-                          cy={cy}
-                          r={props.r || 4}
-                          fill={fillColor}
-                          fillOpacity={0.8}
-                          stroke={fillColor}
-                          strokeWidth={1}
-                        />
-                      );
-                    }}
-                  />
+                  <Scatter name="Vacancies" data={stats.bubble_data} fill={CHART_COLORS.primary} />
                 </ScatterChart>
               </ResponsiveContainer>
               <div className="employer-list">
@@ -523,41 +492,29 @@ function App() {
                 }}>
                   {(() => {
                     const employerCounts = {};
-                    const employerIds = {};
                     stats.bubble_data.forEach(item => {
                       const employer = item.employer || 'Не указано';
                       employerCounts[employer] = (employerCounts[employer] || 0) + item.count;
-                      if (!employerIds[employer] && item.employer_id) {
-                        employerIds[employer] = item.employer_id;
-                      }
                     });
                     return Object.entries(employerCounts)
                       .sort((a, b) => b[1] - a[1])
-                      .map(([employer, count], index) => {
-                        // Pulkovo (employer_id=666661) gets cyan color
-                        const isPulkovo = employerIds[employer] === "666661";
-                        const backgroundColor = isPulkovo 
-                          ? CHART_COLORS.palette[1]  // Cyan (--chart-color-2)
-                          : CHART_COLORS.palette[index % CHART_COLORS.palette.length];
-                        
-                        return (
-                          <div 
-                            key={index} 
-                            style={{
-                              backgroundColor: backgroundColor,
-                              color: 'white',
-                              padding: '6px 12px',
-                              borderRadius: '16px',
-                              fontSize: '12px',
-                              fontWeight: '500',
-                              whiteSpace: 'nowrap',
-                              boxShadow: '0 2px 4px rgba(0,0,0,0.2)'
-                            }}
-                          >
-                            {employer} ({count})
-                          </div>
-                        );
-                      });
+                      .map(([employer, count], index) => (
+                        <div 
+                          key={index} 
+                          style={{
+                            backgroundColor: CHART_COLORS.palette[index % CHART_COLORS.palette.length],
+                            color: 'white',
+                            padding: '6px 12px',
+                            borderRadius: '16px',
+                            fontSize: '12px',
+                            fontWeight: '500',
+                            whiteSpace: 'nowrap',
+                            boxShadow: '0 2px 4px rgba(0,0,0,0.2)'
+                          }}
+                        >
+                          {employer} ({count})
+                        </div>
+                      ));
                   })()}
                 </div>
               </div>

@@ -253,7 +253,6 @@ def parse_vacancies_for_group(vacancies: List[Dict[str, Any]],
         # Получение информации о работодателе
         employer_obj = v.get("employer", {})
         employer_name = employer_obj.get("name", "Не указано")
-        employer_id = employer_obj.get("id", None)
         
         bubble_data.append({
             "id": v.get("id"),
@@ -261,8 +260,7 @@ def parse_vacancies_for_group(vacancies: List[Dict[str, Any]],
             "experience": exp_numeric,
             "experience_label": exp_name,
             "title": v.get("name"),
-            "employer": employer_name,
-            "employer_id": employer_id
+            "employer": employer_name
         })
     
     return {
