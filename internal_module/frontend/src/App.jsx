@@ -473,7 +473,7 @@ function App() {
                     data={stats.bubble_data} 
                     shape={(props) => {
                       const { cx, cy, payload } = props;
-                      const radius = 5;
+                      const radius = 10;
                       const isPulkovo = payload.employer?.trim() === 'Аэропорт Пулково (ООО Воздушные Ворота Северной Столицы)';
                       const fillColor = isPulkovo ? '#22d3ee' : '#3b82f6';
                       return (
