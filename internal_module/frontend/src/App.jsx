@@ -468,7 +468,15 @@ function App() {
                       return null;
                     }}
                   />
-                  <Scatter name="Vacancies" data={stats.bubble_data} fill={CHART_COLORS.primary} />
+                  <Scatter 
+                    name="Vacancies" 
+                    data={stats.bubble_data} 
+                    fill={(entry) => {
+                    if (entry.employer === 'Аэропорт Пулково (ООО Воздушные Ворота Северной Столицы)') {
+                      return '#22d3ee';
+                    }
+                    return CHART_COLORS.primary;
+                  }} />
                 </ScatterChart>
               </ResponsiveContainer>
               <div className="employer-list">
