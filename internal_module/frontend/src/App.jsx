@@ -429,18 +429,12 @@ function App() {
                     content={({ active, payload }) => {
                       if (active && payload && payload.length) {
                         const data = payload[0].payload;
-                        // Подсчёт количества вакансий по работодателям для цветовой карты
-                        const employerCounts = {};
-                        stats.bubble_data.forEach(item => {
-                          const employer = item.employer || 'Не указано';
-                          employerCounts[employer] = (employerCounts[employer] || 0) + item.count;
-                        });
-                        const sortedEmployers = Object.entries(employerCounts)
-                          .sort((a, b) => b[1] - a[1])
-                          .map(([employer]) => employer);
                         const currentEmployer = data.employer || 'Не указано';
-                        const employerIndex = sortedEmployers.indexOf(currentEmployer);
-                        const employerColor = CHART_COLORS.palette[employerIndex % CHART_COLORS.palette.length];
+                        
+                        // Use cyan for Pulkovo, blue for others
+                        const employerColor = currentEmployer.trim() === 'Аэропорт Пулково (ООО Воздушные Ворота Северной Столицы)' 
+                          ? '#22d3ee' 
+                          : '#3b82f6';
                         
                         return (
                           <div className="custom-tooltip" style={{
@@ -506,23 +500,30 @@ function App() {
                     });
                     return Object.entries(employerCounts)
                       .sort((a, b) => b[1] - a[1])
-                      .map(([employer, count], index) => (
-                        <div 
-                          key={index} 
-                          style={{
-                            backgroundColor: CHART_COLORS.palette[index % CHART_COLORS.palette.length],
-                            color: 'white',
-                            padding: '6px 12px',
-                            borderRadius: '16px',
-                            fontSize: '12px',
-                            fontWeight: '500',
-                            whiteSpace: 'nowrap',
-                            boxShadow: '0 2px 4px rgba(0,0,0,0.2)'
-                          }}
-                        >
-                          {employer} ({count})
-                        </div>
-                      ));
+                      .map(([employer, count], index) => {
+                        // Use cyan for Pulkovo, blue for others
+                        const badgeColor = employer.trim() === 'Аэропорт Пулково (ООО Воздушные Ворота Северной Столицы)' 
+                          ? '#22d3ee' 
+                          : '#3b82f6';
+                        
+                        return (
+                          <div 
+                            key={index} 
+                            style={{
+                              backgroundColor: badgeColor,
+                              color: 'white',
+                              padding: '6px 12px',
+                              borderRadius: '16px',
+                              fontSize: '12px',
+                              fontWeight: '500',
+                              whiteSpace: 'nowrap',
+                              boxShadow: '0 2px 4px rgba(0,0,0,0.2)'
+                            }}
+                          >
+                            {employer} ({count})
+                          </div>
+                        );
+                      });
                   })()}
                 </div>
               </div>
