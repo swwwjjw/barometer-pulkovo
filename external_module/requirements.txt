@@ -1,2 +1,2 @@
-httpx
-apscheduler
+httpx>=0.24.0
+apscheduler>=3.10.0
