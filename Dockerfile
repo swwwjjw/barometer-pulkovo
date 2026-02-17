@@ -9,7 +9,7 @@ RUN npm install
 COPY internal_module/frontend/ .
 RUN npm run build
 
-# Этап 2: Среда выполнения
+# Этап 2: Среда выполнения vnjfdsklvhld
 FROM python:3.10-slim
 
 WORKDIR /app
