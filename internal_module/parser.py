@@ -5,9 +5,8 @@ import numpy as np
 import shutil
 
 # Определяем пути
-SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
-LOCAL_FILE = os.path.join(SCRIPT_DIR, "vacancies_current.txt")
-SHARE_FILE = "/mnt/allshare_fileserver/barometer_vacancies/vacancies_current.txt"
+LOCAL_FILE = "work/vacancies_current.txt"
+SHARE_FILE = "data/vacancies_current.txt"
 
 # Логика выбора и перемещения файла
 if os.path.exists(SHARE_FILE):
