@@ -265,39 +265,80 @@ def get_overall_stats(filter_outliers: bool = True):
 
 @app.get("/api/b1/blocks")
 def get_b1_blocks():
-    """Получить все блоки B1 с их статистикой"""
-    return [{
-        "name": block["name"],
-        "stats": {
-            "avg": block["stats"]["avg_monthly_salary"],
-            "median": block["stats"]["median_monthly_salary"],
-            "min": block["stats"]["min_monthly_salary"],
-            "max": block["stats"]["max_monthly_salary"]
-        },
-        "positions_count": len(block["positions"])
-    } for block in B1_DATA]
+    """Получить все блоки B1 с их статистикой (исключая HR блоки)"""
+    # Названия HR блоков, которые нужно исключить
+    HR_BLOCKS = {"Блок по управлению персоналом", "Блок по управлению персоналом (ОЦО)"}
+    
+    result = []
+    for idx, block in enumerate(B1_DATA):
+        # Пропускаем HR блоки
+        if block["name"] in HR_BLOCKS:
+            continue
+        
+        # Фильтруем позиции с зарплатой 0 или None
+        valid_positions = [p for p in block["positions"] 
+                          if p["monthly_salary"]["median"] is not None 
+                          and p["monthly_salary"]["median"] > 0]
+        
+        # Пропускаем блок, если после фильтрации не осталось позиций
+        if not valid_positions:
+            continue
+        
+        # Пересчитываем статистику только по валидным позициям
+        salaries = [p["monthly_salary"]["median"] for p in valid_positions]
+        
+        result.append({
+            "name": block["name"],
+            "original_index": idx,  # Сохраняем оригинальный индекс для get_b1_block_details
+            "stats": {
+                "avg": sum(salaries) / len(salaries),
+                "median": sorted(salaries)[len(salaries) // 2],
+                "min": min(salaries),
+                "max": max(salaries)
+            },
+            "positions_count": len(valid_positions)
+        })
+    
+    return result
 
 @app.get("/api/b1/blocks/{block_index}")
 def get_b1_block_details(block_index: int):
-    """Получить детальную информацию о конкретном блоке B1, включая все позиции"""
-    if block_index < 0 or block_index >= len(B1_DATA):
+    """Получить детальную информацию о конкретном блоке B1, включая все позиции (исключая позиции с нулевой зарплатой)"""
+    # Получаем список отфильтрованных блоков для нахождения оригинального индекса
+    HR_BLOCKS = {"Блок по управлению персоналом", "Блок по управлению персоналом (ОЦО)"}
+    
+    filtered_blocks = []
+    for idx, block in enumerate(B1_DATA):
+        if block["name"] in HR_BLOCKS:
+            continue
+        valid_positions = [p for p in block["positions"] 
+                          if p["monthly_salary"]["median"] is not None 
+                          and p["monthly_salary"]["median"] > 0]
+        if not valid_positions:
+            continue
+        filtered_blocks.append((idx, block, valid_positions))
+    
+    if block_index < 0 or block_index >= len(filtered_blocks):
         raise HTTPException(status_code=404, detail="Блок не найден")
     
-    block = B1_DATA[block_index]
+    original_idx, block, valid_positions = filtered_blocks[block_index]
+    
+    # Пересчитываем статистику по валидным позициям
+    salaries = [p["monthly_salary"]["median"] for p in valid_positions]
     
     # Преобразование данных в формат, ожидаемый фронтендом
     return {
         "name": block["name"],
         "stats": {
-            "avg": block["stats"]["avg_monthly_salary"],
-            "median": block["stats"]["median_monthly_salary"],
-            "min": block["stats"]["min_monthly_salary"],
-            "max": block["stats"]["max_monthly_salary"]
+            "avg": sum(salaries) / len(salaries),
+            "median": sorted(salaries)[len(salaries) // 2],
+            "min": min(salaries),
+            "max": max(salaries)
         },
         "positions": [{
             "name": position["name"],
             "salary": position["monthly_salary"]["median"]
-        } for position in block["positions"]]
+        } for position in valid_positions]
     }
 
 @app.get("/dashboard")
