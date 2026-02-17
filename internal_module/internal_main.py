@@ -15,7 +15,6 @@ from internal_module.parser import (
     filter_salary_outliers,
     parse_vacancies_for_group,
     get_group_list,
-    EXPERIENCE_MAP
 )
 
 app = FastAPI()

@@ -2,10 +2,31 @@ import json
 import os
 from typing import List, Dict, Optional, Any
 import numpy as np
+import shutil
 
+# Определяем пути
+SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+LOCAL_FILE = os.path.join(SCRIPT_DIR, "vacancies_current.txt")
+SHARE_FILE = "/mnt/allshare_fileserver/barometer_vacancies/vacancies_current.txt"
 
-# Путь к файлу данных - использовать последний доступный файл
-DATA_FILE = os.path.join(os.path.dirname(__file__), "../final_folder/vacancies_current.txt")
+# Логика выбора и перемещения файла
+if os.path.exists(SHARE_FILE):
+    # Если есть новый файл на шаре — забираем его
+    if os.path.exists(LOCAL_FILE):
+        os.remove(LOCAL_FILE)                # удаляем старую локальную копию
+    shutil.move(SHARE_FILE, LOCAL_FILE)      # перемещаем новый файл в папку скрипта
+    print(f"Новый файл данных скопирован из {SHARE_FILE} в {LOCAL_FILE}")
+    DATA_FILE = LOCAL_FILE
+else:
+    # Нового файла нет — используем существующий локальный
+    if os.path.exists(LOCAL_FILE):
+        DATA_FILE = LOCAL_FILE
+        print(f"Используется существующий локальный файл: {LOCAL_FILE}")
+    else:
+        raise FileNotFoundError(
+            f"Файл с данными не найден ни в общей папке ({SHARE_FILE}), "
+            f"ни локально ({LOCAL_FILE}). Завершение работы."
+        )
 
 # Маппинг опыта (примерные годы для сортировки/построения графиков)
 EXPERIENCE_MAP = {
@@ -15,24 +36,9 @@ EXPERIENCE_MAP = {
     "moreThan6": 8
 }
 
-
-def load_data(file_path: Optional[str] = None) -> Dict[str, Any]:
+def load_data() -> Dict[str, Any]:
     """Загрузить данные вакансий из JSON файла."""
-    target_file = file_path or DATA_FILE
-    
-    if not os.path.exists(target_file):
-        # Попытка использовать абсолютный путь как запасной вариант для новейшего файла
-        fallback_paths = [
-            "/workspace/final_folder/vacancies_20260209_145339.txt",
-            "/workspace/final_folder/vacancies_20260207_144420.txt",
-            "/workspace/final_folder/vacancies_20260125_144856.txt"
-        ]
-        for fallback in fallback_paths:
-            if os.path.exists(fallback):
-                target_file = fallback
-                break
-        else:
-            return {"metadata": {}, "groups": {}}
+    target_file = DATA_FILE
     
     with open(target_file, "r", encoding="utf-8") as f:
         data = json.load(f)
