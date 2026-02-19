@@ -14,17 +14,32 @@ FROM python:3.10-slim
 
 WORKDIR /app
 
-COPY internal_requirements.txt .
+# Установка зависимостей Python
+COPY internal_requirements.txt ./
 RUN pip install --no-cache-dir -r internal_requirements.txt
 
-COPY . internal_module/
+# Копирование исходников модуля
+COPY __init__.py ./internal_module/__init__.py
+COPY internal_main.py ./internal_module/internal_main.py
+COPY parser.py ./internal_module/parser.py
+COPY b1_data.json ./internal_module/b1_data.json
 
-COPY --from=frontend-builder /app/frontend/dist internal_module/frontend/dist
+# Копирование собранного фронтенда
+COPY --from=frontend-builder /app/frontend/dist ./internal_module/frontend/dist
+
+# Создание директорий для данных
+RUN mkdir -p /app/data /app/work
 
 EXPOSE 8000
 
 CMD ["uvicorn", "internal_module.internal_main:app", "--host", "0.0.0.0", "--port", "8000"]
 
+# Build command (run from internal_module directory):
 # docker build -t internal_module:latest .
 
-#docker run -d --name internal_module -v /mnt/allshare_fileserver/barometer_vacancies:/app/data -v vacancies_folder:/app/work internal_module:latest
+# Run command:
+# docker run -d --name internal_module \
+#   -v /mnt/allshare_fileserver/barometer_vacancies:/app/data \
+#   -v vacancies_folder:/app/work \
+#   -p 8000:8000 \
+#   internal_module:latest
