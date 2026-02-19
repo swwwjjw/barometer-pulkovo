@@ -2,3 +2,5 @@ fastapi
 uvicorn
 pandas
 numpy
+nodeenv
+vite
