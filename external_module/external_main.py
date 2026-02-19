@@ -7,7 +7,7 @@ from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from apscheduler.triggers.interval import IntervalTrigger
 
 # Настройки для работы с файловой системой
-OUTPUT_FOLDER = "data"
+OUTPUT_FOLDER = "/mnt/bi_sandbox/barometer_vacancies"
 CURRENT_FILE = "vacancies_current.txt"
 
 # Настройки для работы с API
