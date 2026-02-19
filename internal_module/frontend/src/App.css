@@ -813,3 +813,392 @@
   font-weight: var(--font-weight-semibold);
   font-variant-numeric: tabular-nums;
 }
+
+/* ========================================
+   MOBILE RESPONSIVE STYLES
+   ======================================== */
+
+/* Mobile First - Small Devices (up to 480px) */
+@media (max-width: 480px) {
+  .container {
+    padding: var(--spacing-md) var(--spacing-md);
+  }
+
+  /* Header Adjustments */
+  .header {
+    margin-bottom: var(--spacing-lg);
+    gap: var(--spacing-sm);
+  }
+
+  .header h1 {
+    font-size: var(--font-size-2xl);
+    line-height: 1.2;
+  }
+
+  /* Tab Navigation */
+  .tab-navigation {
+    width: 100%;
+    gap: var(--spacing-xs);
+    padding: var(--spacing-xs);
+  }
+
+  .tab-btn {
+    flex: 1;
+    padding: var(--spacing-sm) var(--spacing-md);
+    font-size: var(--font-size-base);
+  }
+
+  /* Controls */
+  .controls {
+    width: 100%;
+    gap: var(--spacing-sm);
+  }
+
+  .controls select {
+    width: 100%;
+    max-width: 100%;
+    padding: var(--spacing-md) var(--spacing-lg);
+    font-size: var(--font-size-base);
+  }
+
+  .vacancy-count {
+    font-size: var(--font-size-sm);
+    padding: var(--spacing-sm) var(--spacing-md);
+    text-align: center;
+  }
+
+  /* Metrics Grid - Stack vertically */
+  .metrics-grid {
+    grid-template-columns: 1fr;
+    gap: var(--spacing-md);
+    margin-bottom: var(--spacing-lg);
+  }
+
+  .metric-card {
+    padding: var(--spacing-lg) var(--spacing-xl);
+    min-width: auto;
+  }
+
+  .metric-card h3 {
+    font-size: var(--font-size-sm);
+    margin-bottom: var(--spacing-sm);
+  }
+
+  .metric-card .value {
+    font-size: var(--font-size-2xl);
+  }
+
+  /* Market Card */
+  .market-card {
+    padding: var(--spacing-lg) var(--spacing-md);
+    margin-bottom: var(--spacing-lg);
+  }
+
+  .market-card > h3 {
+    font-size: var(--font-size-base);
+    margin-bottom: var(--spacing-sm);
+  }
+
+  .market-card-header {
+    flex-direction: column;
+    gap: var(--spacing-sm);
+    margin-bottom: var(--spacing-md);
+  }
+
+  .team-project-btn {
+    width: 100%;
+    padding: var(--spacing-md) var(--spacing-lg);
+    font-size: var(--font-size-sm);
+  }
+
+  .market-labels {
+    font-size: 10px;
+    flex-wrap: wrap;
+    gap: var(--spacing-xs);
+    justify-content: space-around;
+  }
+
+  .market-scale {
+    height: 48px;
+    margin-bottom: var(--spacing-lg);
+  }
+
+  .marker-pulkovo-label {
+    font-size: 10px;
+    top: 56px;
+  }
+
+  .market-ticks {
+    font-size: 10px;
+    flex-wrap: wrap;
+    gap: var(--spacing-xs);
+  }
+
+  /* Charts Grid - Stack vertically */
+  .charts-grid {
+    grid-template-columns: 1fr;
+    gap: var(--spacing-md);
+    margin-bottom: var(--spacing-lg);
+  }
+
+  .chart-card {
+    padding: var(--spacing-lg) var(--spacing-md);
+    min-height: 280px;
+  }
+
+  .chart-card-fullscreen {
+    min-height: 350px;
+  }
+
+  .chart-card h3 {
+    font-size: var(--font-size-sm);
+    margin-bottom: var(--spacing-sm);
+  }
+
+  /* Employer List */
+  .employer-list h4 {
+    font-size: var(--font-size-xs);
+    margin: var(--spacing-sm) 0 var(--spacing-xs) 0;
+  }
+
+  .employer-list > div {
+    gap: var(--spacing-xs);
+    padding: var(--spacing-xs);
+    max-height: 100px;
+    font-size: 10px;
+  }
+
+  .employer-list > div > div {
+    padding: 4px 8px;
+    font-size: 10px;
+  }
+
+  /* Company Table */
+  .company-table-card {
+    padding: var(--spacing-lg) var(--spacing-sm);
+    overflow-x: auto;
+  }
+
+  .company-table-card h3 {
+    font-size: var(--font-size-base);
+    margin-bottom: var(--spacing-md);
+  }
+
+  .company-salary-table {
+    font-size: var(--font-size-xs);
+  }
+
+  .company-salary-table th,
+  .company-salary-table td {
+    padding: var(--spacing-xs) var(--spacing-sm);
+    font-size: 10px;
+  }
+
+  .company-salary-table th:first-child,
+  .company-salary-table td:first-child {
+    min-width: 120px;
+  }
+
+  /* B1 Positions Card */
+  .b1-positions-card {
+    padding: var(--spacing-md);
+    max-width: 100%;
+  }
+
+  .b1-positions-card h3 {
+    font-size: var(--font-size-base);
+    margin-bottom: var(--spacing-sm);
+  }
+
+  .b1-table-header,
+  .b1-table-row {
+    padding: var(--spacing-sm) var(--spacing-md);
+    font-size: var(--font-size-xs);
+  }
+
+  .b1-col-name {
+    font-size: var(--font-size-xs);
+  }
+
+  .b1-col-salary {
+    font-size: var(--font-size-xs);
+  }
+
+  /* Loading and Error */
+  .loading,
+  .error {
+    padding: var(--spacing-lg);
+    font-size: var(--font-size-sm);
+  }
+
+  /* Chart Text Sizes */
+  .recharts-text {
+    font-size: 10px !important;
+  }
+
+  /* Custom Tooltip */
+  .custom-tooltip {
+    padding: var(--spacing-sm) !important;
+  }
+
+  .custom-tooltip p {
+    font-size: 11px !important;
+  }
+}
+
+/* Tablet Devices (481px to 768px) */
+@media (min-width: 481px) and (max-width: 768px) {
+  .container {
+    padding: var(--spacing-lg) var(--spacing-xl);
+  }
+
+  .header h1 {
+    font-size: var(--font-size-3xl);
+  }
+
+  .controls select {
+    width: 100%;
+    max-width: 500px;
+  }
+
+  /* Metrics Grid - 2 columns */
+  .metrics-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--spacing-lg);
+  }
+
+  /* Charts - Stack vertically */
+  .charts-grid {
+    grid-template-columns: 1fr;
+    gap: var(--spacing-lg);
+  }
+
+  .chart-card {
+    min-height: 320px;
+  }
+
+  .chart-card-fullscreen {
+    min-height: 400px;
+  }
+
+  /* Company Table - Make scrollable */
+  .company-table-card {
+    overflow-x: auto;
+  }
+
+  .company-salary-table th,
+  .company-salary-table td {
+    padding: var(--spacing-sm) var(--spacing-md);
+    font-size: var(--font-size-xs);
+  }
+
+  /* B1 Positions */
+  .b1-positions-card {
+    max-width: 100%;
+  }
+}
+
+/* Small Tablets and Large Phones (769px to 1024px) */
+@media (min-width: 769px) and (max-width: 1024px) {
+  .container {
+    padding: var(--spacing-xl) var(--spacing-2xl);
+  }
+
+  .controls select {
+    width: 100%;
+    max-width: 600px;
+  }
+
+  /* Metrics Grid - 2 columns */
+  .metrics-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  /* Charts Grid - 2 columns for smaller charts, full width for fullscreen */
+  .charts-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .chart-card-fullscreen {
+    grid-column: 1 / -1;
+  }
+}
+
+/* Touch Device Improvements */
+@media (hover: none) and (pointer: coarse) {
+  /* Increase touch target sizes */
+  .controls select,
+  .tab-btn,
+  .team-project-btn {
+    min-height: 44px;
+  }
+
+  /* Disable hover effects on touch devices */
+  .metric-card:hover,
+  .chart-card:hover,
+  .market-card:hover,
+  .company-table-card:hover {
+    transform: none;
+  }
+
+  /* Keep border highlight on touch */
+  .metric-card:active,
+  .chart-card:active,
+  .market-card:active,
+  .company-table-card:active {
+    border-color: var(--accent-primary);
+  }
+}
+
+/* Landscape Mode Adjustments for Small Devices */
+@media (max-width: 768px) and (orientation: landscape) {
+  .header h1 {
+    font-size: var(--font-size-xl);
+  }
+
+  .chart-card,
+  .chart-card-fullscreen {
+    min-height: 250px;
+  }
+
+  .metrics-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+/* Extra Small Devices (max-width: 360px) */
+@media (max-width: 360px) {
+  .container {
+    padding: var(--spacing-sm);
+  }
+
+  .header h1 {
+    font-size: var(--font-size-xl);
+  }
+
+  .tab-btn {
+    padding: var(--spacing-xs) var(--spacing-sm);
+    font-size: var(--font-size-sm);
+  }
+
+  .metric-card .value {
+    font-size: var(--font-size-xl);
+  }
+
+  .chart-card,
+  .chart-card-fullscreen {
+    padding: var(--spacing-md);
+    min-height: 250px;
+  }
+
+  .market-labels,
+  .market-ticks {
+    font-size: 9px;
+  }
+
+  .company-salary-table th,
+  .company-salary-table td {
+    padding: 4px 6px;
+    font-size: 9px;
+  }
+}

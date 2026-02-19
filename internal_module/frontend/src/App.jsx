@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import axios from 'axios'
 import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer,
@@ -118,69 +118,7 @@ function App() {
     }
   }, [activeTab]);
 
-  // Загрузка данных HH при активной вкладке hh
-  useEffect(() => {
-    if (activeTab !== 'hh') return;
-    axios.get('/api/groups')
-      .then(res => {
-        setGroups(res.data)
-        if (res.data.length > 0) {
-          const firstGroupId = res.data[0].id
-          setSelectedGroupId(firstGroupId)
-          fetchStats(firstGroupId)
-        }
-      })
-      .catch(err => setError("Не удалось загрузить группы"))
-    
-    axios.get('/api/overall-stats')
-      .then(res => {
-        setOverallStats(res.data)
-      })
-      .catch(err => console.error("Не удалось загрузить общую статистику"))
-  }, [activeTab])
-  
-  // Загрузка данных B1 при активной вкладке b1
-  useEffect(() => {
-    if (activeTab !== 'b1') return;
-    
-    setB1Loading(true);
-    setB1Error(null);
-    
-    axios.get('/api/b1/blocks')
-      .then(res => {
-        setB1Blocks(res.data);
-        if (res.data.length > 0) {
-          setSelectedBlockIndex(0);
-          fetchBlockDetails(0);
-        }
-        setB1Loading(false);
-      })
-      .catch(err => {
-        setB1Error("Ошибка загрузки данных Б1");
-        setB1Loading(false);
-      });
-  }, [activeTab])
-
-  const fetchBlockDetails = (blockIndex) => {
-    setB1Loading(true);
-    axios.get(`/api/b1/blocks/${blockIndex}`)
-      .then(res => {
-        setSelectedBlock(res.data);
-        setB1Loading(false);
-      })
-      .catch(err => {
-        setB1Error("Ошибка загрузки блока");
-        setB1Loading(false);
-      });
-  }
-  
-  const handleBlockChange = (e) => {
-    const index = parseInt(e.target.value);
-    setSelectedBlockIndex(index);
-    fetchBlockDetails(index);
-  }
-
-  const fetchStats = (groupId) => {
+  const fetchStats = useCallback((groupId) => {
     setLoading(true)
     setError(null)
     axios.get(`/api/stats/${groupId}`)
@@ -193,16 +131,79 @@ function App() {
         }
         setLoading(false)
       })
-      .catch(err => {
+      .catch(() => {
         setError("Не удалось загрузить статистику")
         setLoading(false)
       })
-  }
+  }, [])
+
+  const fetchBlockDetails = useCallback((blockIndex) => {
+    setB1Loading(true);
+    axios.get(`/api/b1/blocks/${blockIndex}`)
+      .then(res => {
+        setSelectedBlock(res.data);
+        setB1Loading(false);
+      })
+      .catch(() => {
+        setB1Error("Ошибка загрузки блока");
+        setB1Loading(false);
+      });
+  }, [])
+
+  // Загрузка данных HH при активной вкладке hh
+  useEffect(() => {
+    if (activeTab !== 'hh') return;
+    axios.get('/api/groups')
+      .then(res => {
+        setGroups(res.data)
+        if (res.data.length > 0) {
+          const firstGroupId = res.data[0].id
+          setSelectedGroupId(firstGroupId)
+          fetchStats(firstGroupId)
+        }
+      })
+      .catch(() => setError("Не удалось загрузить группы"))
+    
+    axios.get('/api/overall-stats')
+      .then(res => {
+        setOverallStats(res.data)
+      })
+      .catch(() => console.error("Не удалось загрузить общую статистику"))
+  }, [activeTab, fetchStats])
+  
+  // Загрузка данных B1 при активной вкладке b1
+  useEffect(() => {
+    if (activeTab !== 'b1') return;
+    
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setB1Loading(true);
+    setB1Error(null);
+    
+    axios.get('/api/b1/blocks')
+      .then(res => {
+        setB1Blocks(res.data);
+        if (res.data.length > 0) {
+          setSelectedBlockIndex(0);
+          fetchBlockDetails(0);
+        }
+        setB1Loading(false);
+      })
+      .catch(() => {
+        setB1Error("Ошибка загрузки данных Б1");
+        setB1Loading(false);
+      });
+  }, [activeTab, fetchBlockDetails])
 
   const handleGroupChange = (e) => {
     const groupId = e.target.value
     setSelectedGroupId(groupId)
     fetchStats(groupId)
+  }
+
+  const handleBlockChange = (e) => {
+    const index = parseInt(e.target.value);
+    setSelectedBlockIndex(index);
+    fetchBlockDetails(index);
   }
 
   const toggleTeamProject = () => {
