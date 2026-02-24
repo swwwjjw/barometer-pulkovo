@@ -1,3 +1,6 @@
+# Этап 1: Сборка фронтенда
+FROM node:18-alpine AS frontend-builder
+
 WORKDIR /app/frontend
 
 COPY internal_module/frontend/package*.json ./
