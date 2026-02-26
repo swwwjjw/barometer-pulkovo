@@ -2,8 +2,8 @@ services:
   internal_module:
     container_name: internal_module
     build:
-      context: ./internal_module
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: ./internal_module/Dockerfile
     ports:
       - "8083:8083"
     volumes:
