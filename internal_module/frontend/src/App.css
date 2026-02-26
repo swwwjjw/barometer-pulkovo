@@ -225,36 +225,6 @@
   flex: 1;
 }
 
-.chart-responsive-wrapper {
-  width: 100%;
-}
-
-.chart-responsive-wrapper .recharts-responsive-container {
-  min-width: 100%;
-}
-
-@media (max-width: 1024px) {
-  .chart-responsive-wrapper-scroll {
-    overflow-x: auto;
-    overflow-y: hidden;
-    padding-bottom: var(--spacing-xs);
-    -webkit-overflow-scrolling: touch;
-  }
-
-  .chart-responsive-wrapper-scroll::-webkit-scrollbar {
-    height: 6px;
-  }
-
-  .chart-responsive-wrapper-scroll::-webkit-scrollbar-track {
-    background: transparent;
-  }
-
-  .chart-responsive-wrapper-scroll::-webkit-scrollbar-thumb {
-    background: var(--bg-tertiary);
-    border-radius: var(--radius-full);
-  }
-}
-
 /* Карточка сравнения рынка */
 .market-card {
   margin-top: var(--spacing-xl);

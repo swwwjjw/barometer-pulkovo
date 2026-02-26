@@ -88,18 +88,6 @@ const getRoleDisplayName = (keywords) => {
   return ROLE_DISPLAY_NAMES[keywords] || keywords;
 };
 
-const CHART_MIN_WIDTHS = {
-  scatter: { phone: 680, tablet: 820 },
-  experience: { phone: 420, tablet: 520 },
-  salary: { phone: 620, tablet: 760 },
-  employment: { phone: 620, tablet: 760 },
-  schedule: { phone: 620, tablet: 760 }
-};
-
-const getInitialViewportWidth = () => (
-  typeof window !== 'undefined' ? window.innerWidth : 1280
-);
-
 function App() {
   // Состояние вкладки - определяем из пути URL
   const [activeTab, setActiveTab] = useState(() => {
@@ -118,7 +106,6 @@ function App() {
   const [error, setError] = useState(null)
   const [overallStats, setOverallStats] = useState(null)
   const [teamProjectActive, setTeamProjectActive] = useState(false)
-  const [viewportWidth, setViewportWidth] = useState(getInitialViewportWidth)
   
   // Состояние для вкладки B1
   const [b1Blocks, setB1Blocks] = useState([])
@@ -134,20 +121,6 @@ function App() {
       window.history.pushState({}, '', path);
     }
   }, [activeTab]);
-
-  useEffect(() => {
-    if (typeof window === 'undefined') return undefined;
-
-    const handleResize = () => {
-      setViewportWidth(window.innerWidth);
-    };
-
-    window.addEventListener('resize', handleResize);
-
-    return () => {
-      window.removeEventListener('resize', handleResize);
-    };
-  }, []);
 
   const fetchStats = useCallback((groupId) => {
     setLoading(true)
@@ -240,29 +213,6 @@ function App() {
   const toggleTeamProject = () => {
     setTeamProjectActive(!teamProjectActive)
   }
-
-  const isPhoneViewport = viewportWidth <= 480;
-  const isTabletViewport = viewportWidth > 480 && viewportWidth <= 1024;
-  const shouldUseDynamicChartWidth = isPhoneViewport || isTabletViewport;
-
-  const getDynamicChartWidth = useCallback((chartType) => {
-    if (!shouldUseDynamicChartWidth) {
-      return '100%';
-    }
-
-    const horizontalPadding = isPhoneViewport ? 32 : 64;
-    const availableViewportWidth = Math.max(viewportWidth - horizontalPadding, 280);
-    const minWidthConfig = CHART_MIN_WIDTHS[chartType];
-    const minWidth = minWidthConfig
-      ? (isPhoneViewport ? minWidthConfig.phone : minWidthConfig.tablet)
-      : availableViewportWidth;
-
-    return Math.max(availableViewportWidth, minWidth);
-  }, [isPhoneViewport, shouldUseDynamicChartWidth, viewportWidth]);
-
-  const chartWrapperClassName = shouldUseDynamicChartWidth
-    ? 'chart-responsive-wrapper chart-responsive-wrapper-scroll'
-    : 'chart-responsive-wrapper';
 
   const getTeamProjectBonus = () => {
     if (!teamProjectActive || !stats) return 0
@@ -466,98 +416,96 @@ function App() {
           <div className="charts-grid">
             <div className="chart-card chart-card-fullscreen">
               <h3>Зарплата vs Опыт</h3>
-              <div className={chartWrapperClassName}>
-                <ResponsiveContainer width={getDynamicChartWidth('scatter')} height="65%">
-                  <ScatterChart margin={{ top: 10, right: 10, bottom: 10, left: 10 }}>
-                    <CartesianGrid strokeDasharray="3 3" stroke={CHART_COLORS.grid} opacity={0.3} />
-                    <XAxis type="number" dataKey="salary" name="Зарплата" unit="₽" stroke={CHART_COLORS.axis} />
-                    <YAxis
-                      type="number"
-                      dataKey="experience"
-                      name="Опыт"
-                      stroke={CHART_COLORS.axis}
-                      domain={[0, 8]}
-                      ticks={[0, 2, 4.5, 8]}
-                      tickFormatter={(value) => {
-                        const labels = {
-                          0: 'Нет опыта',
-                          2: 'От 1 года до 3 лет',
-                          4.5: 'От 3 до 6 лет',
-                          8: 'Более 6 лет'
-                        };
-                        return labels[value] || value;
-                      }}
-                      width={75}
-                    />
-                    <ZAxis type="number" dataKey="count" range={[60, 400]} name="Вакансии" />
-                    <Tooltip
-                      cursor={{ strokeDasharray: '3 3' }}
-                      content={({ active, payload }) => {
-                        if (active && payload && payload.length) {
-                          const data = payload[0].payload;
-                          // Подсчёт количества вакансий по работодателям для цветовой карты
-                          const employerCounts = {};
-                          stats.bubble_data.forEach(item => {
-                            const employer = item.employer || 'Не указано';
-                            employerCounts[employer] = (employerCounts[employer] || 0) + item.count;
-                          });
-                          const sortedEmployers = Object.entries(employerCounts)
-                            .sort((a, b) => b[1] - a[1])
-                            .map(([employer]) => employer);
-                          const currentEmployer = data.employer || 'Не указано';
-                          const employerIndex = sortedEmployers.indexOf(currentEmployer);
-                          const employerColor = CHART_COLORS.palette[employerIndex % CHART_COLORS.palette.length];
-
-                          return (
-                            <div className="custom-tooltip" style={{
-                              backgroundColor: 'rgba(30, 41, 59, 0.95)',
-                              padding: '12px',
-                              border: '1px solid #475569',
-                              borderRadius: '6px',
-                              color: '#e2e8f0'
-                            }}>
-                              <p style={{ margin: '0 0 8px 0', fontWeight: 'bold', fontSize: '14px', color: employerColor }}>
-                                {currentEmployer}
-                              </p>
-                              <p style={{ margin: '4px 0', fontSize: '13px' }}>
-                                <strong>Зарплата:</strong> {Math.round(data.salary).toLocaleString()} ₽
-                              </p>
-                              <p style={{ margin: '4px 0', fontSize: '13px' }}>
-                                <strong>Опыт:</strong> {data.experience_label}
-                              </p>
-                              <p style={{ margin: '4px 0', fontSize: '13px' }}>
-                                <strong>Вакансий:</strong> {data.count}
-                              </p>
-                            </div>
-                          );
-                        }
-                        return null;
-                      }}
-                    />
-                    <Scatter
-                      name="Vacancies"
-                      data={stats.bubble_data}
-                      shape={(props) => {
-                        const { cx, cy, payload } = props;
-                        const radius = 10;
-                        const isPulkovo = payload.employer?.trim() === 'Аэропорт Пулково (ООО Воздушные Ворота Северной Столицы)';
-                        const fillColor = isPulkovo ? '#22d3ee' : '#3b82f6';
+              <ResponsiveContainer width="100%" height="65%">
+                <ScatterChart margin={{ top: 10, right: 10, bottom: 10, left: 10 }}>
+                  <CartesianGrid strokeDasharray="3 3" stroke={CHART_COLORS.grid} opacity={0.3} />
+                  <XAxis type="number" dataKey="salary" name="Зарплата" unit="₽" stroke={CHART_COLORS.axis} />
+                  <YAxis 
+                    type="number" 
+                    dataKey="experience" 
+                    name="Опыт" 
+                    stroke={CHART_COLORS.axis}
+                    domain={[0, 8]}
+                    ticks={[0, 2, 4.5, 8]}
+                    tickFormatter={(value) => {
+                      const labels = {
+                        0: 'Нет опыта',
+                        2: 'От 1 года до 3 лет',
+                        4.5: 'От 3 до 6 лет',
+                        8: 'Более 6 лет'
+                      };
+                      return labels[value] || value;
+                    }}
+                    width={75}
+                  />
+                  <ZAxis type="number" dataKey="count" range={[60, 400]} name="Вакансии" />
+                  <Tooltip 
+                    cursor={{ strokeDasharray: '3 3' }}
+                    content={({ active, payload }) => {
+                      if (active && payload && payload.length) {
+                        const data = payload[0].payload;
+                        // Подсчёт количества вакансий по работодателям для цветовой карты
+                        const employerCounts = {};
+                        stats.bubble_data.forEach(item => {
+                          const employer = item.employer || 'Не указано';
+                          employerCounts[employer] = (employerCounts[employer] || 0) + item.count;
+                        });
+                        const sortedEmployers = Object.entries(employerCounts)
+                          .sort((a, b) => b[1] - a[1])
+                          .map(([employer]) => employer);
+                        const currentEmployer = data.employer || 'Не указано';
+                        const employerIndex = sortedEmployers.indexOf(currentEmployer);
+                        const employerColor = CHART_COLORS.palette[employerIndex % CHART_COLORS.palette.length];
+                        
                         return (
-                          <circle
-                            cx={cx}
-                            cy={cy}
-                            r={radius}
-                            fill={fillColor}
-                            fillOpacity={0.8}
-                            stroke={fillColor}
-                            strokeWidth={1}
-                          />
+                          <div className="custom-tooltip" style={{
+                            backgroundColor: 'rgba(30, 41, 59, 0.95)',
+                            padding: '12px',
+                            border: '1px solid #475569',
+                            borderRadius: '6px',
+                            color: '#e2e8f0'
+                          }}>
+                            <p style={{ margin: '0 0 8px 0', fontWeight: 'bold', fontSize: '14px', color: employerColor }}>
+                              {currentEmployer}
+                            </p>
+                            <p style={{ margin: '4px 0', fontSize: '13px' }}>
+                              <strong>Зарплата:</strong> {Math.round(data.salary).toLocaleString()} ₽
+                            </p>
+                            <p style={{ margin: '4px 0', fontSize: '13px' }}>
+                              <strong>Опыт:</strong> {data.experience_label}
+                            </p>
+                            <p style={{ margin: '4px 0', fontSize: '13px' }}>
+                              <strong>Вакансий:</strong> {data.count}
+                            </p>
+                          </div>
                         );
-                      }}
-                    />
-                  </ScatterChart>
-                </ResponsiveContainer>
-              </div>
+                      }
+                      return null;
+                    }}
+                  />
+                  <Scatter 
+                    name="Vacancies" 
+                    data={stats.bubble_data} 
+                    shape={(props) => {
+                      const { cx, cy, payload } = props;
+                      const radius = 10;
+                      const isPulkovo = payload.employer?.trim() === 'Аэропорт Пулково (ООО Воздушные Ворота Северной Столицы)';
+                      const fillColor = isPulkovo ? '#22d3ee' : '#3b82f6';
+                      return (
+                        <circle
+                          cx={cx}
+                          cy={cy}
+                          r={radius}
+                          fill={fillColor}
+                          fillOpacity={0.8}
+                          stroke={fillColor}
+                          strokeWidth={1}
+                        />
+                      );
+                    }}
+                  />
+                </ScatterChart>
+              </ResponsiveContainer>
               <div className="employer-list">
                 <h4 style={{ 
                   margin: '16px 0 12px 0', 
@@ -609,83 +557,75 @@ function App() {
 
             <div className="chart-card">
               <h3>Распределение опыта</h3>
-              <div className={chartWrapperClassName}>
-                <ResponsiveContainer width={getDynamicChartWidth('experience')} height="65%">
-                  <PieChart>
-                    <Pie
-                      data={stats.experience_dist.filter(item => item.value > 0)}
-                      cx="50%"
-                      cy="50%"
-                      labelLine={false}
-                      label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
-                      outerRadius="70%"
-                      fill={CHART_COLORS.primary}
-                      dataKey="value"
-                      animationBegin={200}
-                      animationDuration={800}
-                    >
-                      {stats.experience_dist.filter(item => item.value > 0).map((entry, index) => (
-                        <Cell key={`cell-${index}`} fill={CHART_COLORS.palette[index % CHART_COLORS.palette.length]} />
-                      ))}
-                    </Pie>
-                    <Tooltip />
-                  </PieChart>
-                </ResponsiveContainer>
-              </div>
+              <ResponsiveContainer width="100%" height="65%">
+                <PieChart>
+                  <Pie
+                    data={stats.experience_dist.filter(item => item.value > 0)}
+                    cx="50%"
+                    cy="50%"
+                    labelLine={false}
+                    label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
+                    outerRadius="70%"
+                    fill={CHART_COLORS.primary}
+                    dataKey="value"
+                    animationBegin={200}
+                    animationDuration={800}
+                  >
+                    {stats.experience_dist.filter(item => item.value > 0).map((entry, index) => (
+                      <Cell key={`cell-${index}`} fill={CHART_COLORS.palette[index % CHART_COLORS.palette.length]} />
+                    ))}
+                  </Pie>
+                  <Tooltip />
+                </PieChart>
+              </ResponsiveContainer>
             </div>
 
             <div className="chart-card chart-card-fullscreen">
               <h3>Распределение зарплат</h3>
-              <div className={chartWrapperClassName}>
-                <ResponsiveContainer width={getDynamicChartWidth('salary')} height="65%">
-                  <BarChart
-                    data={stats.salary_dist}
-                    margin={{ top: 5, right: 20, left: 10, bottom: 5 }}
-                  >
-                    <CartesianGrid strokeDasharray="3 3" stroke={CHART_COLORS.grid} opacity={0.3} />
-                    <XAxis interval="0" dataKey="range" stroke={CHART_COLORS.axis} />
-                    <YAxis stroke={CHART_COLORS.axis} />
-                    <Tooltip />
-                    <Bar dataKey="count" fill={CHART_COLORS.primary} name="Количество" radius={[4, 4, 0, 0]} />
-                  </BarChart>
-                </ResponsiveContainer>
-              </div>
+              <ResponsiveContainer width="100%" height="65%">
+                <BarChart
+                  data={stats.salary_dist}
+                  margin={{ top: 5, right: 20, left: 10, bottom: 5 }}
+                >
+                  <CartesianGrid strokeDasharray="3 3" stroke={CHART_COLORS.grid} opacity={0.3} />
+                  <XAxis interval="0" dataKey="range" stroke={CHART_COLORS.axis} />
+                  <YAxis stroke={CHART_COLORS.axis} />
+                  <Tooltip />
+                  <Bar dataKey="count" fill={CHART_COLORS.primary} name="Количество" radius={[4, 4, 0, 0]} />
+                </BarChart>
+              </ResponsiveContainer>
             </div>
 
             <div className="chart-card">
               <h3>Распределение по типу занятости</h3>
-              <div className={chartWrapperClassName}>
-                <ResponsiveContainer width={getDynamicChartWidth('employment')} height="65%">
-                  <BarChart
-                    data={stats.employment_dist}
-                    margin={{ top: 5, right: 20, left: 10, bottom: 5 }}
-                  >
-                    <CartesianGrid strokeDasharray="3 3" stroke={CHART_COLORS.grid} opacity={0.3} />
-                    <XAxis interval="0" dataKey="name" stroke={CHART_COLORS.axis} />
-                    <YAxis stroke={CHART_COLORS.axis} />
-                    <Tooltip />
-                    <Bar dataKey="count" fill={CHART_COLORS.primary} name="Количество" radius={[4, 4, 0, 0]} />
-                  </BarChart>
-                </ResponsiveContainer>
-              </div>
+              <ResponsiveContainer width="100%" height="65%">
+                <BarChart
+                  data={stats.employment_dist}
+                  margin={{ top: 5, right: 20, left: 10, bottom: 5 }}
+                >
+                  <CartesianGrid strokeDasharray="3 3" stroke={CHART_COLORS.grid} opacity={0.3} />
+                  <XAxis interval="0" dataKey="name" stroke={CHART_COLORS.axis} />
+                  <YAxis stroke={CHART_COLORS.axis} />
+                  <Tooltip />
+                  <Bar dataKey="count" fill={CHART_COLORS.primary} name="Количество" radius={[4, 4, 0, 0]} />
+                </BarChart>
+              </ResponsiveContainer>
             </div>
 
             <div className="chart-card">
               <h3>Распределение по графику работы</h3>
-              <div className={chartWrapperClassName}>
-                <ResponsiveContainer width={getDynamicChartWidth('schedule')} height="65%">
-                  <BarChart
-                    data={stats.schedule_dist}
-                    margin={{ top: 5, right: 20, left: 10, bottom: 5 }}
-                  >
-                    <CartesianGrid strokeDasharray="3 3" stroke={CHART_COLORS.grid} opacity={0.3} />
-                    <XAxis interval="0" dataKey="name" stroke={CHART_COLORS.axis} />
-                    <YAxis stroke={CHART_COLORS.axis} />
-                    <Tooltip />
-                    <Bar dataKey="count" fill={CHART_COLORS.primary} name="Количество" radius={[4, 4, 0, 0]} />
-                  </BarChart>
-                </ResponsiveContainer>
-              </div>
+              <ResponsiveContainer width="100%" height="65%">
+                <BarChart
+                  data={stats.schedule_dist}
+                  margin={{ top: 5, right: 20, left: 10, bottom: 5 }}
+                >
+                  <CartesianGrid strokeDasharray="3 3" stroke={CHART_COLORS.grid} opacity={0.3} />
+                  <XAxis interval="0" dataKey="name" stroke={CHART_COLORS.axis} />
+                  <YAxis stroke={CHART_COLORS.axis} />
+                  <Tooltip />
+                  <Bar dataKey="count" fill={CHART_COLORS.primary} name="Количество" radius={[4, 4, 0, 0]} />
+                </BarChart>
+              </ResponsiveContainer>
             </div>
           </div>
         </>
