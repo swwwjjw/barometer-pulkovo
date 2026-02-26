@@ -1,0 +1,17 @@
+[Unit]
+Description=Barometer Internal FastAPI Service
+After=network.target
+
+[Service]
+Type=simple
+User=www-data
+Group=www-data
+WorkingDirectory=/opt/barometer-pulkovo/internal_module
+Environment=PYTHONUNBUFFERED=1
+ExecStart=/opt/barometer-pulkovo/.venv/bin/python -m uvicorn internal_main:app --host 127.0.0.1 --port 6666 --workers 2
+Restart=always
+RestartSec=5
+TimeoutStopSec=30
+
+[Install]
+WantedBy=multi-user.target
