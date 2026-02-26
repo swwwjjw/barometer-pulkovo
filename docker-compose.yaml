@@ -9,5 +9,9 @@ services:
     ports:
       - "8083:8083"
     volumes:
+      - hh_data:/app/hh_data
       - /mnt/allshare_fileserver/barometer_vacancies:/mnt/allshare_fileserver/barometer_vacancies
     restart: unless-stopped
+
+volumes:
+  hh_data:
