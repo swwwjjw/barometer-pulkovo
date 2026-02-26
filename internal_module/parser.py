@@ -5,12 +5,12 @@ import numpy as np
 import shutil
 
 # Определяем пути
-# LOCAL_FILE = "hh_data/vacancies_current.txt"
-# SHARE_FILE = "/mnt/allshare_fileserver/barometer_vacancies/vacancies_current.txt"
-DATA_FILE = "../final_folder/vacancies_current.txt"
+LOCAL_FILE = "hh_data/vacancies_current.txt"
+SHARE_FILE = "/mnt/allshare_fileserver/barometer_vacancies/vacancies_current.txt"
+# DATA_FILE = "hh_data/vacancies_current.txt"
 
 # Логика выбора и перемещения файла
-"""if os.path.exists(SHARE_FILE):
+if os.path.exists(SHARE_FILE):
     # Если есть новый файл на шаре — забираем его
     if os.path.exists(LOCAL_FILE):
         os.remove(LOCAL_FILE)                # удаляем старую локальную копию
@@ -27,7 +27,7 @@ else:
             f"Файл с данными не найден ни в общей папке ({SHARE_FILE}), "
             f"ни локально ({LOCAL_FILE}). Завершение работы."
         )
-"""
+
 # Маппинг опыта (примерные годы для сортировки/построения графиков)
 EXPERIENCE_MAP = {
     "noExperience": 0,
