@@ -5,28 +5,35 @@ import numpy as np
 import shutil
 
 # Определяем пути
-LOCAL_FILE = "hh_data/vacancies_current.txt"
+BASE_DIR = os.path.dirname(__file__)
+LOCAL_FILE = os.path.join(BASE_DIR, "hh_data", "vacancies_current.txt")
 SHARE_FILE = "/mnt/allshare_fileserver/barometer_vacancies/vacancies_current.txt"
 # DATA_FILE = "hh_data/vacancies_current.txt"
 
-# Логика выбора и перемещения файла
-if os.path.exists(SHARE_FILE):
-    # Если есть новый файл на шаре — забираем его
-    if os.path.exists(LOCAL_FILE):
-        os.remove(LOCAL_FILE)                # удаляем старую локальную копию
-    shutil.move(SHARE_FILE, LOCAL_FILE)      # перемещаем новый файл в папку скрипта
-    print(f"Новый файл данных скопирован из {SHARE_FILE} в {LOCAL_FILE}")
-    DATA_FILE = LOCAL_FILE
-else:
+def resolve_data_file() -> Optional[str]:
+    """Определить доступный файл данных и обновить локальную копию при необходимости."""
+    os.makedirs(os.path.dirname(LOCAL_FILE), exist_ok=True)
+
+    if os.path.exists(SHARE_FILE):
+        try:
+            if os.path.exists(LOCAL_FILE):
+                os.remove(LOCAL_FILE)  # удаляем старую локальную копию
+            shutil.move(SHARE_FILE, LOCAL_FILE)  # перемещаем новый файл в папку скрипта
+            print(f"Новый файл данных скопирован из {SHARE_FILE} в {LOCAL_FILE}")
+            return LOCAL_FILE
+        except OSError as exc:
+            print(f"Не удалось обновить локальный файл из шары: {exc}")
+
     # Нового файла нет — используем существующий локальный
     if os.path.exists(LOCAL_FILE):
-        DATA_FILE = LOCAL_FILE
         print(f"Используется существующий локальный файл: {LOCAL_FILE}")
-    else:
-        raise FileNotFoundError(
-            f"Файл с данными не найден ни в общей папке ({SHARE_FILE}), "
-            f"ни локально ({LOCAL_FILE}). Завершение работы."
-        )
+        return LOCAL_FILE
+
+    print(
+        f"Файл с данными не найден ни в общей папке ({SHARE_FILE}), "
+        f"ни локально ({LOCAL_FILE}). Запуск без данных вакансий."
+    )
+    return None
 
 # Маппинг опыта (примерные годы для сортировки/построения графиков)
 EXPERIENCE_MAP = {
@@ -38,19 +45,27 @@ EXPERIENCE_MAP = {
 
 def load_data() -> Dict[str, Any]:
     """Загрузить данные вакансий из JSON файла."""
-    target_file = DATA_FILE
+    target_file = resolve_data_file()
+    if not target_file:
+        return {"metadata": {"total_vacancies": 0, "total_groups": 0}, "groups": {}}
     
     with open(target_file, "r", encoding="utf-8") as f:
         data = json.load(f)
     
     # Проверка на новый формат (с группами)
     if "groups" in data:
+        data.setdefault("metadata", {})
+        data["metadata"].setdefault("total_vacancies", sum(
+            len(group.get("vacancies", [])) for group in data.get("groups", {}).values()
+        ))
+        data["metadata"].setdefault("total_groups", len(data.get("groups", {})))
         return data
     
     # Старый формат (с элементами) - преобразование в структуру groups
+    items = data.get("items", [])
     return {
-        "metadata": {"total_vacancies": len(data.get("items", []))},
-        "groups": {"all_vacancies": {"keywords": "all", "vacancies": data.get("items", [])}}
+        "metadata": {"total_vacancies": len(items), "total_groups": 1},
+        "groups": {"all_vacancies": {"keywords": "all", "vacancies": items}}
     }
 
 
