@@ -1,0 +1,11 @@
+services:
+  internal_module:
+    container_name: internal_module
+    build:
+      context: ./internal_module
+      dockerfile: Dockerfile
+    ports:
+      - "8083:8083"
+    volumes:
+      - /mnt/allshare_fileserver/barometer_vacancies:/mnt/allshare_fileserver/barometer_vacancies
+    restart: unless-stopped
