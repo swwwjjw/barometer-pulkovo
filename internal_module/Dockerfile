@@ -10,7 +10,7 @@ COPY frontend/ ./
 # COPY internal_module/frontend/ ./
 RUN npm run build
 
-FROM python:3.11-slim AS runtime
+FROM python:3.8-slim AS runtime
 # FROM python:3.8-slim AS runtime
 
 ENV PYTHONDONTWRITEBYTECODE=1 \
