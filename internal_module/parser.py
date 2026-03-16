@@ -125,7 +125,7 @@ def calculate_salary_median(vacancies: List[Dict[str, Any]]) -> Optional[float]:
     return float(np.median(salaries))
 
 def filter_salary_outliers(vacancies: List[Dict[str, Any]], 
-                           high_multiplier: float = 3,
+                           high_multiplier: float = 5,
                            low_divisor: float = 5,
                            return_stats: bool = False) -> Any:
     """Отфильтровать вакансии с зарплатами, которые слишком высокие или низкие по сравнению с медианой."""
