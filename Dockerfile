@@ -23,8 +23,8 @@ WORKDIR /app
 COPY packages /packages
 COPY internal_module/internal_requirements.txt ./
 RUN pip install --upgrade pip && \
-    pip install -r internal_requirements.txt
-    # pip install --no-index --find-links=/packages -r internal_requirements.txt
+    # pip install -r internal_requirements.txt
+    pip install --no-index --find-links=/packages -r internal_requirements.txt
 
 
 # COPY internal_main.py parser.py b1_data.json ./

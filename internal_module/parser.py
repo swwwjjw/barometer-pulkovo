@@ -6,8 +6,7 @@ import shutil
 
 # Определяем пути
 LOCAL_FILE = "hh_data/vacancies_current.txt"
-# SHARE_FILE = "/mnt/allshare_fileserver/barometer_vacancies/vacancies_current.txt"
-SHARE_FILE = "share/vacancies_current.txt"
+SHARE_FILE = "/mnt/allshare_fileserver/barometer_vacancies/vacancies_current.txt"
 # DATA_FILE = "hh_data/vacancies_current.txt"
 
 # Логика выбора и перемещения файла
