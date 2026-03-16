@@ -1,8 +1,8 @@
 import { useState, useEffect, useCallback } from 'react'
 import axios from 'axios'
 import {
-  BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer,
-  ScatterChart, Scatter, ZAxis, PieChart, Pie, Cell
+  BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
+  ScatterChart, Scatter, ZAxis
 } from 'recharts'
 import './App.css'
 
@@ -555,28 +555,19 @@ function App() {
               </div>
             </div>
 
-            <div className="chart-card">
+            <div className="chart-card chart-card-fullscreen">
               <h3>Распределение опыта</h3>
               <ResponsiveContainer width="100%" height="65%">
-                <PieChart>
-                  <Pie
-                    data={stats.experience_dist.filter(item => item.value > 0)}
-                    cx="50%"
-                    cy="50%"
-                    labelLine={false}
-                    label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
-                    outerRadius="70%"
-                    fill={CHART_COLORS.primary}
-                    dataKey="value"
-                    animationBegin={200}
-                    animationDuration={800}
-                  >
-                    {stats.experience_dist.filter(item => item.value > 0).map((entry, index) => (
-                      <Cell key={`cell-${index}`} fill={CHART_COLORS.palette[index % CHART_COLORS.palette.length]} />
-                    ))}
-                  </Pie>
+                <BarChart
+                  data={stats.experience_dist.filter(item => item.value > 0)}
+                  margin={{ top: 10, right: 20, left: 10, bottom: 5 }}
+                >
+                  <CartesianGrid strokeDasharray="3 3" stroke={CHART_COLORS.grid} opacity={0.3} />
+                  <XAxis interval={0} dataKey="name" stroke={CHART_COLORS.axis} />
+                  <YAxis stroke={CHART_COLORS.axis} />
                   <Tooltip />
-                </PieChart>
+                  <Bar dataKey="value" fill={CHART_COLORS.primary} name="Количество" radius={[4, 4, 0, 0]} />
+                </BarChart>
               </ResponsiveContainer>
             </div>
 
