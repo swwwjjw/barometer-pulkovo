@@ -183,6 +183,7 @@ def normalize_trudvsem_vacancy(vacancy: Dict[str, Any]) -> Dict[str, Any]:
     return {
         "id": f"trudvsem-{vacancy_id}",
         "name": vacancy.get("job-name", "Без названия"),
+        "data_source": "trudvsem",
         "salary": salary_object,
         "employer": {
             "id": str(company_id),
@@ -220,6 +221,9 @@ async def fetch_hh_for_keyword(client: httpx.AsyncClient, vacancy_keywords: str)
             response.raise_for_status()
             data = response.json()
             page_items = data.get("items", [])
+            for item in page_items:
+                if isinstance(item, dict):
+                    item["data_source"] = "hh"
             items.extend(page_items)
 
             if len(page_items) < HH_PER_PAGE:

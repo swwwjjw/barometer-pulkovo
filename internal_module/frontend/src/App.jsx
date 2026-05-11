@@ -23,6 +23,16 @@ const CHART_COLORS = {
   grid: '#334155'        // --bg-tertiary
 };
 
+const SOURCE_COLORS = {
+  hh: '#3b82f6',
+  trudvsem: '#f59e0b'
+};
+
+const SOURCE_LABELS = {
+  hh: 'HH',
+  trudvsem: 'Работа в России'
+};
+
 // Сопоставление ключевых слов с бэкенда и отображаемых названий
 const ROLE_DISPLAY_NAMES = {
   'грузчик нагрузки': 'Грузчик на склад',
@@ -89,6 +99,14 @@ const getRoleDisplayName = (keywords) => {
 };
 
 function App() {
+  const resolveSourceId = (item = {}) => {
+    const source = (item.source_id || item.source || 'hh').toString().toLowerCase()
+    return source === 'trudvsem' ? 'trudvsem' : 'hh'
+  }
+
+  const getSourceLabel = (sourceId) => SOURCE_LABELS[sourceId] || SOURCE_LABELS.hh
+  const getSourceColor = (sourceId) => SOURCE_COLORS[sourceId] || SOURCE_COLORS.hh
+
   // Состояние вкладки - определяем из пути URL
   const [activeTab, setActiveTab] = useState(() => {
     const path = window.location.pathname;
@@ -444,18 +462,10 @@ function App() {
                     content={({ active, payload }) => {
                       if (active && payload && payload.length) {
                         const data = payload[0].payload;
-                        // Подсчёт количества вакансий по работодателям для цветовой карты
-                        const employerCounts = {};
-                        stats.bubble_data.forEach(item => {
-                          const employer = item.employer || 'Не указано';
-                          employerCounts[employer] = (employerCounts[employer] || 0) + item.count;
-                        });
-                        const sortedEmployers = Object.entries(employerCounts)
-                          .sort((a, b) => b[1] - a[1])
-                          .map(([employer]) => employer);
+                        const sourceId = resolveSourceId(data);
+                        const sourceLabel = getSourceLabel(sourceId);
+                        const sourceColor = getSourceColor(sourceId);
                         const currentEmployer = data.employer || 'Не указано';
-                        const employerIndex = sortedEmployers.indexOf(currentEmployer);
-                        const employerColor = CHART_COLORS.palette[employerIndex % CHART_COLORS.palette.length];
                         
                         return (
                           <div className="custom-tooltip" style={{
@@ -465,8 +475,11 @@ function App() {
                             borderRadius: '6px',
                             color: '#e2e8f0'
                           }}>
-                            <p style={{ margin: '0 0 8px 0', fontWeight: 'bold', fontSize: '14px', color: employerColor }}>
+                            <p style={{ margin: '0 0 8px 0', fontWeight: 'bold', fontSize: '14px', color: sourceColor }}>
                               {currentEmployer}
+                            </p>
+                            <p style={{ margin: '4px 0', fontSize: '13px' }}>
+                              <strong>Источник:</strong> {sourceLabel}
                             </p>
                             <p style={{ margin: '4px 0', fontSize: '13px' }}>
                               <strong>Зарплата:</strong> {Math.round(data.salary).toLocaleString()} ₽
@@ -489,8 +502,8 @@ function App() {
                     shape={(props) => {
                       const { cx, cy, payload } = props;
                       const radius = 10;
-                      const isPulkovo = payload.employer?.trim() === 'Аэропорт Пулково (ООО Воздушные Ворота Северной Столицы)';
-                      const fillColor = isPulkovo ? '#22d3ee' : '#3b82f6';
+                      const sourceId = resolveSourceId(payload);
+                      const fillColor = getSourceColor(sourceId);
                       return (
                         <circle
                           cx={cx}
@@ -506,6 +519,16 @@ function App() {
                   />
                 </ScatterChart>
               </ResponsiveContainer>
+              <div className="bubble-source-legend">
+                <div className="bubble-source-item">
+                  <span className="bubble-source-dot" style={{ backgroundColor: SOURCE_COLORS.hh }} />
+                  <span>{SOURCE_LABELS.hh}</span>
+                </div>
+                <div className="bubble-source-item">
+                  <span className="bubble-source-dot" style={{ backgroundColor: SOURCE_COLORS.trudvsem }} />
+                  <span>{SOURCE_LABELS.trudvsem}</span>
+                </div>
+              </div>
               <div className="employer-list">
                 <h4 style={{ 
                   margin: '16px 0 12px 0', 
