@@ -91,8 +91,10 @@ def get_stats(group_id: str, filter_outliers: bool = True):
     # Агрегация данных для пузырькового графика - группировка по зарплате, опыту и работодателю
     bubble_df = pd.DataFrame(bubble_data)
     if not bubble_df.empty:
-        # Группировка по зарплате, опыту и работодателю, подсчет вхождений
-        bubble_agg = bubble_df.groupby(['salary', 'experience', 'experience_label', 'employer']).size().reset_index(name='count')
+        # Группировка по зарплате, опыту, работодателю и источнику, подсчет вхождений
+        bubble_agg = bubble_df.groupby(
+            ['salary', 'experience', 'experience_label', 'employer', 'source_id', 'source_name']
+        ).size().reset_index(name='count')
         # Масштабирование счетчика для размера пузырька при необходимости
         bubble_data_agg = bubble_agg.to_dict(orient='records')
     else:
