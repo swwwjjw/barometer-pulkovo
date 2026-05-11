@@ -27,8 +27,8 @@ RUN pip install --upgrade pip && \
     pip install --no-index --find-links=/packages -r internal_requirements.txt
 
 
-# COPY internal_main.py parser.py b1_data.json ./
-COPY internal_module/internal_main.py internal_module/parser.py internal_module/b1_data.json ./
+# COPY internal_main.py parser.py parser_hh.py b1_data.json ./
+COPY internal_module/internal_main.py internal_module/parser.py internal_module/parser_hh.py internal_module/b1_data.json ./
 COPY --from=frontend-builder /build/frontend/dist ./frontend/dist
 
 RUN mkdir -p hh_data

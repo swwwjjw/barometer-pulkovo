@@ -9,7 +9,7 @@ import pandas as pd
 import numpy as np
 
 # Импорт модуля парсера
-from parser import (
+from parser_hh import (
     load_data,
     process_salary,
     filter_salary_outliers,
