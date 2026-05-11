@@ -19,6 +19,11 @@ HH_API_URL = "https://api.hh.ru/vacancies"
 HH_MAX_PAGES = 20
 HH_AREA = 2
 HH_PER_PAGE = 99
+HH_USER_AGENT = os.getenv(
+    "HH_USER_AGENT",
+    "barometer-vacancy-collector/1.0 (contact: support@example.com)",
+)
+HH_API_TOKEN = os.getenv("HH_API_TOKEN")
 
 # Настройки для работы с API "Работа России"
 TRUDVSEM_API_URL = "http://opendata.trudvsem.ru/api/v1/vacancies"
@@ -58,6 +63,21 @@ KEYWORDS = [
     "aналитик 1С: ERP",
     "программист 1С ЗУП",
 ]
+
+
+def build_request_headers() -> Dict[str, str]:
+    """
+    Формирует заголовки запросов к внешним API.
+
+    Для HH API обязательным является корректный User-Agent, иначе часто приходит 403.
+    """
+    headers = {
+        "User-Agent": HH_USER_AGENT,
+        "Accept": "application/json",
+    }
+    if HH_API_TOKEN:
+        headers["Authorization"] = f"Bearer {HH_API_TOKEN}"
+    return headers
 
 
 def save_vacancies_to_file(grouped_data: Dict[str, Any]) -> None:
@@ -218,6 +238,13 @@ async def fetch_hh_for_keyword(client: httpx.AsyncClient, vacancy_keywords: str)
         try:
             await asyncio.sleep(REQUEST_DELAY_SECONDS)
             response = await client.get(HH_API_URL, params=params)
+            if response.status_code == 403:
+                print(
+                    f"[{datetime.now()}] HH вернул 403 Forbidden для ключевых слов "
+                    f"'{vacancy_keywords}', страница {page}. Проверьте корректность "
+                    "переменной HH_USER_AGENT и при необходимости HH_API_TOKEN."
+                )
+                break
             response.raise_for_status()
             data = response.json()
             page_items = data.get("items", [])
@@ -319,7 +346,8 @@ async def fetch_vacancies() -> None:
     source_totals = {"hh": 0, "trudvsem": 0}
 
     timeout = httpx.Timeout(HTTP_TIMEOUT_SECONDS)
-    async with httpx.AsyncClient(timeout=timeout) as client:
+    headers = build_request_headers()
+    async with httpx.AsyncClient(timeout=timeout, headers=headers) as client:
         for group_index, vacancy_keywords in enumerate(KEYWORDS):
             group_name = f"group_{group_index + 1}_keywords_{vacancy_keywords.replace(' ', '_')}"
             print(f"[{datetime.now()}] Обработка группы {group_name}...")
